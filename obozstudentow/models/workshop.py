@@ -1,0 +1,29 @@
+from django.db import models
+
+class Workshop(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    start = models.DateTimeField()
+    end = models.DateTimeField()
+    location = models.CharField(max_length=100)
+    visible = models.BooleanField(default=True)
+    photo = models.ImageField(upload_to='workshop', blank=True)
+    userLimit = models.IntegerField()
+
+    def __unicode__(self):
+        return self.name
+    
+
+class WorkshopSignup(models.Model):
+    user = models.ForeignKey('obozstudentow.User', on_delete=models.CASCADE)
+    workshop = models.ForeignKey(Workshop, on_delete=models.CASCADE)
+    
+    def __unicode__(self):
+        return self.user.first_name + " " + self.user.last_name + " (" + self.workshop.name + ")"
+    
+class WorkshopLeader(models.Model):
+    user = models.ForeignKey('obozstudentow.User', on_delete=models.PROTECT)
+    workshop = models.ForeignKey(Workshop, on_delete=models.CASCADE)
+    
+    def __unicode__(self):
+        return self.user.first_name + " " + self.user.last_name + " (" + self.workshop.name + ")"
