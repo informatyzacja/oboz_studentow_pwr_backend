@@ -43,3 +43,15 @@ class Point(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     addedBy = models.ForeignKey('obozstudentow.User', on_delete=models.SET_NULL, null=True)
     numberOfPoints = models.FloatField()
+
+# announcements
+class Announcement(models.Model):
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+    date = models.DateTimeField(auto_now_add=True)
+    addedBy = models.ForeignKey('obozstudentow.User', on_delete=models.SET_NULL, null=True)
+    visible = models.BooleanField(default=True)
+    
+    def __unicode__(self):
+        return self.title

@@ -29,6 +29,11 @@ class ScheduleItem(models.Model):
     def __unicode__(self):
         return self.name
     
+
+class Bus(models.Model):
+    description = models.CharField(max_length=100)
+    location = models.URLField()
+
 class User(AbstractUser):
     phoneNumber = models.CharField(max_length=9, blank=True)
     bandId = models.CharField(max_length=10, blank=True)
@@ -36,6 +41,7 @@ class User(AbstractUser):
     photo = models.ImageField(upload_to='users', blank=True) 
     title = models.CharField(max_length=100, blank=True) # e.g. "Koordynator"
     diet = models.CharField(max_length=100, blank=True) # e.g. "wegetariańska"
+    
 
 
     def __unicode__(self):
