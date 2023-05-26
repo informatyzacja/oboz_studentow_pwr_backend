@@ -1,0 +1,39 @@
+
+
+{% extends 'base.html' %}
+{% comment %} login view {% endcomment %}
+{% load static %}
+
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="{% static 'register.css' %}">
+{% endblock %}
+
+
+{% block content %}
+<center>
+<img id="logo" src="{% static 'logo.png' %}" alt="logo">
+
+{% comment %} <h1>Obóz Studentów PWR</h1> {% endcomment %}
+
+<form method="POST">
+    {% csrf_token %}    
+    
+    <div>
+    <div class="text-gradient">
+        <h2> Rejestracja </h2>
+        <p> Podaj e-mail, który podałeś podczas zapisywania się na obóz. </p>
+    </div>
+    <input id="email" name="email" type="email" autocomplete="email" required class="pill" placeholder="E-MAIL">
+
+
+    <button type="submit" class="pill">
+        Zarejestruj się
+    </button>
+
+    <a href="{% url 'login' %}" class="small-link f-left">Posiadasz już konto? Zaloguj się</a>
+
+    </div>
+</form>
+
+</center>
+{% endblock %}

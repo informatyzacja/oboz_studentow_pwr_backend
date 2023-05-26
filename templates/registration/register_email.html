@@ -1,0 +1,12 @@
+{% load i18n %}{% autoescape off %}
+
+Otrzymałeś tę wiadomość, ponieważ zarejestrowałeś się w aplikacji Obozu Studenckiego PWR.
+
+Odwiedź tą stronę i ustal swoje hasło:
+{% block reset_link %}
+{{ protocol }}://{{ domain }}{% url 'register_confirm' uidb64=uid token=token %}
+{% endblock %}
+
+Zespół Obozu Studenckiego PWR
+
+{% endautoescape %}

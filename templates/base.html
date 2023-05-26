@@ -1,0 +1,39 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'font.css' %}">
+
+    {% block stylesheets %} {% endblock %}
+    
+
+    <title>{% block title %}Obóz Studentów PWR{% endblock %}</title>
+
+    {% comment %} <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/logo/web/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/logo/web/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/logo/web/favicon-16x16.png">
+    <link rel="manifest" href="/logo/web/site.webmanifest">
+    <link rel="mask-icon" href="/logo/web/safari-pinned-tab.svg" color="#000000">
+    <link rel="shortcut icon" href="/logo/web/favicon.ico">
+    <meta name="msapplication-TileColor" content="#000000">
+    <meta name="msapplication-config" content="/logo/web/browserconfig.xml">
+    <meta name="theme-color" content="#0c0e1d" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#ffffff"> {% endcomment %}
+</head>
+
+
+
+<body>
+    <main>
+        {% block content %} {% endblock %}
+    </main>
+</body>
+
+</html>

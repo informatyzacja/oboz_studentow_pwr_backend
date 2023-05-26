@@ -1,0 +1,35 @@
+
+
+{% extends 'base.html' %}
+{% comment %} index view {% endcomment %}
+{% load static %}
+
+{% block stylesheets %}
+<link rel="stylesheet" type="text/css" href="{% static 'index.css' %}">
+{% endblock %}
+
+{% block content %}
+<center>
+<img id="logo" src="{% static 'logo.png' %}" alt="logo">
+
+<h1>Obóz Studentów PWR</h1>
+
+<div id="main">
+
+
+    <a  href="{% url 'login' %}">
+        <div class="pill button">
+        <p>Zaloguj się</p>
+        </div>
+    </a>
+
+    <a  href="{% url 'register' %}">
+        <div class="pill button">
+            <p>ZAREJESTRUJ SIĘ </p>
+        </div>
+    </a>
+
+</div>
+
+</center>
+{% endblock %}
