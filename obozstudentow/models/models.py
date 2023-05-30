@@ -24,6 +24,7 @@ class ScheduleItem(models.Model):
     start = models.DateTimeField()
     end = models.DateTimeField()
     location = models.CharField(max_length=100)
+    photo = models.ImageField(upload_to='schedule', blank=True)
     visible = models.BooleanField(default=True)
 
     def __str__(self):

@@ -30,10 +30,10 @@ from ..models import ScheduleItem
 class ScheduleItemSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ScheduleItem
-        fields = ('id', 'name', 'description', 'start', 'end', 'location')
+        fields = ('id', 'name', 'description', 'start', 'end', 'location', 'photo')
 
 class ScheduleItemViewSet(viewsets.ModelViewSet):
-    queryset = ScheduleItem.objects.all()
+    queryset = ScheduleItem.objects.filter(visible=True)
     serializer_class = ScheduleItemSerializer
 
 api_router.register(r'schedule', ScheduleItemViewSet)
