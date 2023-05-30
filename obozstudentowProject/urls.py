@@ -16,6 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 import obozstudentow.api
+from django.conf import settings
+from django.conf.urls.static import static
 
 from django.contrib.auth import views as auth_views
 from django.shortcuts import render
@@ -26,14 +28,6 @@ from django.urls import reverse_lazy
 
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
-
-# TODO: do something
-def password_change(request):
-    if request.method == 'POST':
-        form = PasswordChangeForm(user=request.user, data=request.POST)
-        if form.is_valid():
-            form.save()
-            update_session_auth_hash(request, form.user)
 
 class EmailLoginBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
@@ -79,4 +73,4 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='password_reset/password_reset_confirm.html', success_url=reverse_lazy('password_reset_complete')), name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='password_reset/password_reset_complete.html'), name='password_reset_complete'),
     
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -29,8 +29,9 @@ SECRET_KEY = os.getenv("SECRET_KEY", get_random_secret_key())
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", 'true').lower() == 'true'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost").split(",")
 
+CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
 
 # Application definition
 
@@ -45,9 +46,14 @@ INSTALLED_APPS = [
     "obozstudentow",
 
     "rest_framework",
+    "corsheaders",
+    'rest_framework.authtoken' if DEBUG else '',
+
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -79,7 +85,10 @@ WSGI_APPLICATION = "obozstudentowProject.wsgi.application"
 
 AUTHENTICATION_BACKENDS = ['obozstudentowProject.urls.EmailLoginBackend']
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
+
+MEDIA_ROOT = os.getenv("MEDIA_ROOT", BASE_DIR / 'media/')
+MEDIA_URL = os.getenv("MEDIA_URL", '/media/')
 
 
 # Database
@@ -147,3 +156,13 @@ AUTH_USER_MODEL = "obozstudentow.User"
 
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication' if DEBUG else '',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
+}
