@@ -34,6 +34,10 @@ class GroupWarden(models.Model):
 # points
 class PointType(models.Model):
     name = models.CharField(max_length=100)
+    group_type = models.ForeignKey(GroupType, on_delete=models.CASCADE)
+    description = models.TextField(blank=True)
+    points_max = models.FloatField()
+    points_min = models.FloatField(default = 0)
     
     def __str__(self):
         return self.name

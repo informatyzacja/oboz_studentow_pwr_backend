@@ -19,9 +19,10 @@ api_router.register(r'contact', ContactViewSet)
 api_router.register(r'person', PersonViewSet)
 
 from .workshop import *
-api_router.register(r'workshop', WorkshopViewSet, basename='workshop')
-api_router.register(r'workshopUserSignedUp', WorkshopUserSignedUpViewSet, basename='workshopsSignedUp')
-api_router.register(r'workshopSignUps', WorkshopSignupViewSet, basename='workshopUser')
+api_router.register(r'workshop', WorkshopViewSet)
+api_router.register(r'workshopUserSignedUp', WorkshopUserSignedUpViewSet)
+api_router.register(r'workshopSignUps', WorkshopSignupViewSet)
+api_router.register(r'workshopLeader', WorkshopLeaderViewSet)
 
 
 #home
@@ -94,3 +95,16 @@ class ProfileViewSet(viewsets.ModelViewSet):
         return self.queryset.filter(id=self.request.user.id)
     
 api_router.register(r'profile', ProfileViewSet, basename='profile')
+
+
+from ..models import Link
+class LinkSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Link
+        fields = "__all__"
+
+class LinkViewSet(viewsets.ModelViewSet):
+    queryset = Link.objects.all()
+    serializer_class = LinkSerializer
+
+api_router.register(r'link', LinkViewSet)

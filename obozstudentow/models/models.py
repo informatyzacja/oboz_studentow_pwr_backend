@@ -6,7 +6,7 @@ from django.contrib.auth.models import AbstractUser
 class Link(models.Model):
     name = models.CharField(max_length=100)
     url = models.URLField()
-    icon = models.URLField(blank=True)
+    icon = models.ImageField(upload_to='links', blank=True)
 
     def __str__(self):
         return self.name

@@ -4,27 +4,41 @@ from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework import status
 
-
+from .people import PersonSerializer
 
 from ..models import Workshop, WorkshopSignup, WorkshopLeader
 
 class WorkshopSerializer(serializers.HyperlinkedModelSerializer):
     userCount = serializers.SerializerMethodField('workshop_user_count')
+    workshopleaders = serializers.SerializerMethodField()
 
     def workshop_user_count(self, obj):
-        return WorkshopSignup.objects.filter(workshop=obj).count()
+        return obj.workshopsignup_set.count()
+    
+    def get_workshopleaders(self, obj):
+        return [PersonSerializer( leader.user, context=self.context ).data for leader in obj.workshopleader_set.all()]
 
     class Meta:
         model = Workshop
-        fields = ('id', 'name', 'description', 'start', 'end', 'location', 'photo', 'userLimit', 'userCount')
+        fields = ('id', 'name', 'description', 'start', 'end', 'location', 'photo', 'userLimit', 'userCount', 'workshopleaders')
 
 class WorkshopViewSet(viewsets.ModelViewSet):
-    queryset = Workshop.objects.all()
+    queryset = Workshop.objects.filter(visible=True)
     serializer_class = WorkshopSerializer
 
     def get_queryset(self):
         return self.queryset.filter(visible=True)
     
+class WorkshopLeaderSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = WorkshopLeader
+        fields = ('id', 'workshop', 'user')
+
+class WorkshopLeaderViewSet(viewsets.ModelViewSet):
+    queryset = WorkshopLeader.objects.all()
+    serializer_class = WorkshopLeaderSerializer
+
+
 
 
 #home
