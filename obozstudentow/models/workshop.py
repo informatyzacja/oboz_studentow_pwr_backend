@@ -7,6 +7,7 @@ class Workshop(models.Model):
     end = models.DateTimeField()
     location = models.CharField(max_length=100)
     visible = models.BooleanField(default=True)
+    signupsOpen = models.BooleanField(default=False)
     photo = models.ImageField(upload_to='workshop', blank=True)
     userLimit = models.IntegerField()
 

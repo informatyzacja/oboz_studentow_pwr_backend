@@ -1,4 +1,4 @@
-from ..models import LifeGuard, SoberDuty, Contact
+from ..models import LifeGuard, SoberDuty, Staff
 
 from django.contrib import admin
 
@@ -12,7 +12,7 @@ class SoberDutyAdmin(admin.ModelAdmin):
     list_display = ('user', 'start', 'end')
     search_fields = ('user', 'start', 'end')
 
-@admin.register(Contact)
+@admin.register(Staff)
 class ContactAdmin(admin.ModelAdmin):
     list_display = ('user',)
     search_fields = ('user',)

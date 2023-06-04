@@ -1,12 +1,13 @@
 from rest_framework import serializers, viewsets
 from django.db.models import Q
+from django.utils import timezone
 
 from rest_framework.response import Response
 from rest_framework import status
 
 from .people import PersonSerializer
 
-from ..models import Workshop, WorkshopSignup, WorkshopLeader
+from ..models import Workshop, WorkshopSignup, WorkshopLeader, User
 
 class WorkshopSerializer(serializers.HyperlinkedModelSerializer):
     userCount = serializers.SerializerMethodField('workshop_user_count')
@@ -16,7 +17,7 @@ class WorkshopSerializer(serializers.HyperlinkedModelSerializer):
         return obj.workshopsignup_set.count()
     
     def get_workshopleaders(self, obj):
-        return [PersonSerializer( leader.user, context=self.context ).data for leader in obj.workshopleader_set.all()]
+        return PersonSerializer( User.objects.filter(id__in=obj.workshopleader_set.values('user')), context=self.context, many=True).data
 
     class Meta:
         model = Workshop
@@ -65,7 +66,7 @@ class WorkshopSignupViewSet(viewsets.ModelViewSet):
     def create(self, request):
         if request.data.get('workshop') and request.data.get('user'):
             workshop = Workshop.objects.get(id=request.data.get('workshop'))
-            if WorkshopSignup.objects.filter(workshop=workshop).count() < workshop.userLimit and not WorkshopSignup.objects.filter(workshop=workshop, user=request.user).exists():
+            if WorkshopSignup.objects.filter(workshop=workshop).count() < workshop.userLimit and not WorkshopSignup.objects.filter(workshop=workshop, user=request.user).exists() and workshop.visible and workshop.signupsOpen and workshop.start > timezone.now():
                 WorkshopSignup.objects.create(workshop=workshop, user=request.user)
                 return Response(status=status.HTTP_201_CREATED) 
             

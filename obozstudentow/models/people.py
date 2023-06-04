@@ -15,7 +15,7 @@ class SoberDuty(models.Model):
         return self.user.first_name + " " + self.user.last_name + " (" + self.start.strftime("HH:MM dd.mm") + " - " + self.end.strftime("HH:MM dd.mm") + ")"
     
 
-class Contact(models.Model):
+class Staff(models.Model):
     user = models.ForeignKey('obozstudentow.User', on_delete=models.CASCADE)
     
     def __str__(self):

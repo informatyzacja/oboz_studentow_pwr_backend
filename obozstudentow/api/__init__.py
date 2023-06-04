@@ -13,10 +13,10 @@ api_router.register(r'groupWarden', GroupWardenViewSet)
 api_router.register(r'groupMember', GroupMemberViewSet)
 
 from .people import *
-api_router.register(r'lifeGuard', LifeGuardViewSet)
-api_router.register(r'currentSoberDuty', CurrentSoberDutyViewSet)
-api_router.register(r'contact', ContactViewSet)
-api_router.register(r'person', PersonViewSet)
+# api_router.register(r'lifeGuard', LifeGuardViewSet)
+# api_router.register(r'currentSoberDuty', CurrentSoberDutyViewSet)
+api_router.register(r'contact', ContactViewSet, 'contact')
+# api_router.register(r'person', PersonViewSet)
 
 from .workshop import *
 api_router.register(r'workshop', WorkshopViewSet)
@@ -94,7 +94,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.queryset.filter(id=self.request.user.id)
     
-api_router.register(r'profile', ProfileViewSet, basename='profile')
+api_router.register(r'profile', ProfileViewSet)
 
 
 from ..models import Link
