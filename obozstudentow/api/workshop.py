@@ -12,6 +12,11 @@ from ..models import Workshop, WorkshopSignup, WorkshopLeader, User
 class WorkshopSerializer(serializers.HyperlinkedModelSerializer):
     userCount = serializers.SerializerMethodField('workshop_user_count')
     workshopleaders = serializers.SerializerMethodField()
+    userSignUpId = serializers.SerializerMethodField()
+
+    def get_userSignUpId(self, obj):
+        signup = WorkshopSignup.objects.filter(workshop=obj, user=self.context['request'].user)
+        return signup.first().id if signup.exists() else None
 
     def workshop_user_count(self, obj):
         return obj.workshopsignup_set.count()
@@ -21,7 +26,7 @@ class WorkshopSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Workshop
-        fields = ('id', 'name', 'description', 'start', 'end', 'location', 'photo', 'userLimit', 'userCount', 'workshopleaders')
+        fields = ('id', 'name', 'description', 'start', 'end', 'location', 'photo', 'userLimit', 'userCount', 'signupsOpen', 'userSignUpId', 'workshopleaders')
 
 class WorkshopViewSet(viewsets.ModelViewSet):
     queryset = Workshop.objects.filter(visible=True)
@@ -56,21 +61,21 @@ class WorkshopSignupSerializer(serializers.HyperlinkedModelSerializer):
         model = WorkshopSignup
         fields = ('id', 'workshop', 'user')
 
+from rest_framework.views import APIView
+
 class WorkshopSignupViewSet(viewsets.ModelViewSet):
     queryset = WorkshopSignup.objects.all()
     serializer_class = WorkshopSignupSerializer
-
-    def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
     
     def create(self, request):
-        if request.data.get('workshop') and request.data.get('user'):
+        if request.data.get('workshop'):
             workshop = Workshop.objects.get(id=request.data.get('workshop'))
             if WorkshopSignup.objects.filter(workshop=workshop).count() < workshop.userLimit and not WorkshopSignup.objects.filter(workshop=workshop, user=request.user).exists() and workshop.visible and workshop.signupsOpen and workshop.start > timezone.now():
                 WorkshopSignup.objects.create(workshop=workshop, user=request.user)
                 return Response(status=status.HTTP_201_CREATED) 
             
-        return Response(status=status.HTTP_409_CONFLICT)
+            return Response(status=status.HTTP_409_CONFLICT)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
     
     def destroy(self, request, pk=None):
         if WorkshopSignup.objects.filter(id=pk, user=request.user).exists():

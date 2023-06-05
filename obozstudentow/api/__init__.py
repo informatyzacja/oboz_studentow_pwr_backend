@@ -19,10 +19,10 @@ api_router.register(r'contact', ContactViewSet, 'contact')
 # api_router.register(r'person', PersonViewSet)
 
 from .workshop import *
-api_router.register(r'workshop', WorkshopViewSet)
-api_router.register(r'workshopUserSignedUp', WorkshopUserSignedUpViewSet)
-api_router.register(r'workshopSignUps', WorkshopSignupViewSet)
-api_router.register(r'workshopLeader', WorkshopLeaderViewSet)
+api_router.register(r'workshop', WorkshopViewSet, 'workshop')
+api_router.register(r'workshopUserSignedUp', WorkshopUserSignedUpViewSet, 'workshopUserSignedUp')
+api_router.register(r'workshopSignUps', WorkshopSignupViewSet, 'workshopSignupViewSet')
+# api_router.register(r'workshopLeader', WorkshopLeaderViewSet, 'workshopLeader')
 
 
 #home
