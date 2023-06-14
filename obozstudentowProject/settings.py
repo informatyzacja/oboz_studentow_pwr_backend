@@ -14,24 +14,31 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 
+def get_secret(key, default):
+    value = os.getenv(key, default)
+    if os.path.isfile(value):
+        with open(value) as f:
+            return f.read().strip('\n').strip()
+    return value
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load environment variables from .env file
-load_dotenv(os.path.join(BASE_DIR,'.env'))
+# load_dotenv(os.path.join(BASE_DIR,'.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 from django.core.management.utils import get_random_secret_key
-SECRET_KEY = os.getenv("SECRET_KEY", get_random_secret_key())
+SECRET_KEY = get_secret("SECRET_KEY", get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", 'true').lower() == 'true'
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost").split(",")
 
-CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
+CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost").split(",")
 
 # Application definition
 
@@ -94,11 +101,12 @@ MEDIA_URL = os.getenv("MEDIA_URL", '/media/')
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+
 DATABASES = {
     "default": {
         "ENGINE": os.getenv("DB_ENGINE", "django.db.backends.sqlite3"),
         "NAME": os.getenv("DB_NAME", BASE_DIR / "db.sqlite3"),
-        'PASSWORD': os.getenv("DB_PASSWORD",""),
+        'PASSWORD': get_secret("DB_PASSWORD",""),
         'USER': os.getenv("DB_USER",""),
         'HOST': os.getenv("DB_HOST","")
     }
@@ -140,7 +148,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = "static/"
-# STATIC_ROOT = os.getenv("STATIC_ROOT", './')
+STATIC_ROOT = os.getenv("STATIC_ROOT", './')
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
