@@ -93,6 +93,9 @@ WSGI_APPLICATION = "obozstudentowProject.wsgi.application"
 AUTHENTICATION_BACKENDS = ['obozstudentowProject.urls.EmailLoginBackend']
 
 EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
+EMAIL_HOST = os.getenv("EMAIL_HOST", "localhost")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "webmaster@localhost")
+
 
 MEDIA_ROOT = os.getenv("MEDIA_ROOT", BASE_DIR / 'media/')
 MEDIA_URL = os.getenv("MEDIA_URL", '/media/')
