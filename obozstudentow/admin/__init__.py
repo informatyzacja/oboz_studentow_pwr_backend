@@ -21,17 +21,64 @@ class ScheduleItemAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'start', 'end', 'location', 'visible')
     search_fields = ('name', 'description', 'start', 'end', 'location', 'visible')
 
+
+from django.contrib.auth.forms import BaseUserCreationForm
+from django.core.exceptions import ValidationError
+
+class UserCreationFormEmail(BaseUserCreationForm):
+    password1 = None
+    password2 = None
+
+    def save(self, commit=True):
+        user = super(BaseUserCreationForm, self).save(commit=False)
+        if commit:
+            user.save()
+            if hasattr(self, "save_m2m"):
+                self.save_m2m()
+        return user
+
+    def clean_email(self):
+        """Reject usernames that differ only in case."""
+        email = self.cleaned_data.get("email")
+        if (
+            email
+            and self._meta.model.objects.filter(email__iexact=email).exists()
+        ):
+            self._update_errors(
+                ValidationError(
+                    {
+                        "email": self.instance.unique_error_message(
+                            self._meta.model, ["email"]
+                        )
+                    }
+                )
+            )
+        else:
+            return email
+        
 class CustomUserAdmin(UserAdmin):
-    list_display = ('username', "email", 'first_name', 'last_name', 'phoneNumber', 'bandId', "is_staff")
-    search_fields = ('username', 'first_name', "email", 'last_name', 'phoneNumber', 'bandId', 'houseNumber')
+    list_display = ("email", 'first_name', 'last_name', 'phoneNumber', 'bandId', "is_staff")
+    search_fields = ('first_name', "email", 'last_name', 'phoneNumber', 'bandId', 'houseNumber')
 
     list_filter = ("is_staff", "is_superuser", "is_active", "groups")
+    ordering = ("email",)
+
+    add_fieldsets = (
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": ("email", "first_name", "last_name"),
+            },
+        ),
+    )
+    add_form = UserCreationFormEmail
 
 
     fieldsets = (
-        (None, {"fields": ("username", "password")}),
-        (_("Personal info"), {"fields": ("first_name", "last_name", "email")}),
-        (_("Additional info"), {"fields": ("phoneNumber", "bandId", "houseNumber", "photo", "title", "diet", "bus")}),
+        (None, {"fields": ("email", "password")}),
+        (_("Personal info"), {"fields": ("first_name", "last_name")}),
+        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "houseNumber", "photo", "title", "diet", "bus")}),
         (
             _("Permissions"),
             {

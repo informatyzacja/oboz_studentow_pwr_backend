@@ -43,6 +43,8 @@ class Bus(models.Model):
         return "Bus " + self.description
 
 class User(AbstractUser):
+    username=None
+    email = models.EmailField(unique=True)
     phoneNumber = models.CharField(max_length=9, blank=True)
     bandId = models.CharField(max_length=10, blank=True)
     houseNumber = models.CharField(max_length=10, blank=True)
@@ -51,6 +53,8 @@ class User(AbstractUser):
     diet = models.CharField(max_length=100, blank=True) # e.g. "wegetariańska"
     bus = models.ForeignKey(Bus, on_delete=models.SET_NULL, null=True, blank=True)
     
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
 
 
     def __unicode__(self):
