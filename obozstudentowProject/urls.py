@@ -21,13 +21,9 @@ from django.conf.urls.static import static
 
 from django.contrib.auth import views as auth_views
 from django.shortcuts import render
-from django.http import HttpResponse
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 from django.urls import reverse_lazy
-
-from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.forms import PasswordChangeForm
 
 class EmailLoginBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):

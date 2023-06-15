@@ -10,7 +10,7 @@ class GroupType(models.Model):
 class Group(models.Model):
     name = models.CharField(max_length=100)
     type = models.ForeignKey(GroupType, on_delete=models.PROTECT)
-    logo = ResizedImageField(upload_to='groups', blank=True, quality=85)
+    logo = ResizedImageField(upload_to='groups', blank=True, force_format=None)
     map = ResizedImageField(upload_to='groups/maps', blank=True)
     messenger = models.URLField(blank=True)
     description = models.TextField(blank=True)
