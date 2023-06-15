@@ -1,12 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django_resized import ResizedImageField
 
 # Separate models
 
 class Link(models.Model):
     name = models.CharField(max_length=100)
     url = models.URLField()
-    icon = models.ImageField(upload_to='links', blank=True)
+    icon = ResizedImageField(upload_to='links', blank=True)
 
     def __str__(self):
         return self.name
@@ -24,7 +25,7 @@ class ScheduleItem(models.Model):
     start = models.DateTimeField()
     end = models.DateTimeField()
     location = models.CharField(max_length=100)
-    photo = models.ImageField(upload_to='schedule', blank=True)
+    photo = ResizedImageField(upload_to='schedule', blank=True)
     visible = models.BooleanField(default=True)
 
     def __str__(self):
@@ -45,7 +46,7 @@ class User(AbstractUser):
     phoneNumber = models.CharField(max_length=9, blank=True)
     bandId = models.CharField(max_length=10, blank=True)
     houseNumber = models.CharField(max_length=10, blank=True)
-    photo = models.ImageField(upload_to='users', blank=True) 
+    photo = ResizedImageField(upload_to='users', blank=True) 
     title = models.CharField(max_length=100, blank=True) # e.g. "Koordynator"
     diet = models.CharField(max_length=100, blank=True) # e.g. "wegetariańska"
     bus = models.ForeignKey(Bus, on_delete=models.SET_NULL, null=True, blank=True)

@@ -1,4 +1,5 @@
 from django.db import models
+from django_resized import ResizedImageField
 
 class Workshop(models.Model):
     name = models.CharField(max_length=100)
@@ -8,7 +9,7 @@ class Workshop(models.Model):
     location = models.CharField(max_length=100)
     visible = models.BooleanField(default=True)
     signupsOpen = models.BooleanField(default=False)
-    photo = models.ImageField(upload_to='workshop', blank=True)
+    photo = ResizedImageField(upload_to='workshop', blank=True)
     userLimit = models.IntegerField()
 
     def __str__(self):

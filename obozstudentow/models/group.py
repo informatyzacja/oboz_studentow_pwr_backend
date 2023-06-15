@@ -1,4 +1,5 @@
 from django.db import models
+from django_resized import ResizedImageField
 
 class GroupType(models.Model):
     name = models.CharField(max_length=100)
@@ -9,9 +10,10 @@ class GroupType(models.Model):
 class Group(models.Model):
     name = models.CharField(max_length=100)
     type = models.ForeignKey(GroupType, on_delete=models.PROTECT)
-    logo = models.ImageField(upload_to='groups', blank=True)
-    map = models.ImageField(upload_to='groups/maps', blank=True)
+    logo = ResizedImageField(upload_to='groups', blank=True, quality=85)
+    map = ResizedImageField(upload_to='groups/maps', blank=True)
     messenger = models.URLField(blank=True)
+    description = models.TextField(blank=True)
     
     def __str__(self):
         return self.name

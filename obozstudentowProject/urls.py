@@ -42,7 +42,6 @@ class EmailLoginBackend(ModelBackend):
         return None
     
 
-
 def index(request, resource=None):
     if request.user.is_authenticated:
         return render(request, 'app.html')

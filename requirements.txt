@@ -3,3 +3,4 @@ djangorestframework
 python-dotenv
 django-cors-headers
 Pillow
+django-resized
