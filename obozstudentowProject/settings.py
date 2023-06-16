@@ -54,9 +54,11 @@ INSTALLED_APPS = [
 
     "rest_framework",
     "corsheaders",
-    'rest_framework.authtoken' if DEBUG else '',
     'import_export',
 ]
+
+if DEBUG:
+    INSTALLED_APPS.append("rest_framework.authtoken")
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -173,10 +175,12 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication' if DEBUG else '',
         'rest_framework.authentication.SessionAuthentication',
     ]
 }
+
+if DEBUG:
+    REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'].append('rest_framework.authentication.TokenAuthentication')
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10*1024*1024
 

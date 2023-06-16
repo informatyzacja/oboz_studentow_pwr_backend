@@ -75,3 +75,9 @@ urlpatterns = [
     
 ]
 
+
+
+handler404 = "obozstudentowProject.errorViews.error_404"
+handler500 = "obozstudentowProject.errorViews.error_500"
+handler403 = "obozstudentowProject.errorViews.error_403"
+handler400 = "obozstudentowProject.errorViews.error_400"
