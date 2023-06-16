@@ -3,6 +3,7 @@ from .meals import *
 from .people import *
 from .workshop import *
 
+from import_export.admin import ImportExportModelAdmin
 
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
@@ -56,7 +57,7 @@ class UserCreationFormEmail(BaseUserCreationForm):
         else:
             return email
         
-class CustomUserAdmin(UserAdmin):
+class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
     list_display = ("email", 'first_name', 'last_name', 'phoneNumber', 'bandId', "is_staff")
     search_fields = ('first_name', "email", 'last_name', 'phoneNumber', 'bandId', 'houseNumber')
 

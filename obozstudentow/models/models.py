@@ -7,7 +7,7 @@ from django_resized import ResizedImageField
 class Link(models.Model):
     name = models.CharField(max_length=100)
     url = models.URLField()
-    icon = ResizedImageField(upload_to='links', blank=True)
+    icon = ResizedImageField(upload_to='links', blank=True, force_format=None)
 
     def __str__(self):
         return self.name
@@ -57,8 +57,8 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
 
-    def __unicode__(self):
-        return self.first_name
+    def __str__(self):
+        return self.first_name + " " + self.last_name + " " + self.title
     
 
     

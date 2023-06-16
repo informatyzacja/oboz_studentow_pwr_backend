@@ -4,3 +4,4 @@ python-dotenv
 django-cors-headers
 Pillow
 django-resized
+django-import-export

@@ -51,7 +51,7 @@ urlpatterns = [
 
 
     # login/logout
-    path("login/", auth_views.LoginView.as_view(), name="login"),
+    path("login/", auth_views.LoginView.as_view(redirect_authenticated_user=True), name="login"),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
 
     # register
@@ -71,7 +71,7 @@ urlpatterns = [
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + [
 
     path('', index, name="index"),
-    path('<path:resource>', index, name="index2"),
+    path('<path:resource>/', index, name="index2"),
     
 ]
 
