@@ -16,7 +16,7 @@ class Group(models.Model):
     description = models.TextField(blank=True)
     
     def __str__(self):
-        return self.name
+        return self.name + " (" + self.type.name + ")"
     
 class GroupMember(models.Model):
     user = models.ForeignKey('obozstudentow.User', on_delete=models.CASCADE)

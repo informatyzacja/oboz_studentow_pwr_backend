@@ -23,6 +23,11 @@ class ScheduleItemAdmin(admin.ModelAdmin):
     search_fields = ('name', 'description', 'start', 'end', 'location', 'visible')
 
 
+
+class GroupMemberInlineAdmin(admin.TabularInline):
+    model = GroupMember
+    extra = 1
+
 from django.contrib.auth.forms import BaseUserCreationForm
 from django.core.exceptions import ValidationError
 
@@ -94,6 +99,7 @@ class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
         ),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
+    inlines = [GroupMemberInlineAdmin, GroupWardenInline]
 
 admin.site.register(Link, LinkAdmin)
 admin.site.register(FAQ, FAQAdmin)
