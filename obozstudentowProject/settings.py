@@ -94,9 +94,14 @@ WSGI_APPLICATION = "obozstudentowProject.wsgi.application"
 
 AUTHENTICATION_BACKENDS = ['obozstudentowProject.urls.EmailLoginBackend']
 
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "webmaster@localhost")
 EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
 EMAIL_HOST = os.getenv("EMAIL_HOST", "localhost")
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "webmaster@localhost")
+EMAIL_PORT = os.getenv("EMAIL_PORT", 25)
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = get_secret("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "false").lower() == "true"
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "false").lower() == "true"
 
 
 MEDIA_ROOT = os.getenv("MEDIA_ROOT", BASE_DIR / 'media/')
@@ -195,7 +200,7 @@ CSRF_FAILURE_VIEW = "obozstudentowProject.errorViews.error_crft"
 CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", "").strip().split(",")
 if CSRF_TRUSTED_ORIGINS == [""]:
     CSRF_TRUSTED_ORIGINS = []
-    
+
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 LOGGING = {
