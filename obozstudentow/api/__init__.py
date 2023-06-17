@@ -62,6 +62,26 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
     
 api_router.register(r'announcement', AnnouncementViewSet)
 
+from ..models import DailyQuest
+class DailyQuestSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = DailyQuest
+        fields = ('id', 'content', 'finish', 'addedBy')
+
+class DailyQuestViewSet(viewsets.ModelViewSet):
+    queryset = DailyQuest.objects.all()
+    serializer_class = DailyQuestSerializer
+
+    def get_queryset(self):
+        return self.queryset.filter(
+            Q(group__in=self.request.user.groupmember_set.values('group')) | 
+            Q(group__in=self.request.user.groupwarden_set.values('group')) | 
+            Q(group=None), 
+            visible=True
+        )
+    
+api_router.register(r'dailyQuest', DailyQuestViewSet)
+
 from ..models import Bus
 class BusSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:

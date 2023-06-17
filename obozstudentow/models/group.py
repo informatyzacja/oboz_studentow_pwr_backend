@@ -63,3 +63,13 @@ class Announcement(models.Model):
     
     def __str__(self):
         return self.title
+    
+class DailyQuest(models.Model):
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True, null=True)
+    content = models.TextField()
+    finish = models.DateTimeField()
+    addedBy = models.ForeignKey('obozstudentow.User', on_delete=models.SET_NULL, null=True)
+    visible = models.BooleanField(default=True)
+    
+    def __str__(self):
+        return self.content

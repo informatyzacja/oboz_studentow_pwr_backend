@@ -108,6 +108,13 @@ class AnnouncementAdmin(admin.ModelAdmin):
     list_display = ('title', 'content', 'date', 'addedBy', 'group', 'visible')
     search_fields = ('title', 'content', 'date', 'addedBy', 'group', 'visible')
 
+from ..models import DailyQuest
+
+@admin.register(DailyQuest)
+class DailyQuestAdmin(admin.ModelAdmin):
+    list_display = ('content', 'finish', 'addedBy', 'group', 'visible')
+    search_fields = ('content', 'finish', 'addedBy', 'group', 'visible')
+
 
 from ..models import Bus
 
