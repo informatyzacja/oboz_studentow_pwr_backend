@@ -24,6 +24,7 @@ from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from django.contrib.auth.backends import ModelBackend
 from django.urls import reverse_lazy
+from django.shortcuts import redirect
 
 class EmailLoginBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
@@ -37,13 +38,21 @@ class EmailLoginBackend(ModelBackend):
                 return user
         return None
     
+def app(request, resource=None):
+    if request.user.is_authenticated:
+        return render(request, 'app.html')
+    return redirect('login')
 
 def index(request, resource=None):
     if request.user.is_authenticated:
-        return render(request, 'app.html')
+        return redirect('app')
     return render(request, 'index.html')
 
 urlpatterns = [
+
+    path('', index, name="index"),
+    path('app/', app, name="app"),
+    path('app/<path:resource>', app, name="app2"),
 
     path("admin/", admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
@@ -68,12 +77,7 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='password_reset/password_reset_confirm.html', success_url=reverse_lazy('password_reset_complete')), name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='password_reset/password_reset_complete.html'), name='password_reset_complete'),
     
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + [
-
-    path('', index, name="index"),
-    path('<path:resource>/', index, name="index2"),
-    
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
 
