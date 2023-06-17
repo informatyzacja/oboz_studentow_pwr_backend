@@ -1,4 +1,4 @@
-from rest_framework import serializers, viewsets
+from rest_framework import serializers, viewsets, mixins
 from django.db.models import Q
 from django.utils import timezone
 
@@ -28,7 +28,7 @@ class WorkshopSerializer(serializers.HyperlinkedModelSerializer):
         model = Workshop
         fields = ('id', 'name', 'description', 'start', 'end', 'location', 'photo', 'userLimit', 'userCount', 'signupsOpen', 'userSignUpId', 'workshopleaders')
 
-class WorkshopViewSet(viewsets.ModelViewSet):
+class WorkshopViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Workshop.objects.filter(visible=True)
     serializer_class = WorkshopSerializer
 
@@ -40,7 +40,7 @@ class WorkshopLeaderSerializer(serializers.HyperlinkedModelSerializer):
         model = WorkshopLeader
         fields = ('id', 'workshop', 'user')
 
-class WorkshopLeaderViewSet(viewsets.ModelViewSet):
+class WorkshopLeaderViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = WorkshopLeader.objects.all()
     serializer_class = WorkshopLeaderSerializer
 
@@ -48,7 +48,7 @@ class WorkshopLeaderViewSet(viewsets.ModelViewSet):
 
 
 #home
-class WorkshopUserSignedUpViewSet(viewsets.ModelViewSet):
+class WorkshopUserSignedUpViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Workshop.objects.all()
     serializer_class = WorkshopSerializer
 
@@ -63,14 +63,18 @@ class WorkshopSignupSerializer(serializers.HyperlinkedModelSerializer):
 
 from rest_framework.views import APIView
 
-class WorkshopSignupViewSet(viewsets.ModelViewSet):
+
+
+
+
+class WorkshopSignupViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = WorkshopSignup.objects.all()
     serializer_class = WorkshopSignupSerializer
     
     def create(self, request):
         if request.data.get('workshop'):
             workshop = Workshop.objects.get(id=request.data.get('workshop'))
-            if WorkshopSignup.objects.filter(workshop=workshop).count() < workshop.userLimit and not WorkshopSignup.objects.filter(workshop=workshop, user=request.user).exists() and workshop.visible and workshop.signupsOpen and workshop.start > timezone.now():
+            if WorkshopSignup.objects.filter(workshop=workshop).count() < workshop.userLimit and not WorkshopSignup.objects.filter(workshop=workshop, user=request.user).exists() and workshop.visible and workshop.signupsOpen and workshop.end > timezone.now():
                 WorkshopSignup.objects.create(workshop=workshop, user=request.user)
                 return Response(status=status.HTTP_201_CREATED) 
             

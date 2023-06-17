@@ -1,5 +1,5 @@
 
-from rest_framework import serializers, routers, viewsets
+from rest_framework import serializers, routers, viewsets, mixins
 from django.db.models import Q
 
 
@@ -10,7 +10,7 @@ class FAQSerializer(serializers.HyperlinkedModelSerializer):
         model = FAQ
         fields = ('id', 'question', 'answer')
 
-class FAQViewSet(viewsets.ModelViewSet):
+class FAQViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = FAQ.objects.all()
     serializer_class = FAQSerializer
 

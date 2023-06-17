@@ -1,4 +1,4 @@
-from rest_framework import serializers, routers, viewsets
+from rest_framework import serializers, routers, viewsets, mixins
 from django.db.models import Q
 
 api_router = routers.DefaultRouter()
@@ -9,8 +9,8 @@ api_router.register(r'faq', FAQViewSet)
 from .group import *
 api_router.register(r'group', GroupViewSet)
 api_router.register(r'groupType', GroupTypeViewSet)
-api_router.register(r'groupWarden', GroupWardenViewSet)
-api_router.register(r'groupMember', GroupMemberViewSet)
+# api_router.register(r'groupWarden', GroupWardenViewSet)
+# api_router.register(r'groupMember', GroupMemberViewSet)
 
 from .people import *
 # api_router.register(r'lifeGuard', LifeGuardViewSet)
@@ -33,7 +33,7 @@ class ScheduleItemSerializer(serializers.HyperlinkedModelSerializer):
         model = ScheduleItem
         fields = ('id', 'name', 'description', 'start', 'end', 'location', 'photo')
 
-class ScheduleItemViewSet(viewsets.ModelViewSet):
+class ScheduleItemViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = ScheduleItem.objects.filter(visible=True)
     serializer_class = ScheduleItemSerializer
 
@@ -48,7 +48,7 @@ class AnnouncementSerializer(serializers.HyperlinkedModelSerializer):
         model = Announcement
         fields = ('id', 'title', 'content', 'date', 'addedBy')
 
-class AnnouncementViewSet(viewsets.ModelViewSet):
+class AnnouncementViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Announcement.objects.all()
     serializer_class = AnnouncementSerializer
 
@@ -68,7 +68,7 @@ class DailyQuestSerializer(serializers.HyperlinkedModelSerializer):
         model = DailyQuest
         fields = ('id', 'content', 'finish', 'addedBy')
 
-class DailyQuestViewSet(viewsets.ModelViewSet):
+class DailyQuestViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = DailyQuest.objects.all()
     serializer_class = DailyQuestSerializer
 
@@ -88,7 +88,7 @@ class BusSerializer(serializers.HyperlinkedModelSerializer):
         model = Bus
         fields = "__all__"
 
-class BusViewSet(viewsets.ModelViewSet):
+class BusViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Bus.objects.all()
     serializer_class = BusSerializer
 
@@ -129,7 +129,7 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id', 'first_name', 'last_name', 'email', 'groups', 'fraction', 'bandId', 'houseNumber', 'photo', 'title', 'bus')
         depth = 1
 
-class ProfileViewSet(viewsets.ModelViewSet):
+class ProfileViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all()
     serializer_class = ProfileSerializer
 
@@ -149,7 +149,7 @@ class LinkSerializer(serializers.HyperlinkedModelSerializer):
         model = Link
         fields = "__all__"
 
-class LinkViewSet(viewsets.ModelViewSet):
+class LinkViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Link.objects.all()
     serializer_class = LinkSerializer
 
