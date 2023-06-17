@@ -9,20 +9,14 @@ api_router.register(r'faq', FAQViewSet)
 from .group import *
 api_router.register(r'group', GroupViewSet)
 api_router.register(r'groupType', GroupTypeViewSet)
-# api_router.register(r'groupWarden', GroupWardenViewSet)
-# api_router.register(r'groupMember', GroupMemberViewSet)
 
 from .people import *
-# api_router.register(r'lifeGuard', LifeGuardViewSet)
-# api_router.register(r'currentSoberDuty', CurrentSoberDutyViewSet)
 api_router.register(r'contact', ContactViewSet, 'contact')
-# api_router.register(r'person', PersonViewSet)
 
 from .workshop import *
 api_router.register(r'workshop', WorkshopViewSet, 'workshop')
 api_router.register(r'workshopUserSignedUp', WorkshopUserSignedUpViewSet, 'workshopUserSignedUp')
 api_router.register(r'workshopSignUps', WorkshopSignupViewSet, 'workshopSignupViewSet')
-# api_router.register(r'workshopLeader', WorkshopLeaderViewSet, 'workshopLeader')
 
 
 #home

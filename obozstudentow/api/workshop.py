@@ -35,16 +35,6 @@ class WorkshopViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets
     def get_queryset(self):
         return self.queryset.filter(visible=True)
     
-class WorkshopLeaderSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = WorkshopLeader
-        fields = ('id', 'workshop', 'user')
-
-class WorkshopLeaderViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = WorkshopLeader.objects.all()
-    serializer_class = WorkshopLeaderSerializer
-
-
 
 
 #home
@@ -67,7 +57,7 @@ from rest_framework.views import APIView
 
 
 
-class WorkshopSignupViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class WorkshopSignupViewSet(viewsets.GenericViewSet):
     queryset = WorkshopSignup.objects.all()
     serializer_class = WorkshopSignupSerializer
     

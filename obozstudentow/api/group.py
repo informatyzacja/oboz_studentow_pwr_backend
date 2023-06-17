@@ -33,24 +33,3 @@ class GroupTypeViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
 
 
-class GroupWardeSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = GroupWarden
-        fields = ('id', 'group', 'user')
-
-class GroupWardenViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = GroupWarden.objects.all()
-    serializer_class = GroupWardeSerializer
-
-
-
-class GroupMemberSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = GroupMember
-        fields = ('id', 'group', 'user')
-
-class GroupMemberViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = GroupMember.objects.all()
-    serializer_class = GroupMemberSerializer
-
-
