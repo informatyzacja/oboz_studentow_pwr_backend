@@ -94,17 +94,39 @@ class BusViewSet(viewsets.ModelViewSet):
 
 api_router.register(r'bus', BusViewSet)
 
+
+
+class GroupWithMembersSerializer(serializers.HyperlinkedModelSerializer):
+    wardens = serializers.SerializerMethodField()
+    members = serializers.SerializerMethodField()
+
+    def get_wardens(self, obj):
+        return PersonSerializer( User.objects.filter(id__in=GroupWarden.objects.filter(group=obj).values('user')), many=True, context=self.context ).data
+    
+    def get_members(self, obj):
+        return PersonSerializer( User.objects.filter(id__in=GroupMember.objects.filter(group=obj).values('user')), many=True, context=self.context ).data
+
+    class Meta:
+        model = Group
+        fields = ('id', 'name', 'type', 'logo', 'map', 'wardens', 'members', 'description', 'messenger')
+        depth = 1
+
 from ..models import Group
 
 class ProfileSerializer(serializers.HyperlinkedModelSerializer):
     fraction = serializers.SerializerMethodField()
+    groups = serializers.SerializerMethodField()
 
     def get_fraction(self, obj):
-        return GroupSerializer( Group.objects.filter(Q(groupmember__user=obj) | Q(groupwarden__user=obj), type=GroupType.objects.get(name='Frakcja')).first(), context=self.context ).data
+        return GroupSerializer( Group.objects.filter(Q(groupmember__user=obj) | Q(groupwarden__user=obj), type__name="Frakcja").first(), context=self.context ).data
     
+    def get_groups(self, obj):
+        return GroupWithMembersSerializer( Group.objects.filter(Q(groupmember__user=obj) | Q(groupwarden__user=obj), ~Q(type__name="Frakcja")), context=self.context, many=True ).data
+
+
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'email', 'groupmember_set', 'groupwarden_set', 'fraction', 'bandId', 'houseNumber', 'photo', 'title', 'bus')
+        fields = ('id', 'first_name', 'last_name', 'email', 'groups', 'fraction', 'bandId', 'houseNumber', 'photo', 'title', 'bus')
         depth = 1
 
 class ProfileViewSet(viewsets.ModelViewSet):
@@ -115,6 +137,10 @@ class ProfileViewSet(viewsets.ModelViewSet):
         return self.queryset.filter(id=self.request.user.id)
     
 api_router.register(r'profile', ProfileViewSet)
+
+
+
+
 
 
 from ..models import Link
