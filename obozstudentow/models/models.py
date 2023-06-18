@@ -20,7 +20,7 @@ class FAQ(models.Model):
     
 class ScheduleItem(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
     start = models.DateTimeField()
     end = models.DateTimeField()
     location = models.CharField(max_length=100)
