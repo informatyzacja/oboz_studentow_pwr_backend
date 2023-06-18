@@ -12,6 +12,10 @@ class Workshop(models.Model):
     photo = ResizedImageField(upload_to='workshop', blank=True)
     userLimit = models.IntegerField()
 
+    class Meta:
+        verbose_name = "Warsztat"
+        verbose_name_plural = "Warsztaty"
+
     def __str__(self):
         return self.name
     
@@ -20,6 +24,10 @@ class WorkshopSignup(models.Model):
     user = models.ForeignKey('obozstudentow.User', on_delete=models.CASCADE)
     workshop = models.ForeignKey(Workshop, on_delete=models.CASCADE)
     
+    class Meta:
+        verbose_name = "Zapis na warsztaty"
+        verbose_name_plural = "Zapisy na warsztaty"
+
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name + " (" + self.workshop.name + ")"
     
@@ -27,5 +35,9 @@ class WorkshopLeader(models.Model):
     user = models.ForeignKey('obozstudentow.User', on_delete=models.PROTECT)
     workshop = models.ForeignKey(Workshop, on_delete=models.CASCADE)
     
+    class Meta:
+        verbose_name = "Prowadzący warsztaty"
+        verbose_name_plural = "Prowadzący warsztaty"
+
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name + " (" + self.workshop.name + ")"

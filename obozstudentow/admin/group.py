@@ -21,6 +21,7 @@ class GroupWardenInline(admin.TabularInline):
 class GroupAdmin(admin.ModelAdmin):
     list_display = ('name', 'type', 'logo', 'map', 'messenger')
     search_fields = ('name', 'type')
+    list_filter = ('type',)
     inlines = [GroupWardenInline, GroupMemberInline]
 
 

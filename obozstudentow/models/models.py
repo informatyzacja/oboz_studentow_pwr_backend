@@ -27,6 +27,10 @@ class ScheduleItem(models.Model):
     photo = ResizedImageField(upload_to='schedule', blank=True)
     visible = models.BooleanField(default=True)
 
+    class Meta:
+        verbose_name = "Harmonogram"
+        verbose_name_plural = "Harmonogram"
+
     def __str__(self):
         return self.name
     
@@ -36,7 +40,7 @@ class Bus(models.Model):
     location = models.URLField()
 
     class Meta:
-        verbose_name_plural = "Buses"
+        verbose_name_plural = "Busy"
 
     def __str__(self):
         return "Bus " + self.description
