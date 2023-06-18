@@ -20,7 +20,7 @@ class SoberDuty(models.Model):
         verbose_name_plural = "Dyżury trzeźwości"
     
     def __str__(self):
-        return self.user.first_name + " " + self.user.last_name + " (" + self.start.strftime("HH:MM dd.mm") + " - " + self.end.strftime("HH:MM dd.mm") + ")"
+        return self.user.first_name + " " + self.user.last_name + " (" + self.start.strftime("%H:%M %d.%m") + " - " + self.end.strftime("%H:%M %d.%m") + ")"
     
 
 class Staff(models.Model):
