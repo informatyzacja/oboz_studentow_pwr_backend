@@ -18,8 +18,12 @@ api_router.register(r'workshop', WorkshopViewSet, 'workshop')
 api_router.register(r'workshopUserSignedUp', WorkshopUserSignedUpViewSet, 'workshopUserSignedUp')
 api_router.register(r'workshopSignUps', WorkshopSignupViewSet, 'workshopSignupViewSet')
 
+from .staff.permissions import *
+api_router.register(r'permissions', PermissionsViewSet)
+
 
 #home
+from ..views import *
 
 from ..models import ScheduleItem
 class ScheduleItemSerializer(serializers.HyperlinkedModelSerializer):
