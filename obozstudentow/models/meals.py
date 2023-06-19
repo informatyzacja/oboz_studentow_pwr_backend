@@ -2,6 +2,8 @@ from django.db import models
 
 class MealType(models.Model):
     name = models.CharField(max_length=100)
+    start = models.TimeField()
+    end = models.TimeField()
 
     class Meta:
         verbose_name = "Rodzaj posiłku"

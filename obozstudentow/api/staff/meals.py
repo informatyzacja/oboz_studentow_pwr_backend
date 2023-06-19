@@ -8,6 +8,15 @@ from ...models import Meal, MealValidation, User
 
 from django.urls import path
 
+# class MealSerializer(serializers.HyperlinkedModelSerializer):
+#     class Meta:
+#         model = Meal
+#         fields = ('id', 'type__name', 'date')
+
+@api_view(['GET'])
+@permission_required('obozstudentow.can_validate_meals')
+def get_current_meal(request):
+    return Response(Meal.objects.filter(date=timezone.now().date(), type__start__lte=timezone.now().time(), type__end__gte=timezone.now().time()).values('id', 'type__name', 'date').first())
 
 @api_view(['GET'])
 @permission_required('obozstudentow.can_validate_meals')
@@ -63,4 +72,5 @@ def validate_meal(request):
 urlpatterns = [
     path('validate/', validate_meal),
     path('check/', check_meal_validation),
+    path('current-meal/', get_current_meal),
 ]
