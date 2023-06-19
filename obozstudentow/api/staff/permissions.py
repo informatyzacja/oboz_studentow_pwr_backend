@@ -14,7 +14,7 @@ class PermissionsSerializer(serializers.HyperlinkedModelSerializer):
 class PermissionsViewSet( viewsets.GenericViewSet):
     queryset = Permission.objects.all()
     def list(self, request):
-        queryset = request.user.groups.first().permissions.all()
+        queryset = request.user.user_permissions.all() | Permission.objects.filter(group__user=request.user)
         serializer = PermissionsSerializer(queryset, many=True)
         return Response(serializer.data)
 
