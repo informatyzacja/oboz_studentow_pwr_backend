@@ -8,10 +8,6 @@ from ...models import Meal, MealValidation, User
 
 from django.urls import path
 
-# class MealSerializer(serializers.HyperlinkedModelSerializer):
-#     class Meta:
-#         model = Meal
-#         fields = ('id', 'type__name', 'date')
 
 @api_view(['GET'])
 @permission_required('obozstudentow.can_validate_meals')
@@ -32,14 +28,14 @@ def check_meal_validation(request):
     user = User.objects.get(id=int(request.GET['user_id']))
 
     if not Meal.objects.filter(id=request.GET['meal_id']).exists():
-        return Response({'success': False, 'error': 'Posiłek nie istnieje', 'user': user.first_name + ' ' + user.last_name})
+        return Response({'success': False, 'error': 'Posiłek nie istnieje', 'user': user.first_name + ' ' + user.last_name, 'user_title': user.title, 'user_diet': user.diet})
 
     if MealValidation.objects.filter(meal_id=request.GET['meal_id'], user=user).exists():
         mv = MealValidation.objects.get(meal_id=request.GET['meal_id'], user=user)
         date = timezone.localtime(mv.timeOfValidation)
-        return Response({'success': False, 'error': f'Posiłek zrealizowany {date.strftime("%H:%M %d.%m")}', 'user': user.first_name + ' ' + user.last_name})
+        return Response({'success': False, 'error': f'Posiłek zrealizowany {date.strftime("%H:%M %d.%m")}', 'user': user.first_name + ' ' + user.last_name, 'user_title': user.title, 'user_diet': user.diet})
 
-    return Response({'success': True, 'error': None, 'user': user.first_name + ' ' + user.last_name })
+    return Response({'success': True, 'error': None, 'user': user.first_name + ' ' + user.last_name, 'user_title': user.title, 'user_diet': user.diet })
 
 
 @api_view(['PUT'])
@@ -56,17 +52,17 @@ def validate_meal(request):
     user = User.objects.get(id=int(request.data['user_id']))
 
     if not Meal.objects.filter(id=request.data['meal_id']).exists():
-        return Response({'success': False, 'error': 'Posiłek nie istnieje', 'user': user.first_name + ' ' + user.last_name})
+        return Response({'success': False, 'error': 'Posiłek nie istnieje', 'user': user.first_name + ' ' + user.last_name, 'user_title': user.title, 'user_diet': user.diet})
 
     if MealValidation.objects.filter(meal_id=request.data['meal_id'], user=user).exists():
         mv = MealValidation.objects.get(meal_id=request.data['meal_id'], user=user)
         date = timezone.localtime(mv.timeOfValidation)
-        return Response({'success': False, 'error': f'Posiłek zrealizowany {date.strftime("%H:%M %d.%m")}', 'user': user.first_name + ' ' + user.last_name})
+        return Response({'success': False, 'error': f'Posiłek zrealizowany {date.strftime("%H:%M %d.%m")}', 'user': user.first_name + ' ' + user.last_name, 'user_title': user.title, 'user_diet': user.diet})
     
     mv = MealValidation.objects.create(meal_id=request.data['meal_id'], user_id=request.data['user_id'])
     mv.save()
 
-    return Response({'success': True, 'error': None, 'user': user.first_name + ' ' + user.last_name })
+    return Response({'success': True, 'error': None, 'user': user.first_name + ' ' + user.last_name, 'user_title': user.title, 'user_diet': user.diet })
 
 
 urlpatterns = [
