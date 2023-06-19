@@ -3,9 +3,7 @@ from django.db.models import Q
 
 
 from django.contrib.auth.models import Permission
-from django.contrib.contenttypes.models import ContentType
-
-from django.contrib.auth.models import Group as DjangoGroup
+from rest_framework.response import Response
 
 # from ...models import CustomPermissions
 class PermissionsSerializer(serializers.HyperlinkedModelSerializer):
@@ -13,8 +11,11 @@ class PermissionsSerializer(serializers.HyperlinkedModelSerializer):
         model = Permission
         fields = ('name','codename')
 
-class PermissionsViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = Permission.objects.filter(content_type__model='custompermissions')
-    serializer_class = PermissionsSerializer
+class PermissionsViewSet( viewsets.GenericViewSet):
+    queryset = Permission.objects.all()
+    def list(self, request):
+        queryset = request.user.groups.first().permissions.all()
+        serializer = PermissionsSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 
