@@ -118,8 +118,8 @@ from ..models import DailyQuest
 
 @admin.register(DailyQuest)
 class DailyQuestAdmin(admin.ModelAdmin):
-    list_display = ('content', 'finish', 'addedBy', 'group', 'visible')
-    search_fields = ('content', 'finish', 'addedBy', 'group', 'visible')
+    list_display = ('title', 'description', 'finish', 'addedBy', 'group', 'visible')
+    search_fields = ('title', 'description', 'finish', 'addedBy', 'group', 'visible')
 
 
 from ..models import Bus

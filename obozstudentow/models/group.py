@@ -95,9 +95,11 @@ class Announcement(models.Model):
         return self.title
     
 class DailyQuest(models.Model):
+    title = models.CharField(max_length=200)
     group = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True, null=True)
-    content = models.TextField()
+    description = models.TextField(null=True, blank=True)
     finish = models.DateTimeField()
+    points = models.FloatField()
     addedBy = models.ForeignKey('obozstudentow.User', on_delete=models.SET_NULL, null=True)
     visible = models.BooleanField(default=True)
 
@@ -106,4 +108,4 @@ class DailyQuest(models.Model):
         verbose_name_plural = "Daily questy"
     
     def __str__(self):
-        return self.content
+        return self.title

@@ -64,7 +64,7 @@ from ..models import DailyQuest
 class DailyQuestSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = DailyQuest
-        fields = ('id', 'content', 'finish', 'addedBy')
+        fields = ('id', 'title', 'description', 'points', 'finish', 'addedBy')
 
 class DailyQuestViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = DailyQuest.objects.all()
