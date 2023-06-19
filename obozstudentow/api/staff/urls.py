@@ -1,7 +1,7 @@
-from django.urls import path
+from django.urls import path, include
 
-from .meals import validate_meal
+
 
 urlpatterns = [
-    path('validate-meal/', validate_meal),
+    path('meal-validation/', include('obozstudentow.api.staff.meals')),
 ]
