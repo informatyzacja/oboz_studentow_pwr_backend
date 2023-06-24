@@ -17,10 +17,10 @@ class UserManager(BaseUserManager):
             email=self.normalize_email(email)
         )
         user.set_password(password)
-        user.admin = True
-        user.staff = True
-        user.active = True
-        user.save(using=self._db)
+        user.is_superuser = True
+        user.is_staff = True
+        user.is_active = True
+        user.save()
         return user
 
 class User(AbstractUser):
