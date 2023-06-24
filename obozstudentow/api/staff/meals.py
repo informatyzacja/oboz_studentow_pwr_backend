@@ -12,7 +12,7 @@ from django.urls import path
 @api_view(['GET'])
 @permission_required('obozstudentow.can_validate_meals')
 def get_current_meal(request):
-    return Response(Meal.objects.filter(date=timezone.now().date(), type__start__lte=timezone.now().time(), type__end__gte=timezone.now().time()).values('id', 'type__name', 'date').first())
+    return Response(Meal.objects.filter(date=timezone.now().date(), type__start__lte=timezone.now().time(), type__end__gt=timezone.now().time()).values('id', 'type__name', 'date').first() or {})
 
 @api_view(['GET'])
 @permission_required('obozstudentow.can_validate_meals')
@@ -32,8 +32,7 @@ def check_meal_validation(request):
 
     if MealValidation.objects.filter(meal_id=request.GET['meal_id'], user=user).exists():
         mv = MealValidation.objects.get(meal_id=request.GET['meal_id'], user=user)
-        date = timezone.localtime(mv.timeOfValidation)
-        return Response({'success': False, 'error': f'Posiłek zrealizowany {date.strftime("%H:%M %d.%m")}', 'user': user.first_name + ' ' + user.last_name, 'user_title': user.title, 'user_diet': user.diet})
+        return Response({'success': False, 'error': f'Posiłek zrealizowany {mv.timeOfValidation.strftime("%H:%M %d.%m")}', 'user': user.first_name + ' ' + user.last_name, 'user_title': user.title, 'user_diet': user.diet})
 
     return Response({'success': True, 'error': None, 'user': user.first_name + ' ' + user.last_name, 'user_title': user.title, 'user_diet': user.diet })
 
@@ -56,8 +55,7 @@ def validate_meal(request):
 
     if MealValidation.objects.filter(meal_id=request.data['meal_id'], user=user).exists():
         mv = MealValidation.objects.get(meal_id=request.data['meal_id'], user=user)
-        date = timezone.localtime(mv.timeOfValidation)
-        return Response({'success': False, 'error': f'Posiłek zrealizowany {date.strftime("%H:%M %d.%m")}', 'user': user.first_name + ' ' + user.last_name, 'user_title': user.title, 'user_diet': user.diet})
+        return Response({'success': False, 'error': f'Posiłek zrealizowany {mv.timeOfValidation.strftime("%H:%M %d.%m")}', 'user': user.first_name + ' ' + user.last_name, 'user_title': user.title, 'user_diet': user.diet})
     
     mv = MealValidation.objects.create(meal_id=request.data['meal_id'], user_id=request.data['user_id'])
     mv.save()
