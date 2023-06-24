@@ -152,3 +152,16 @@ class LinkViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = LinkSerializer
 
 api_router.register(r'link', LinkViewSet)
+
+
+from ..models import Image
+class ImageSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Image
+        fields = ("id","name", "image")
+
+class ImageViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Image.objects.all()
+    serializer_class = ImageSerializer
+
+api_router.register(r'image', ImageViewSet)

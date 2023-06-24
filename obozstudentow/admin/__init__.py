@@ -128,3 +128,11 @@ from ..models import Bus
 class BusAdmin(admin.ModelAdmin):
     list_display = ('description', 'location')
     search_fields = ('description', 'location')
+
+
+from ..models import Image
+@admin.register(Image)
+class ImageAdmin(admin.ModelAdmin):
+    list_display = ('name', 'image')
+    search_fields = ('name', 'image')
+
