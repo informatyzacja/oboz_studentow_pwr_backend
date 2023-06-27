@@ -143,9 +143,11 @@ api_router.register(r'profile', ProfileViewSet)
 
 from ..models import Link
 class LinkSerializer(serializers.HyperlinkedModelSerializer):
+    icon = serializers.ImageField(source='icon.icon')
+
     class Meta:
         model = Link
-        fields = "__all__"
+        fields = ("id","name", "url", "icon")
 
 class LinkViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Link.objects.all()

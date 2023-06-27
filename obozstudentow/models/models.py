@@ -3,10 +3,22 @@ from django_resized import ResizedImageField
 
 # Separate models
 
+class Icons(models.Model):
+    name = models.CharField(max_length=100)
+    icon = models.ImageField(upload_to='icons')
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = "Ikonka"
+        verbose_name_plural = "Ikonki"
+
+
 class Link(models.Model):
     name = models.CharField(max_length=100)
     url = models.URLField()
-    icon = ResizedImageField(upload_to='links', blank=True, force_format=None)
+    icon = models.ForeignKey(Icons, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -55,4 +67,5 @@ class Image(models.Model):
         return self.name
     
     class Meta:
+        verbose_name = "Obrazek"
         verbose_name_plural = "Obrazki"

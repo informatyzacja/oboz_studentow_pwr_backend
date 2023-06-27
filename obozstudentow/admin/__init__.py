@@ -8,7 +8,7 @@ from import_export.admin import ImportExportModelAdmin
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.admin import UserAdmin
-from ..models import Link, FAQ, ScheduleItem, User
+from ..models import Link, FAQ, ScheduleItem, User, Icons
 
 class LinkAdmin(admin.ModelAdmin):
     list_display = ('name', 'url', 'icon')
@@ -22,7 +22,10 @@ class ScheduleItemAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'start', 'end', 'location', 'visible')
     search_fields = ('name', 'description', 'start', 'end', 'location', 'visible')
 
-
+@admin.register(Icons)
+class IconsAdmin(admin.ModelAdmin):
+    list_display = ('name', 'icon')
+    search_fields = ('name', 'icon')
 
 class GroupMemberInlineAdmin(admin.TabularInline):
     model = GroupMember
