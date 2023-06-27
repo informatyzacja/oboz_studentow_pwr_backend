@@ -26,7 +26,7 @@ class WorkshopSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Workshop
-        fields = ('id', 'name', 'description', 'start', 'end', 'location', 'photo', 'userLimit', 'userCount', 'signupsOpen', 'userSignUpId', 'workshopleaders')
+        fields = ('id', 'name', 'description', 'start', 'end', 'location', 'photo', 'userLimit', 'userCount', 'signupsOpen', 'signupsOpenTime', 'userSignUpId', 'workshopleaders')
 
 class WorkshopViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Workshop.objects.filter(visible=True)
@@ -64,7 +64,7 @@ class WorkshopSignupViewSet(viewsets.GenericViewSet):
     def create(self, request):
         if request.data.get('workshop'):
             workshop = Workshop.objects.get(id=request.data.get('workshop'))
-            if WorkshopSignup.objects.filter(workshop=workshop).count() < workshop.userLimit and not WorkshopSignup.objects.filter(workshop=workshop, user=request.user).exists() and workshop.visible and workshop.signupsOpen and workshop.end > timezone.now():
+            if WorkshopSignup.objects.filter(workshop=workshop).count() < workshop.userLimit and not WorkshopSignup.objects.filter(workshop=workshop, user=request.user).exists() and workshop.visible and workshop.signupsOpen and (workshop.signupsOpenTime == None or workshop.signupsOpenTime <= timezone.now()) and workshop.end > timezone.now():
                 WorkshopSignup.objects.create(workshop=workshop, user=request.user)
                 return Response(status=status.HTTP_201_CREATED) 
             

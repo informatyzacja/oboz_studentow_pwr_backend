@@ -9,6 +9,7 @@ class Workshop(models.Model):
     location = models.CharField(max_length=100)
     visible = models.BooleanField(default=True)
     signupsOpen = models.BooleanField(default=False)
+    signupsOpenTime = models.DateTimeField(blank=True, null=True)
     photo = ResizedImageField(upload_to='workshop', blank=True)
     userLimit = models.IntegerField()
 
