@@ -6,6 +6,8 @@ from rest_framework import serializers
 from ...models import Point, PointType
 from .. import PersonSerializer
 
+from django.utils import timezone
+
 
 class PointsSerializer(serializers.ModelSerializer):
     addedBy = serializers.SerializerMethodField()
@@ -26,3 +28,15 @@ class PointsSerializer(serializers.ModelSerializer):
 @permission_required('obozstudentow.can_view_points')
 def get_points(request):
     return Response(PointsSerializer(Point.objects.all(), many=True).data)
+
+@api_view(['PUT'])
+@permission_required('obozstudentow.can_validate_points')
+def validate_points(request, id):
+    if not Point.objects.filter(id=id).exists():
+        return Response({'success': False, 'message': 'Nie znaleziono punktów o podanym id'})
+    point = Point.objects.get(id=id)
+    point.validated = True
+    point.validatedBy = request.user
+    point.validationDate = timezone.now()
+    point.save()
+    return Response({'success': True})

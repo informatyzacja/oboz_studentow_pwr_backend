@@ -14,4 +14,5 @@ urlpatterns = [
     path('get-groups/', get_groups),
 
     path('get-points/', get_points),
+    path('validate-points/<int:id>/', validate_points),
 ]
