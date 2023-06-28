@@ -73,6 +73,10 @@ class Point(models.Model):
     addedBy = models.ForeignKey('obozstudentow.User', on_delete=models.SET_NULL, null=True)
     numberOfPoints = models.FloatField()
 
+    validated = models.BooleanField(default=False)
+    validatedBy = models.ForeignKey('obozstudentow.User', on_delete=models.SET_NULL, null=True, related_name="validatedBy")
+    validationDate = models.DateTimeField(blank=True, null=True)
+
     class Meta:
         verbose_name = "Punkty"
         verbose_name_plural = "Punkty"

@@ -2,6 +2,7 @@ from django.urls import path, include
 
 from .user import *
 from .groups import *
+from .points import *
 
 urlpatterns = [
     path('meal-validation/', include('obozstudentow.api.staff.meals')),
@@ -11,4 +12,6 @@ urlpatterns = [
     path('get-fractions/', get_fractions),
     path('get-group/', get_group),
     path('get-groups/', get_groups),
+
+    path('get-points/', get_points),
 ]
