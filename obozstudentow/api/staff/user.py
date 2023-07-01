@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from django.contrib.auth.decorators import permission_required
 
 
-from ...models import User
+from ...models import User, GroupType, GroupMember
 from .. import ProfileSerializer
 
 
@@ -13,9 +13,24 @@ from .. import ProfileSerializer
 def get_user_info(request):
     user_id = request.GET.get('user_id')
     if user_id is None:
-        return Response({'error': 'Nie podano ID użytkownika'})
+        return Response({'success':False, 'error': 'Nie podano ID użytkownika'})
     try:
         user = User.objects.get(id=user_id)
         return Response(ProfileSerializer(user, context={'request': request}).data)
     except User.DoesNotExist:
-        return Response({'error': 'Użytkownik nie istnieje'})
+        return Response({'success':False, 'error': 'Użytkownik nie istnieje'})
+
+@api_view(['GET'])
+@permission_required('obozstudentow.can_add_points')
+def get_user_group(request):
+    user_id = request.GET.get('user_id')
+    group_type= request.GET.get('group_type')
+    if user_id is None:
+        return Response({'success':False, 'error': 'Nie podano ID użytkownika'})
+    if group_type is None:
+        return Response({'success':False, 'error': 'Nie podano typu grupy'})
+    try:
+        group_member = GroupMember.objects.get(user=user_id, group__type__name=group_type)
+        return Response({'success':True, 'group': group_member.group.pk})
+    except GroupMember.DoesNotExist:
+        return Response({'success':False, 'error': 'Użytkownik nie należy do żadnej grupy o podanym typie'})
