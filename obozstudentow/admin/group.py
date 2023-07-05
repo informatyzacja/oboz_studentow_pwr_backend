@@ -34,5 +34,6 @@ class PointTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Point)
 class PointAdmin(admin.ModelAdmin):
-    list_display = ('group', 'type', 'description', 'date', 'addedBy', 'numberOfPoints')
+    list_display = ('group', 'type', 'description', 'date', 'addedBy', 'numberOfPoints', 'validated')
     search_fields = ('group', 'type', 'description', 'date', 'addedBy', 'numberOfPoints')
+    list_filter = ('validated', 'rejected', 'group', 'type', 'addedBy')

@@ -21,13 +21,13 @@ class PointsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Point
-        fields = ('id','description','date','numberOfPoints','group','type','addedBy', 'validated', 'validatedBy', 'validationDate')
+        fields = ('id','description','date','numberOfPoints','group','type','addedBy', 'validated', 'rejected', 'validatedBy', 'validationDate')
         depth = 2
 
 @api_view(['GET'])
 @permission_required('obozstudentow.can_view_points')
 def get_points(request):
-    return Response(PointsSerializer(Point.objects.all(), many=True).data)
+    return Response(PointsSerializer(Point.objects.order_by('date'), many=True).data)
 
 @api_view(['PUT'])
 @permission_required('obozstudentow.can_validate_points')
@@ -38,6 +38,20 @@ def validate_points(request, id):
     point.validated = True
     point.validatedBy = request.user
     point.validationDate = timezone.now()
+    point.rejected = False
+    point.save()
+    return Response({'success': True})
+
+@api_view(['PUT'])
+@permission_required('obozstudentow.can_validate_points')
+def reject_points(request, id):
+    if not Point.objects.filter(id=id).exists():
+        return Response({'success': False, 'error': 'Nie znaleziono punktów o podanym id'})
+    point = Point.objects.get(id=id)
+    point.validated = False
+    point.validatedBy = request.user
+    point.validationDate = timezone.now()
+    point.rejected = True
     point.save()
     return Response({'success': True})
 

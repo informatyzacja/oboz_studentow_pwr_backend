@@ -76,6 +76,7 @@ class Point(models.Model):
     validated = models.BooleanField(default=False)
     validatedBy = models.ForeignKey('obozstudentow.User', on_delete=models.SET_NULL, null=True, related_name="validatedBy")
     validationDate = models.DateTimeField(blank=True, null=True)
+    rejected = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Punkty"

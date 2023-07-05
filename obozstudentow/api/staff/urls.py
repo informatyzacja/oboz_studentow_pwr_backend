@@ -17,6 +17,7 @@ urlpatterns = [
 
     path('get-points/', get_points),
     path('validate-points/<int:id>/', validate_points),
+    path('reject-points/<int:id>/', reject_points),
     path('get-point-types/', get_point_types),
     path('add-points/', add_points),
 
