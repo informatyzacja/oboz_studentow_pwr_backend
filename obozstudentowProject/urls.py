@@ -59,6 +59,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('api/', include(obozstudentow.api.api_router.urls)),
+    path('api2/', include('obozstudentow.api.urls')),
 
 
     # login/logout

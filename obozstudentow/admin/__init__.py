@@ -139,3 +139,9 @@ class ImageAdmin(admin.ModelAdmin):
     list_display = ('name', 'image')
     search_fields = ('name', 'image')
 
+
+from ..models import Setting
+@admin.register(Setting)
+class SettingAdmin(admin.ModelAdmin):
+    list_display = ('name', 'value')
+    search_fields = ('name', 'value')

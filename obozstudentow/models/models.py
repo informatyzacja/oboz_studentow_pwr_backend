@@ -69,3 +69,15 @@ class Image(models.Model):
     class Meta:
         verbose_name = "Obrazek"
         verbose_name_plural = "Obrazki"
+
+
+class Setting(models.Model):
+    name = models.CharField(max_length=100)
+    value = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = "Ustawienie"
+        verbose_name_plural = "Ustawienia"

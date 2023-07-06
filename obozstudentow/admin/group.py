@@ -37,3 +37,10 @@ class PointAdmin(admin.ModelAdmin):
     list_display = ('group', 'type', 'description', 'date', 'addedBy', 'numberOfPoints', 'validated')
     search_fields = ('group', 'type', 'description', 'date', 'addedBy', 'numberOfPoints')
     list_filter = ('validated', 'rejected', 'group', 'type', 'addedBy')
+
+from ..models import NightGameSignup
+@admin.register(NightGameSignup)
+class NightGameSignupAdmin(admin.ModelAdmin):
+    list_display = ('group', 'user_first_name', 'user_last_name', 'user_band', 'date', 'addedBy', 'failed')
+    search_fields = ('group', 'user_first_name', 'user_last_name', 'user_band', 'date', 'addedBy')
+    list_filter = ('group', 'failed')

@@ -114,3 +114,23 @@ class DailyQuest(models.Model):
     
     def __str__(self):
         return self.title
+    
+
+class NightGameSignup(models.Model):
+    user_band = models.CharField(max_length=10)
+    user_first_name = models.CharField(max_length=150)
+    user_last_name = models.CharField(max_length=150)
+
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True, null=True)
+    date = models.DateTimeField(auto_now_add=True)
+    addedBy = models.ForeignKey('obozstudentow.User', on_delete=models.SET_NULL, null=True, related_name="addedBy")
+
+    failed = models.BooleanField(default=False)
+    error = models.TextField(blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Zapis na grę nocną"
+        verbose_name_plural = "Zapisy na grę nocną"
+
+    def __str__(self):
+        return self.user_first_name + " " + self.user_last_name

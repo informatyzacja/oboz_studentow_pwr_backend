@@ -1,6 +1,8 @@
 from rest_framework import serializers, routers, viewsets, mixins
 from django.db.models import Q
 
+from .group import get_group_signup_info
+
 api_router = routers.DefaultRouter()
 
 from .faq import *
