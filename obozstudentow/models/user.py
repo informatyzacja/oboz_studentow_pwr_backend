@@ -42,3 +42,7 @@ class User(AbstractUser):
     def __str__(self):
         return self.first_name + " " + self.last_name + " " + self.title
     
+class UserFCMToken(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    token = models.CharField(max_length=200)
+    date = models.DateTimeField(auto_now_add=True)
