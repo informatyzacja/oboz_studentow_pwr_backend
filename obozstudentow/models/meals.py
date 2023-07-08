@@ -27,6 +27,7 @@ class MealValidation(models.Model):
     user = models.ForeignKey('obozstudentow.User', on_delete=models.CASCADE)
     meal = models.ForeignKey(Meal, on_delete=models.PROTECT)
     timeOfValidation = models.DateTimeField(auto_now_add=True)
+    validatedBy = models.ForeignKey('obozstudentow.User', on_delete=models.SET_NULL, related_name='meal_validations', null=True, blank=True)
 
     class Meta:
         verbose_name = "Walidacja posiłku"

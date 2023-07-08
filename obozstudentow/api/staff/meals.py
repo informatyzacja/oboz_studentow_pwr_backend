@@ -32,7 +32,10 @@ def check_meal_validation(request):
 
     if MealValidation.objects.filter(meal_id=request.GET['meal_id'], user=user).exists():
         mv = MealValidation.objects.get(meal_id=request.GET['meal_id'], user=user)
-        return Response({'success': False, 'error': f'Posiłek zrealizowany {mv.timeOfValidation.strftime("%H:%M %d.%m")}', 'user': user.first_name + ' ' + user.last_name, 'user_title': user.title, 'user_diet': user.diet})
+        validatedByInfo = ''
+        if mv.validatedBy:
+            validatedByInfo = f', zatwierdzone przez {mv.validatedBy.first_name} {mv.validatedBy.last_name}'
+        return Response({'success': False, 'error': f'Posiłek zrealizowany {mv.timeOfValidation.strftime("%H:%M %d.%m")}'+validatedByInfo, 'user': user.first_name + ' ' + user.last_name, 'user_title': user.title, 'user_diet': user.diet})
 
     return Response({'success': True, 'error': None, 'user': user.first_name + ' ' + user.last_name, 'user_title': user.title, 'user_diet': user.diet })
 
@@ -57,7 +60,7 @@ def validate_meal(request):
         mv = MealValidation.objects.get(meal_id=request.data['meal_id'], user=user)
         return Response({'success': False, 'error': f'Posiłek zrealizowany {mv.timeOfValidation.strftime("%H:%M %d.%m")}', 'user': user.first_name + ' ' + user.last_name, 'user_title': user.title, 'user_diet': user.diet})
     
-    mv = MealValidation.objects.create(meal_id=request.data['meal_id'], user_id=request.data['user_id'])
+    mv = MealValidation.objects.create(meal_id=request.data['meal_id'], user_id=request.data['user_id'], validatedBy=request.user)
     mv.save()
 
     return Response({'success': True, 'error': None, 'user': user.first_name + ' ' + user.last_name, 'user_title': user.title, 'user_diet': user.diet })
