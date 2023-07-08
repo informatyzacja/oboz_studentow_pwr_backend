@@ -160,9 +160,14 @@ api_router.register(r'link', LinkViewSet)
 
 from ..models import Image
 class ImageSerializer(serializers.HyperlinkedModelSerializer):
+    downloadLink = serializers.SerializerMethodField()
+
+    def get_downloadLink(self, obj):
+        return '/download-image/' + str(obj.id) + '/'
+
     class Meta:
         model = Image
-        fields = ("id","name", "image")
+        fields = ("id","name", "image", "downloadLink")
 
 class ImageViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Image.objects.all()

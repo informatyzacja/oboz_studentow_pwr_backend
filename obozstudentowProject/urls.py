@@ -26,6 +26,8 @@ from django.contrib.auth.backends import ModelBackend
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
 
+import obozstudentow.views
+
 class EmailLoginBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
         UserModel = get_user_model()
@@ -60,6 +62,8 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('api/', include(obozstudentow.api.api_router.urls)),
     path('api2/', include('obozstudentow.api.urls')),
+
+    path('download-image/<int:image_id>/', obozstudentow.views.download_image, name='download'),
 
 
     # login/logout
