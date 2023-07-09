@@ -19,6 +19,8 @@ def add_announcement(request):
 
     Announcement.objects.create(title=title, content=content, group_id=groupId, addedBy=request.user)
     
+    info = 'Dodano ogłoszenie'
+
     if request.data.get('sendNotif'):
         if groupId is None:
             tokens = list(UserFCMToken.objects.all().values_list('token', flat=True))
@@ -30,5 +32,15 @@ def add_announcement(request):
             
         if tokens:
             response = send_notification(title, content, tokens)
+            info = f'Wysłano powiadomienie do {response.success_count} użytkowników, {response.failure_count} niepowodzeń'
     
-    return Response({'success': True})
+    return Response({'success': True, 'info': info})
+
+from .. import AnnouncementSerializer
+
+@api_view(['GET'])
+@permission_required('obozstudentow.can_add_announcement')
+def get_visible_announcements(request):
+    announcements = Announcement.objects.filter(visible=True).order_by('-date')
+
+    return Response(AnnouncementSerializer(announcements, many=True, context={'request': request}).data)

@@ -40,13 +40,22 @@ class ScheduleItemViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 api_router.register(r'schedule', ScheduleItemViewSet)
 
 
-
+from .people import PersonSerializer
 
 from ..models import Announcement
 class AnnouncementSerializer(serializers.HyperlinkedModelSerializer):
+    addedBy = serializers.SerializerMethodField()
+    group = serializers.SerializerMethodField()
+
+    def get_addedBy(self, obj):
+        return PersonSerializer(obj.addedBy, context={'request': self.context['request']}).data
+    
+    def get_group(self, obj):
+        return GroupSerializer(obj.group, context={'request': self.context['request']}).data
+
     class Meta:
         model = Announcement
-        fields = ('id', 'title', 'content', 'date', 'addedBy')
+        fields = ('id', 'title', 'content', 'date', 'addedBy', 'group')
 
 class AnnouncementViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Announcement.objects.all()

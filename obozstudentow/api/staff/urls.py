@@ -22,5 +22,6 @@ urlpatterns = [
     path('get-point-types/', get_point_types),
     path('add-points/', add_points),
     path('add-announcement/', add_announcement),
+    path('get-visible-announcements/', get_visible_announcements),
 
 ]
