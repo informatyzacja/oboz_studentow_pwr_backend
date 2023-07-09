@@ -14,3 +14,22 @@ def register_fcm_token(request):
     UserFCMToken.objects.create(user=request.user, token=token)
 
     return Response({'success': True})
+
+
+import firebase_admin
+from firebase_admin import credentials, messaging
+from obozstudentowProject.settings import BASE_DIR
+
+def send_notification(title, body, tokens):
+    cred = credentials.Certificate(BASE_DIR / "oboz-studentow-pwr-firebase-adminsdk-h0u6e-de2592f07a.json")
+    firebase_admin.initialize_app(cred)
+    message = messaging.MulticastMessage(
+        notification=messaging.Notification(
+            title=title,
+            body=body,
+        ),
+        tokens=tokens,
+    )
+    response = messaging.send_multicast(message)
+    return response
+

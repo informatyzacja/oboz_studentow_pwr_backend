@@ -3,6 +3,7 @@ from django.urls import path, include
 from .user import *
 from .groups import *
 from .points import *
+from .announcements import *
 
 urlpatterns = [
     path('meal-validation/', include('obozstudentow.api.staff.meals')),
@@ -20,5 +21,6 @@ urlpatterns = [
     path('reject-points/<int:id>/', reject_points),
     path('get-point-types/', get_point_types),
     path('add-points/', add_points),
+    path('add-announcement/', add_announcement),
 
 ]
