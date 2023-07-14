@@ -1,11 +1,13 @@
 from rest_framework import serializers, routers, viewsets, mixins
 from django.db.models import Q
 
-from ..models import Group, GroupMember, GroupWarden, GroupType
+from ..models import Group, GroupMember, GroupWarden, GroupType, UserFCMToken
 
+from .notifications import send_notification
 
 from .people import PersonSerializer
 from ..models import User
+
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
     wardens = serializers.SerializerMethodField()
 
@@ -92,8 +94,11 @@ def signup_group(request):
     if not GroupMember.objects.filter(user=request.user, group__type=group_type).exists():
         GroupMember.objects.create(user=request.user, group=group).save()
     else:
+        group.delete()
         nightGameSignup.failed = True
         nightGameSignup.error = "Użytkownik jest już w jakiejś grupie"
+        nightGameSignup.save()
+        return Response({'success':False, 'error': f"Użytkownik {request.user.first_name} {request.user.last_name} jest już w jakiejś grupie",'error_code': 8})
 
     nightGameSignup.save()
 
@@ -107,6 +112,7 @@ def signup_group(request):
             group = group,
             addedBy = request.user
         )
+        userError = ""
         if User.objects.filter(bandId=person['band'],first_name=person['first_name'].strip(),last_name=person['last_name'].strip()).exists():
             user = User.objects.get(bandId=person['band'],first_name=person['first_name'].strip(),last_name=person['last_name'].strip())
 
@@ -115,33 +121,54 @@ def signup_group(request):
             else:
                 nightGameSignup.failed = True
                 nightGameSignup.error = "Użytkownik jest już w jakiejś grupie"
-
+                userError = f"Użytkownik {person['first_name'].strip()} {person['last_name'].strip()} jest już w jakiejś grupie"
 
         elif User.objects.filter(bandId=person['band'], last_name=person['last_name'].strip()).exists():
             user = User.objects.get(bandId=person['band'], last_name=person['last_name'].strip())
             nightGameSignup.failed = True
             nightGameSignup.error = f"Nie znaleziono użytkownika o podanym imieniu. Znaleziony użytkownik to: {user.first_name} {user.last_name}, ID: {user.pk}, opaska: {user.bandId if user.bandId else 'brak numeru opaski'}"
+            userError = f"Nie znaleziono użytkownika o podanych danych: {person['first_name'].strip()} {person['last_name'].strip()}, opaska: {person['band']}"
 
         elif User.objects.filter(bandId=person['band'], first_name=person['first_name'].strip()).exists():
             user = User.objects.get(bandId=person['band'], first_name=person['first_name'].strip())
             nightGameSignup.failed = True
             nightGameSignup.error = f"Nie znaleziono użytkownika o podanym nazwisku. Znaleziony użytkownik to: {user.first_name} {user.last_name}, ID: {user.pk}, opaska: {user.bandId if user.bandId else 'brak numeru opaski'}"
+            userError = f"Nie znaleziono użytkownika o podanych danych: {person['first_name'].strip()} {person['last_name'].strip()}, opaska: {person['band']}"
 
         elif User.objects.filter(bandId=person['band']).exists():
             user = User.objects.get(bandId=person['band'])
             nightGameSignup.failed = True
             nightGameSignup.error = f"Nie znaleziono użytkownika o podanym imieniu i nazwisku. Znaleziony użytkownik to: {user.first_name} {user.last_name}, ID: {user.pk}, opaska: {user.bandId if user.bandId else 'brak numeru opaski'}"
+            userError = f"Nie znaleziono użytkownika o podanych danych: {person['first_name'].strip()} {person['last_name'].strip()}, opaska: {person['band']}"
         
         elif User.objects.filter(first_name=person['first_name'].strip(), last_name=person['last_name'].strip()).exists():
             user = User.objects.get(first_name=person['first_name'].strip(), last_name=person['last_name'].strip())
             nightGameSignup.failed = True
             nightGameSignup.error = f"Nie znaleziono użytkownika o podanej opasce. Znaleziony użytkownik to: {user.first_name} {user.last_name}, ID: {user.pk}, opaska: {user.bandId if user.bandId else 'brak numeru opaski'}"
+            userError = f"Nie znaleziono użytkownika o podanych danych: {person['first_name'].strip()} {person['last_name'].strip()}, opaska: {person['band']}"
 
         else:
             nightGameSignup.failed = True
             nightGameSignup.error = f"Nie znaleziono użytkownika o podanym imieniu, nazwisku, ani opasce."
-
+            userError = f"Nie znaleziono użytkownika o podanych danych: {person['first_name'].strip()} {person['last_name'].strip()}, opaska: {person['band']}"
+            
         nightGameSignup.save()
+        if nightGameSignup.failed:
+            group.delete()
+            return Response({'success':False, 'error': userError, 'error_code': 9})
+
+    #send notifications
+    try:
+        tokens = list(UserFCMToken.objects.filter(user__in=GroupMember.objects.filter(group=group).values_list('user', flat=True)).values_list('token', flat=True))
+
+        title = f"Zostałeś/aś właśnie zapisany/a do grupy {group.name} na grę nocną."
+        content = f"Grupę i jej członków możesz zobaczyć w zakładce \"profil\""
+        absolute_url = request.build_absolute_uri("/app/profil")
+        
+        response = send_notification(title, content, tokens, link=absolute_url if request.is_secure() else None)
+    except:
+        pass
+    
     
     return Response({'success': True})
     
