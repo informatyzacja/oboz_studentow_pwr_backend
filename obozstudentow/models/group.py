@@ -88,6 +88,7 @@ class Announcement(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
     date = models.DateTimeField(auto_now_add=True)
+    hide_date = models.DateTimeField(blank=True, null=True)
     addedBy = models.ForeignKey('obozstudentow.User', on_delete=models.SET_NULL, null=True)
     visible = models.BooleanField(default=True)
 

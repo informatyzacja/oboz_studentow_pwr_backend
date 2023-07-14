@@ -6,18 +6,29 @@ from ...models import UserFCMToken, Announcement, GroupMember, GroupWarden
 
 from ..notifications import send_notification
 
+from django.db.models import Q 
+
+from django.utils import timezone
+
 
 @api_view(['POST'])
 @permission_required('obozstudentow.can_add_announcement')
 def add_announcement(request):
     title = request.data.get('title')
     content = request.data.get('content')
-    if title is None or content is None:
-        return Response({'success':False, 'error': 'Nie podano tytułu lub treści'})
+    hide_date = request.data.get('hide_date')
+    
+    if title is None or content is None or hide_date is None:
+        return Response({'success':False, 'error': 'Nie podano tytułu, treści lub daty zakończenia ogłoszenia'})
+    
+    hide_date = timezone.datetime.strptime(hide_date, "%Y-%m-%dT%H:%M")
+
+    if hide_date < timezone.now():
+        return Response({'success':False, 'error': 'Data zakończenia ogłoszenia nie może być w przeszłości'})
     
     groupId = request.data.get('groupId')
 
-    Announcement.objects.create(title=title, content=content, group_id=groupId, addedBy=request.user)
+    Announcement.objects.create(title=title, content=content, group_id=groupId, addedBy=request.user, hide_date=hide_date)
     
     info = 'Dodano ogłoszenie'
 
@@ -41,6 +52,6 @@ from .. import AnnouncementSerializer
 @api_view(['GET'])
 @permission_required('obozstudentow.can_add_announcement')
 def get_visible_announcements(request):
-    announcements = Announcement.objects.filter(visible=True).order_by('-date')
+    announcements = Announcement.objects.filter(visible=True).filter(Q(hide_date=None) | Q(hide_date__gt=timezone.now())).order_by('-date')
 
     return Response(AnnouncementSerializer(announcements, many=True, context={'request': request}).data)

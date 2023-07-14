@@ -66,6 +66,7 @@ class AnnouncementViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             Q(group__in=self.request.user.groupmember_set.values('group')) | 
             Q(group__in=self.request.user.groupwarden_set.values('group')) | 
             Q(group=None), 
+            Q(hide_date=None) | Q(hide_date__gt=timezone.now()),
             visible=True
         )
     
