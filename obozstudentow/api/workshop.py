@@ -33,7 +33,7 @@ class WorkshopViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets
     serializer_class = WorkshopSerializer
 
     def get_queryset(self):
-        return self.queryset.filter(visible=True)
+        return self.queryset.filter(visible=True, end__gt=timezone.now())
     
 
 
@@ -43,16 +43,13 @@ class WorkshopUserSignedUpViewSet(mixins.ListModelMixin, viewsets.GenericViewSet
     serializer_class = WorkshopSerializer
 
     def get_queryset(self):
-        return self.queryset.filter(Q(id__in=WorkshopSignup.objects.filter(user=self.request.user).values('workshop')) | Q(id__in=WorkshopLeader.objects.filter(user=self.request.user).values('workshop')), visible=True)
+        return self.queryset.filter(Q(id__in=WorkshopSignup.objects.filter(user=self.request.user).values('workshop')) | Q(id__in=WorkshopLeader.objects.filter(user=self.request.user).values('workshop')), visible=True, end__gt=timezone.now())
 
 
 class WorkshopSignupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = WorkshopSignup
         fields = ('id', 'workshop', 'user')
-
-from rest_framework.views import APIView
-
 
 
 
