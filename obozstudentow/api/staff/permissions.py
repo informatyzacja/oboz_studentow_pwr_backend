@@ -15,7 +15,9 @@ class PermissionsViewSet( viewsets.GenericViewSet):
     queryset = Permission.objects.all()
     def list(self, request):
         queryset = request.user.user_permissions.all() | Permission.objects.filter(group__user=request.user)
-        serializer = PermissionsSerializer(queryset, many=True)
-        return Response(serializer.data)
+        serializer_data = PermissionsSerializer(queryset, many=True).data
+        if request.user.is_staff:
+            serializer_data.append({'name': 'Is staff', 'codename': 'is_staff'})
+        return Response(serializer_data)
 
 
