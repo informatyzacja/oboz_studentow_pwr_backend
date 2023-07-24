@@ -6,7 +6,7 @@ from ..models import GroupType, Group, GroupMember, GroupWarden
 
 @admin.register(GroupType)
 class GroupTypeAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('id', 'name',)
     search_fields = ('name',)
 
 class GroupMemberInline(admin.TabularInline):
