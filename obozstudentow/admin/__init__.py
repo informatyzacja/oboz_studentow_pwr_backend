@@ -18,7 +18,7 @@ class FAQAdmin(admin.ModelAdmin):
     list_display = ('question', 'answer')
     search_fields = ('question', 'answer')
 
-class ScheduleItemAdmin(admin.ModelAdmin):
+class ScheduleItemAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('name', 'description', 'start', 'end', 'location', 'visible')
     search_fields = ('name', 'description', 'start', 'end', 'location', 'visible')
 

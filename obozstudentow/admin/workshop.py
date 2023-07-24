@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from import_export.admin import ImportExportModelAdmin
 
 from ..models import Workshop, WorkshopSignup, WorkshopLeader
 
@@ -13,7 +14,7 @@ class WorkshopLeaderInline(admin.TabularInline):
     extra = 1
 
 @admin.register(Workshop)
-class WorkshopAdmin(admin.ModelAdmin):
+class WorkshopAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('name', 'visible')
     search_fields = ('name', 'visible')
     inlines = [WorkshopLeaderInline, WorkshopSignupInline]

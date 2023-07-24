@@ -12,6 +12,7 @@ class Workshop(models.Model):
     signupsOpenTime = models.DateTimeField(blank=True, null=True)
     photo = ResizedImageField(upload_to='workshop', blank=True)
     userLimit = models.IntegerField()
+    itemsToTake = models.TextField(blank=True)
 
     class Meta:
         verbose_name = "Warsztat"

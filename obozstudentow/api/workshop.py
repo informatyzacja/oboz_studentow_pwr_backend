@@ -26,7 +26,7 @@ class WorkshopSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Workshop
-        fields = ('id', 'name', 'description', 'start', 'end', 'location', 'photo', 'userLimit', 'userCount', 'signupsOpen', 'signupsOpenTime', 'userSignUpId', 'workshopleaders')
+        fields = ('id', 'name', 'description', 'start', 'end', 'location', 'photo', 'userLimit', 'userCount', 'signupsOpen', 'signupsOpenTime', 'userSignUpId', 'workshopleaders', 'itemsToTake')
 
 class WorkshopViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Workshop.objects.filter(visible=True)

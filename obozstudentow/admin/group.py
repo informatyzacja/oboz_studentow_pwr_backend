@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from import_export.admin import ImportExportModelAdmin
 
 from ..models import GroupType, Group, GroupMember, GroupWarden
 
@@ -28,7 +29,7 @@ class GroupAdmin(admin.ModelAdmin):
 from ..models import PointType, Point
 
 @admin.register(PointType)
-class PointTypeAdmin(admin.ModelAdmin):
+class PointTypeAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
 
