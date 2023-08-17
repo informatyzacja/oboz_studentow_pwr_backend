@@ -73,3 +73,7 @@ button {
 a {
     text-decoration: none;
 }
+
+a {
+    color: var(--orange);
+}
