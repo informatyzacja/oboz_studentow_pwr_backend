@@ -40,7 +40,7 @@ class User(AbstractUser):
     objects = UserManager()
 
     def __str__(self):
-        return self.first_name + " " + self.last_name + " " + self.title
+        return self.first_name + " " + self.last_name + (" " + self.title if self.title else "")
     
 class UserFCMToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

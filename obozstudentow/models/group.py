@@ -47,6 +47,7 @@ class GroupWarden(models.Model):
 
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name + " (" + self.group.name + ")"
+        
 
 
 # points

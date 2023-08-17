@@ -123,12 +123,22 @@ class AnnouncementAdmin(admin.ModelAdmin):
     list_display = ('title', 'content', 'date', 'addedBy', 'group', 'visible')
     search_fields = ('title', 'content', 'date', 'addedBy', 'group', 'visible')
 
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(AnnouncementAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['addedBy'].queryset = User.objects.filter(groups__name__in=('Kadra','Sztab','Bajer'))
+        return form
+
 from ..models import DailyQuest
 
 @admin.register(DailyQuest)
 class DailyQuestAdmin(admin.ModelAdmin):
     list_display = ('title', 'description', 'finish', 'addedBy', 'group', 'visible')
     search_fields = ('title', 'description', 'finish', 'addedBy', 'group', 'visible')
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(DailyQuestAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['addedBy'].queryset = User.objects.filter(groups__name__in=('Sztab'))
+        return form
 
 
 from ..models import Bus

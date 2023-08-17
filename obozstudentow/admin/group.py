@@ -1,8 +1,12 @@
 from django.contrib import admin
 
 from import_export.admin import ImportExportModelAdmin
+from django.db.models.fields.related import ForeignKey
+from django.forms.models import ModelChoiceField
+from django.http.request import HttpRequest
+from typing import Any
 
-from ..models import GroupType, Group, GroupMember, GroupWarden
+from ..models import GroupType, Group, GroupMember, GroupWarden, User
 
 @admin.register(GroupType)
 class GroupTypeAdmin(admin.ModelAdmin):
@@ -17,6 +21,12 @@ class GroupMemberInline(admin.TabularInline):
 class GroupWardenInline(admin.TabularInline):
     model = GroupWarden
     extra = 1
+
+    def formfield_for_foreignkey(self, db_field: ForeignKey[Any], request: HttpRequest | None, **kwargs: Any) -> ModelChoiceField | None:
+        field = super(GroupWardenInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        if db_field.name == 'user':
+            field.queryset = User.objects.filter(groups__name__in=('Sztab','Kadra','Bajer'))
+        return field
 
 @admin.register(Group)
 class GroupAdmin(admin.ModelAdmin):
