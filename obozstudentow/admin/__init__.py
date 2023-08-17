@@ -10,6 +10,10 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.admin import UserAdmin
 from ..models import Link, FAQ, ScheduleItem, User, Icons
 
+admin.site.site_header = "Panel administracyjny Obozu Studentów PWR 2023"
+admin.site.site_title = "Panel administracyjny Obozu Studentów PWR 2023"
+admin.site.index_title = "Witaj w panelu administracyjnym Obozu Studentów PWR 2023"
+
 class LinkAdmin(admin.ModelAdmin):
     list_display = ('name', 'url', 'icon')
     search_fields = ('name', 'url', 'icon')
@@ -19,8 +23,10 @@ class FAQAdmin(admin.ModelAdmin):
     search_fields = ('question', 'answer')
 
 class ScheduleItemAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    list_display = ('name', 'description', 'start', 'end', 'location', 'visible')
+    list_display = ('name', 'description', 'start', 'end', 'location', 'visible', 'has_image')
     search_fields = ('name', 'description', 'start', 'end', 'location', 'visible')
+    # filter_vertical = ('has_image',)
+    ordering = ('start','end')
 
 @admin.register(Icons)
 class IconsAdmin(admin.ModelAdmin):
@@ -66,10 +72,10 @@ class UserCreationFormEmail(BaseUserCreationForm):
             return email
         
 class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
-    list_display = ("email", 'first_name', 'last_name', 'phoneNumber', 'bandId', "is_staff")
-    search_fields = ('first_name', "email", 'last_name', 'phoneNumber', 'bandId', 'houseNumber')
+    list_display = ("email", 'first_name', 'last_name', 'bandId', "is_staff", 'title')
+    search_fields = ('first_name', "email", 'last_name', 'phoneNumber', 'bandId', 'houseNumber', 'title')
 
-    list_filter = ("is_staff", "is_superuser", "is_active", "groups")
+    list_filter = ("is_staff", "is_active", "groups")
     ordering = ("email",)
 
     add_fieldsets = (

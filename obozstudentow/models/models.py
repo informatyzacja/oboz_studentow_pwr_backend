@@ -1,5 +1,6 @@
 from django.db import models
 from django_resized import ResizedImageField
+from django.contrib import admin
 
 # Separate models
 
@@ -35,7 +36,7 @@ class ScheduleItem(models.Model):
     description = models.TextField(null=True, blank=True)
     start = models.DateTimeField()
     end = models.DateTimeField()
-    location = models.CharField(max_length=100)
+    location = models.CharField(max_length=100, null=True, blank=True)
     photo = ResizedImageField(upload_to='schedule', blank=True)
     visible = models.BooleanField(default=True)
 
@@ -45,6 +46,13 @@ class ScheduleItem(models.Model):
 
     def __str__(self):
         return self.name
+    
+    @admin.display(
+        boolean=True,
+        description='Ma zdjęcie?',
+    )
+    def has_image(self):
+        return bool(self.photo)
     
 
 class Bus(models.Model):
