@@ -71,7 +71,7 @@ urlpatterns = [
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
 
     # register
-    path('register/', auth_views.PasswordResetView.as_view(template_name='registration/register.html', email_template_name='registration/register_email.html', success_url='done/'), name='register'),
+    path('register/', auth_views.PasswordResetView.as_view(template_name='registration/register.html', email_template_name='registration/register_email.txt', html_email_template_name='registration/register_email.html', subject_template_name='registration/register_email_subject.txt' , success_url='done/'), name='register'),
     path('register/done/', auth_views.PasswordResetDoneView.as_view(template_name='registration/register_done.html'), name='register_done'),
 
     path('register/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='registration/register_confirm.html', success_url=reverse_lazy('register_complete'), post_reset_login=True), name='register_confirm'),

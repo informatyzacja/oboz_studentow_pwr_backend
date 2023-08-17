@@ -9,27 +9,25 @@
 {% endblock %}
 
 {% block content %}
-<center>
-<img id="logo" src="{% static 'logo.png' %}" alt="logo">
+<div class="center">
+    <img id="logo" src="{% static 'logowanie logo obozu.svg' %}" alt="logo">
 
-<h1>Obóz Studentów PWR</h1>
-
-<div id="main">
+    <div id="main">
 
 
-    <a  href="{% url 'login' %}">
-        <div class="pill button">
-        <p>Zaloguj się</p>
-        </div>
-    </a>
+        <a  href="{% url 'login' %}">
+            <div class="pill button">
+            <p>Zaloguj się</p>
+            </div>
+        </a>
 
-    <a  href="{% url 'register' %}">
-        <div class="pill button">
-            <p>ZAREJESTRUJ SIĘ </p>
-        </div>
-    </a>
+        <a  href="{% url 'register' %}">
+            <div class="pill button">
+                <p>ZAREJESTRUJ SIĘ </p>
+            </div>
+        </a>
+
+    </div>
 
 </div>
-
-</center>
 {% endblock %}

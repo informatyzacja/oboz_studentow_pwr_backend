@@ -1,52 +1,11 @@
-:root {
-    --bg: #131313;
-    --radial-gradient: radial-gradient(50% 50% at 55.81% 50%, #DEA766 0%, #DE7539 100%);
-    --radial-gradient-circle: radial-gradient(circle, #DEA766 0%, #DE7539 80%);
-    --theme-dark:#DE7539;
-    --theme-light:#DEA766;
-    --text-gray:#8D8D8D;
-}
-
-html {
-    max-width: 450px;
-    margin: 0 auto;
-}
-
-body {
-    background-color: var(--bg);
 
 
-    font-family: 'Sui Generis' !important;
-    font-style: normal;
-    font-weight: 400;
-    display: flex;
-    align-items: center;
-    text-align: center;
-    padding-bottom: 30px;
-
-}
 
 #logo {
-    width: 223px;
-    height: 223px;
+    width: 310px;
+    height: 310px;
     margin-top: 30px;
 }
-
-h1 {
-
-    background: var(--radial-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-
-    word-spacing: 1000px; 
-
-    text-transform: uppercase;
-
-    font-size: 30px;
-    line-height: 36px;
-}
-
 form {
     margin-top: 30px;
     width: 80%;
@@ -66,45 +25,11 @@ form {
 }
 
 
-input {
-    padding: 0 22px;
-    background-color: var(--bg);
-    border: 1px solid var(--theme-dark);
-    font-size: 12px;
-    color: var(--theme-dark);
-
-    font-family: 'Sui Generis';
-
-    background: var(--radial-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent; 
-    background-clip: text;
-
-    box-sizing: border-box;
-
-}
-
-/* input selected */
-input:focus {
-    outline: none;
-    /* border: 1px solid var(--theme-light); */
-}
-
-input::selection {
-    background: #dea86684;
-}
 
 button {
-    background:  var(--radial-gradient-circle);
-
-    font-family: 'Sui Generis';
-    font-size: 15px;
-    text-transform: uppercase;
-    color: black;
 
     margin-top: 25px !important;
 
-    border: none;
 }
 
 .small-link {

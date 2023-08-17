@@ -11,9 +11,8 @@
 
 {% block content %}
 <center>
-<img id="logo" src="{% static 'logo.png' %}" alt="logo">
+<img id="logo" src="{% static 'logowanie logo obozu.svg' %}" alt="logo">
 
-<h1>Obóz Studentów PWR</h1>
 
 <form method="POST">
     {% csrf_token %}
@@ -34,7 +33,7 @@
         <input id="password" name="password" type="password" autocomplete="current-password" required class="pill" placeholder="HASŁO">
 
 
-    <button type="submit" class="pill">
+    <button type="submit" class="pill button">
         Zaloguj
     </button>
         <a href="{% url 'register' %}" class="small-link f-left">Zarejestruj się</a>
