@@ -1,5 +1,6 @@
 from django.db import models
 from django_resized import ResizedImageField
+from django.contrib import admin
 
 class Workshop(models.Model):
     name = models.CharField(max_length=100)
@@ -12,7 +13,7 @@ class Workshop(models.Model):
     signupsOpenTime = models.DateTimeField(blank=True, null=True)
     photo = ResizedImageField(upload_to='workshop', blank=True)
     userLimit = models.IntegerField()
-    itemsToTake = models.TextField(blank=True)
+    itemsToTake = models.TextField(blank=True, null=True)
 
     class Meta:
         verbose_name = "Warsztat"
@@ -20,6 +21,14 @@ class Workshop(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+    @admin.display(
+        boolean=True,
+        description='Ma zdjęcie?',
+    )
+    def has_image(self):
+        return bool(self.photo)
     
 
 class WorkshopSignup(models.Model):

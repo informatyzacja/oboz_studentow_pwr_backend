@@ -72,7 +72,7 @@ class UserCreationFormEmail(BaseUserCreationForm):
             return email
         
 class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
-    list_display = ("email", 'first_name', 'last_name', 'bandId', "is_staff", 'title')
+    list_display = ('id', "email", 'first_name', 'last_name', 'bandId', "is_staff", 'title')
     search_fields = ('first_name', "email", 'last_name', 'phoneNumber', 'bandId', 'houseNumber', 'title')
 
     list_filter = ("is_staff", "is_active", "groups")

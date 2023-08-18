@@ -22,10 +22,17 @@ class WorkshopLeaderInline(admin.TabularInline):
         if db_field.name == 'user':
             field.queryset = User.objects.filter(groups__name__in=('Sztab','Kadra','Bajer'))
         return field
+    
+@admin.register(WorkshopLeader)
+class WorkshopLeaderAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    list_display = ('user', 'workshop')
+    search_fields = ('user__first_name', 'user__last_name', 'workshop__name')
+    list_filter = ('workshop',)
 
 @admin.register(Workshop)
 class WorkshopAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    list_display = ('name', 'visible')
-    search_fields = ('name', 'visible')
+    list_display = ('name', 'visible', 'has_image', 'start', 'end', 'location', 'signupsOpen', 'signupsOpenTime')
+    search_fields = ('name', 'visible', 'location')
+    list_filter = ('visible', 'signupsOpen', 'start', 'end', 'location', 'signupsOpenTime')
     inlines = [WorkshopLeaderInline, WorkshopSignupInline]
 
