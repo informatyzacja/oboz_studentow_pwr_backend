@@ -93,7 +93,7 @@ class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         (_("Personal info"), {"fields": ("first_name", "last_name")}),
-        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "houseNumber", "photo", "title", "diet", "bus")}),
+        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "houseNumber", "photo", "title", "diet", "bus", 'birthDate')}),
         (
             _("Permissions"),
             {
@@ -159,5 +159,5 @@ class ImageAdmin(admin.ModelAdmin):
 from ..models import Setting
 @admin.register(Setting)
 class SettingAdmin(admin.ModelAdmin):
-    list_display = ('name', 'value')
-    search_fields = ('name', 'value')
+    list_display = ('name', 'description', 'value')
+    search_fields = ('name', 'description', 'value')

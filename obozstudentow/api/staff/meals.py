@@ -22,10 +22,10 @@ def check_meal_validation(request):
     if 'user_id' not in request.GET:
         return Response({'success': False, 'error': 'Nie podano ID użytkownika'})
 
-    if not User.objects.filter(id=int(request.GET['user_id'])).exists():
+    if not User.objects.filter(bandId=int(request.GET['user_id'])).exists():
         return Response({'success': False, 'error': 'Użytkownik nie istnieje'})
 
-    user = User.objects.get(id=int(request.GET['user_id']))
+    user = User.objects.get(bandId=int(request.GET['user_id']))
 
     if not Meal.objects.filter(id=request.GET['meal_id']).exists():
         return Response({'success': False, 'error': 'Posiłek nie istnieje', 'user': user.first_name + ' ' + user.last_name, 'user_title': user.title, 'user_diet': user.diet})
@@ -48,10 +48,10 @@ def validate_meal(request):
     if 'user_id' not in request.data:
         return Response({'success': False, 'error': 'Nie podano ID użytkownika'})
 
-    if not User.objects.filter(id=int(request.data['user_id'])).exists():
+    if not User.objects.filter(bandId=int(request.data['user_id'])).exists():
         return Response({'success': False, 'error': 'Użytkownik nie istnieje'})
 
-    user = User.objects.get(id=int(request.data['user_id']))
+    user = User.objects.get(bandId=int(request.data['user_id']))
 
     if not Meal.objects.filter(id=request.data['meal_id']).exists():
         return Response({'success': False, 'error': 'Posiłek nie istnieje', 'user': user.first_name + ' ' + user.last_name, 'user_title': user.title, 'user_diet': user.diet})
@@ -60,7 +60,7 @@ def validate_meal(request):
         mv = MealValidation.objects.get(meal_id=request.data['meal_id'], user=user)
         return Response({'success': False, 'error': f'Posiłek zrealizowany {mv.timeOfValidation.strftime("%H:%M %d.%m")}', 'user': user.first_name + ' ' + user.last_name, 'user_title': user.title, 'user_diet': user.diet})
     
-    mv = MealValidation.objects.create(meal_id=request.data['meal_id'], user_id=request.data['user_id'], validatedBy=request.user)
+    mv = MealValidation.objects.create(meal_id=request.data['meal_id'], user_id=user.id, validatedBy=request.user)
     mv.save()
 
     return Response({'success': True, 'error': None, 'user': user.first_name + ' ' + user.last_name, 'user_title': user.title, 'user_diet': user.diet })

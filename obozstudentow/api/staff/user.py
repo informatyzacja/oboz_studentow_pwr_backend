@@ -15,7 +15,7 @@ def get_user_info(request):
     if user_id is None:
         return Response({'success':False, 'error': 'Nie podano ID użytkownika'})
     try:
-        user = User.objects.get(id=user_id)
+        user = User.objects.get(bandId=user_id)
         return Response(ProfileSerializer(user, context={'request': request}).data)
     except User.DoesNotExist:
         return Response({'success':False, 'error': 'Użytkownik nie istnieje'})
@@ -30,7 +30,7 @@ def get_user_group(request):
     if group_type is None:
         return Response({'success':False, 'error': 'Nie podano typu grupy'})
     try:
-        group_member = GroupMember.objects.get(user=user_id, group__type__name=group_type)
+        group_member = GroupMember.objects.get(user=User.objects.get(bandId=user_id), group__type__name=group_type)
         return Response({'success':True, 'group': group_member.group.pk})
     except GroupMember.DoesNotExist:
         return Response({'success':False, 'error': 'Użytkownik nie należy do żadnej grupy o podanym typie'})
