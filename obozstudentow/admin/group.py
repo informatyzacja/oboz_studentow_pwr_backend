@@ -40,8 +40,9 @@ from ..models import PointType, Point
 
 @admin.register(PointType)
 class PointTypeAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    list_display = ('name',)
-    search_fields = ('name',)
+    list_display = ('name','group_type')
+    search_fields = ('name','group_type')
+    list_filter = ('group_type',)
 
 @admin.register(Point)
 class PointAdmin(admin.ModelAdmin):
