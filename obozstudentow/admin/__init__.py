@@ -93,7 +93,7 @@ class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         (_("Personal info"), {"fields": ("first_name", "last_name")}),
-        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "houseNumber", "photo", "title", "diet", "bus", 'birthDate')}),
+        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "houseNumber", "photo", "title", "diet", "bus", 'birthDate', 'freenow_code')}),
         (
             _("Permissions"),
             {
