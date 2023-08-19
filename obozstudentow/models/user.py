@@ -34,6 +34,7 @@ class User(AbstractUser):
     diet = models.CharField(max_length=100, blank=True, null=True) # e.g. "wegetariańska"
     bus = models.ForeignKey(Bus, on_delete=models.SET_NULL, null=True, blank=True)
     birthDate = models.DateField(blank=True, null=True)
+    freenow_code = models.CharField(max_length=20, blank=True, null=True)
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

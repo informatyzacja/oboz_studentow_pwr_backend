@@ -136,7 +136,7 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'email', 'groups', 'fraction', 'bandId', 'houseNumber', 'photo', 'title', 'bus', 'diet')
+        fields = ('id', 'first_name', 'last_name', 'email', 'groups', 'fraction', 'bandId', 'houseNumber', 'photo', 'title', 'bus', 'diet', 'freenow_code')
         depth = 1
 
 class ProfileViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
