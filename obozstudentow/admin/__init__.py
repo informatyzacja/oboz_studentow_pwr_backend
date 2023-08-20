@@ -168,3 +168,9 @@ from ..models import Setting
 class SettingAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'value')
     search_fields = ('name', 'description', 'value')
+
+from ..models import Partners
+@admin.register(Partners)
+class PartnersAdmin(admin.ModelAdmin):
+    list_display = ('name', 'logo', 'link')
+    search_fields = ('name', 'logo', 'link')

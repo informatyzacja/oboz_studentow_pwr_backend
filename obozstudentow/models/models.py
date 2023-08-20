@@ -90,3 +90,15 @@ class Setting(models.Model):
     class Meta:
         verbose_name = "Ustawienie"
         verbose_name_plural = "Ustawienia"
+
+class Partners(models.Model):
+    name = models.CharField(max_length=100)
+    link = models.URLField(blank=True, null=True)
+    logo = ResizedImageField(upload_to='partners', force_format=None, size=[400, 400])
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = "Partner"
+        verbose_name_plural = "Partnerzy"

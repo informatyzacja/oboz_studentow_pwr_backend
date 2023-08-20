@@ -184,3 +184,16 @@ class ImageViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = ImageSerializer
 
 api_router.register(r'image', ImageViewSet)
+
+
+from ..models import Partners
+class PartnersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Partners
+        fields = "__all__"
+
+class PartnersViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Partners.objects.all()
+    serializer_class = PartnersSerializer
+
+api_router.register(r'partners', PartnersViewSet)
