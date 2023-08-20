@@ -18,7 +18,7 @@ class LinkAdmin(admin.ModelAdmin):
     list_display = ('name', 'url', 'icon')
     search_fields = ('name', 'url', 'icon')
 
-class FAQAdmin(admin.ModelAdmin):
+class FAQAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('question', 'answer')
     search_fields = ('question', 'answer')
 
@@ -72,10 +72,10 @@ class UserCreationFormEmail(BaseUserCreationForm):
             return email
         
 class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
-    list_display = ('id', "email", 'first_name', 'last_name', 'bandId', "is_staff", 'title')
+    list_display = ('id', "email", 'first_name', 'last_name', 'bandId', "is_staff", 'title', 'is_active')
     search_fields = ('first_name', "email", 'last_name', 'phoneNumber', 'bandId', 'houseNumber', 'title')
 
-    list_filter = ("is_staff", "is_active", "groups")
+    list_filter = ("is_staff", "is_active", "groups", 'is_active')
     ordering = ("email",)
 
     add_fieldsets = (
@@ -144,7 +144,7 @@ class DailyQuestAdmin(admin.ModelAdmin):
 from ..models import Bus
 
 @admin.register(Bus)
-class BusAdmin(admin.ModelAdmin):
+class BusAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('description', 'location')
     search_fields = ('description', 'location')
 

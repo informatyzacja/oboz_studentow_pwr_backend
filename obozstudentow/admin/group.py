@@ -27,10 +27,16 @@ class GroupWardenInline(admin.TabularInline):
         if db_field.name == 'user':
             field.queryset = User.objects.filter(groups__name__in=('Sztab','Kadra','Bajer'))
         return field
+    
+@admin.register(GroupMember)
+class GroupMemberAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    list_display = ('id', 'group', 'user')
+    search_fields = ('group', 'user')
+    list_filter = ('group','group__type')
 
 @admin.register(Group)
-class GroupAdmin(admin.ModelAdmin):
-    list_display = ('name', 'type', 'logo', 'map', 'messenger')
+class GroupAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    list_display = ('id', 'name', 'type', 'logo', 'map', 'messenger')
     search_fields = ('name', 'type')
     list_filter = ('type',)
     inlines = [GroupWardenInline, GroupMemberInline]
