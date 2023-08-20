@@ -80,7 +80,7 @@ class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
     frakcja.short_description = 'Frakcja'
 
     list_display = ('id', "email", 'first_name', 'last_name', 'bandId', 'frakcja', 'title', 'is_active', "is_staff", 'has_image')
-    search_fields = ('first_name', "email", 'last_name', 'title', 'phoneNumber', 'bandId', 'houseNumber', 'title', 'frakcja')
+    search_fields = ('first_name', "email", 'last_name', 'title', 'phoneNumber', 'bandId', 'houseNumber', 'title')
 
     list_filter = ("groups", 'bus', "is_staff", "is_active", 'is_active')
     ordering = ("last_name",'first_name')
