@@ -72,11 +72,18 @@ class UserCreationFormEmail(BaseUserCreationForm):
             return email
         
 class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
-    list_display = ('id', "email", 'first_name', 'last_name', 'bandId', "is_staff", 'title', 'is_active')
-    search_fields = ('first_name', "email", 'last_name', 'phoneNumber', 'bandId', 'houseNumber', 'title')
+    def frakcja(self, user):
+        groups = []
+        for group in GroupMember.objects.filter(user=user, group__type=GroupType.objects.get(name='Frakcja')):
+            groups.append(group.group.name)
+        return ' '.join(groups)
+    frakcja.short_description = 'Frakcja'
 
-    list_filter = ("is_staff", "is_active", "groups", 'is_active')
-    ordering = ("email",)
+    list_display = ('id', "email", 'first_name', 'last_name', 'bandId', 'frakcja', 'title', 'is_active', "is_staff", 'has_image')
+    search_fields = ('first_name', "email", 'last_name', 'title', 'phoneNumber', 'bandId', 'houseNumber', 'title', 'frakcja')
+
+    list_filter = ("groups", 'bus', "is_staff", "is_active", 'is_active')
+    ordering = ("last_name",'first_name')
 
     add_fieldsets = (
         (

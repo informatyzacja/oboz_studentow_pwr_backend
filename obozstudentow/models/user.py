@@ -5,6 +5,7 @@ from django_resized import ResizedImageField
 from .models import Bus
 
 from django.contrib.auth.models import BaseUserManager
+from django.contrib import admin
 
 class UserManager(BaseUserManager):
     def create_superuser(self, email, password=None, **extra_fields):
@@ -45,6 +46,13 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.first_name + " " + self.last_name + (" " + self.title if self.title else "")
+    
+    @admin.display(
+        boolean=True,
+        description='Ma zdjęcie?',
+    )
+    def has_image(self):
+        return bool(self.photo)
     
 class UserFCMToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
