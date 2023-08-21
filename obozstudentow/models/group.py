@@ -16,6 +16,7 @@ class Group(models.Model):
     type = models.ForeignKey(GroupType, on_delete=models.PROTECT)
     logo = models.FileField(upload_to='groups', blank=True, null=True)
     map = ResizedImageField(upload_to='groups/maps', blank=True, null=True)
+    background = models.ImageField(upload_to='groups/backgrounds', blank=True, null=True)
     messenger = models.URLField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
 

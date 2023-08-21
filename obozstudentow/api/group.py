@@ -20,7 +20,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Group
-        fields = ('id', 'name', 'type', 'logo', 'map', 'wardens', 'description', 'messenger')
+        fields = ('id', 'name', 'type', 'logo', 'map', 'wardens', 'description', 'messenger', 'background')
         depth = 1
 
 class GroupViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
