@@ -8,7 +8,9 @@ from import_export.admin import ImportExportModelAdmin
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.admin import UserAdmin
-from ..models import Link, FAQ, ScheduleItem, User, Icons
+from ..models import Link, FAQ, ScheduleItem, User, Icons, UserFCMToken
+
+from django.contrib.auth.models import Group
 
 admin.site.site_header = "Panel administracyjny Obozu Studentów PWR 2023"
 admin.site.site_title = "Panel administracyjny Obozu Studentów PWR 2023"
@@ -71,6 +73,100 @@ class UserCreationFormEmail(BaseUserCreationForm):
         else:
             return email
         
+
+admin.site.register(Link, LinkAdmin)
+admin.site.register(FAQ, FAQAdmin)
+admin.site.register(ScheduleItem, ScheduleItemAdmin)
+        
+class UserFCMTokenInline(admin.TabularInline):
+    model = UserFCMToken
+    extra = 0
+    classes = ['collapse']
+
+class Participant(User):
+    class Meta:
+        proxy = True
+        verbose_name = 'Uczestnik'
+        verbose_name_plural = 'Uczestnicy'
+
+    
+
+class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
+    def get_queryset(self, request):
+        return self.model.objects.filter(groups=None)
+
+    def frakcja(self, user):
+        groups = []
+        for group in GroupMember.objects.filter(user=user, group__type=GroupType.objects.get(name='Frakcja')):
+            groups.append(group.group.name)
+        return ' '.join(groups)
+    frakcja.short_description = 'Frakcja'
+
+    list_display = ('id', "email", 'first_name', 'last_name', 'bandId', 'frakcja', 'title', 'is_active', "is_staff", 'has_image')
+    search_fields = ('first_name', "email", 'last_name', 'title', 'phoneNumber', 'bandId', 'houseNumber', 'title')
+
+    list_filter = ("groups", 'bus', "is_staff", "is_active")
+    ordering = ("last_name",'first_name')
+
+    add_fieldsets = (
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": ("email", "first_name", "last_name"),
+            },
+        ),
+    )
+    add_form = UserCreationFormEmail
+
+
+    fieldsets = (
+        (None, {"fields": ("email", "password")}),
+        (_("Personal info"), {"fields": ("first_name", "last_name")}),
+        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "houseNumber", "photo", "title", "diet", "bus", 'birthDate', 'freenow_code')}),
+        (
+            _("Permissions"),
+            {
+                "fields": (
+                    "is_active",
+                ),
+            },
+        ),
+        (_("Important dates"), {"fields": ("last_login", "date_joined")}),
+    )
+    inlines = [GroupMemberInlineAdmin, GroupWardenInline, UserFCMTokenInline]
+
+admin.site.register(Participant, ParticipantAdmin)
+
+
+class Kadra(User):
+    class Meta:
+        proxy = True
+        verbose_name = 'Kadrowicz'
+        verbose_name_plural = 'Kadra'
+
+class KadraAdmin(ParticipantAdmin):
+    def get_queryset(self, request):
+        return self.model.objects.filter(groups__name__in=['Kadra','Bajer'])
+    
+    fieldsets = (
+        (None, {"fields": ("email", "password")}),
+        (_("Personal info"), {"fields": ("first_name", "last_name")}),
+        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "houseNumber", "photo", "title", "diet", "bus", 'birthDate', 'freenow_code')}),
+        (
+            _("Permissions"),
+            {
+                "fields": (
+                    "is_active",
+                    "groups",
+                ),
+            },
+        ),
+        (_("Important dates"), {"fields": ("last_login", "date_joined")}),
+    )
+    
+admin.site.register(Kadra, KadraAdmin)
+   
 class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
     def frakcja(self, user):
         groups = []
@@ -82,7 +178,7 @@ class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
     list_display = ('id', "email", 'first_name', 'last_name', 'bandId', 'frakcja', 'title', 'is_active', "is_staff", 'has_image')
     search_fields = ('first_name', "email", 'last_name', 'title', 'phoneNumber', 'bandId', 'houseNumber', 'title')
 
-    list_filter = ("groups", 'bus', "is_staff", "is_active", 'is_active')
+    list_filter = ("groups", 'bus', "is_staff", "is_active")
     ordering = ("last_name",'first_name')
 
     add_fieldsets = (
@@ -115,11 +211,8 @@ class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
         ),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
-    inlines = [GroupMemberInlineAdmin, GroupWardenInline]
+    inlines = [GroupMemberInlineAdmin, GroupWardenInline, UserFCMTokenInline]
 
-admin.site.register(Link, LinkAdmin)
-admin.site.register(FAQ, FAQAdmin)
-admin.site.register(ScheduleItem, ScheduleItemAdmin)
 admin.site.register(User, CustomUserAdmin)
 
 
