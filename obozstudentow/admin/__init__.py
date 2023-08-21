@@ -102,10 +102,10 @@ class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
         return ' '.join(groups)
     frakcja.short_description = 'Frakcja'
 
-    list_display = ('id', "email", 'first_name', 'last_name', 'bandId', 'frakcja', 'title', 'is_active', "is_staff", 'has_image')
+    list_display = ('id', "email", 'first_name', 'last_name', 'bandId', 'frakcja', 'is_active')
     search_fields = ('first_name', "email", 'last_name', 'title', 'phoneNumber', 'bandId', 'houseNumber', 'title')
 
-    list_filter = ("groups", 'bus', "is_staff", "is_active")
+    list_filter = ('bus', "is_active")
     ordering = ("last_name",'first_name')
 
     add_fieldsets = (
@@ -149,6 +149,8 @@ class KadraAdmin(ParticipantAdmin):
     def get_queryset(self, request):
         return self.model.objects.filter(groups__name__in=['Kadra','Bajer'])
     
+    list_display = ('id', "email", 'first_name', 'last_name', 'bandId', 'frakcja', 'title', 'is_active', 'has_image')
+    
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         (_("Personal info"), {"fields": ("first_name", "last_name")}),
@@ -164,6 +166,8 @@ class KadraAdmin(ParticipantAdmin):
         ),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
+
+    list_filter = ('groups', 'bus', "is_active")
     
 admin.site.register(Kadra, KadraAdmin)
    
@@ -214,6 +218,19 @@ class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
     inlines = [GroupMemberInlineAdmin, GroupWardenInline, UserFCMTokenInline]
 
 admin.site.register(User, CustomUserAdmin)
+
+
+class Sztab(User):
+    class Meta:
+        proxy = True
+        verbose_name = 'Sztab'
+        verbose_name_plural = 'Sztab'
+
+class SztabAdmin(CustomUserAdmin):
+    def get_queryset(self, request):
+        return self.model.objects.filter(groups__name__in=['Sztab'])
+    
+admin.site.register(Sztab, SztabAdmin)
 
 
 from ..models import Announcement

@@ -27,8 +27,8 @@ class Staff(models.Model):
     user = models.ForeignKey('obozstudentow.User', on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name = "Sztab"
-        verbose_name_plural = "Sztab"
+        verbose_name = "Kontakt do sztabu"
+        verbose_name_plural = "Kontakty do sztabu"
     
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name

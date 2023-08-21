@@ -9,7 +9,7 @@ class LifeGuardAdmin(admin.ModelAdmin):
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(LifeGuardAdmin, self).get_form(request, obj, **kwargs)
-        form.base_fields['user'].queryset = User.objects.filter(groups__name__in=('Ratownicy'))
+        form.base_fields['user'].queryset = User.objects.filter(groups__name__in=('Ratownicy',))
         return form
 
 @admin.register(SoberDuty)
@@ -29,6 +29,6 @@ class ContactAdmin(admin.ModelAdmin):
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(ContactAdmin, self).get_form(request, obj, **kwargs)
-        form.base_fields['user'].queryset = User.objects.filter(groups__name__in=('Sztab'))
+        form.base_fields['user'].queryset = User.objects.filter(groups__name__in=('Sztab',))
         return form
         
