@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     'import_export',
+    'orderable'
 ]
 
 if DEBUG:

@@ -1,6 +1,7 @@
 from ..models import LifeGuard, SoberDuty, Staff, User
 
 from django.contrib import admin
+from orderable.admin import OrderableAdmin
 
 @admin.register(LifeGuard)
 class LifeGuardAdmin(admin.ModelAdmin):
@@ -23,12 +24,13 @@ class SoberDutyAdmin(admin.ModelAdmin):
         return form
 
 @admin.register(Staff)
-class ContactAdmin(admin.ModelAdmin):
-    list_display = ('user',)
+class ContactAdmin(OrderableAdmin):
+    list_display = ('user', 'sort_order_display')
     search_fields = ('user',)
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(ContactAdmin, self).get_form(request, obj, **kwargs)
         form.base_fields['user'].queryset = User.objects.filter(groups__name__in=('Sztab',))
         return form
+    
         
