@@ -68,7 +68,7 @@ class AnnouncementViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             Q(group=None), 
             Q(hide_date=None) | Q(hide_date__gt=timezone.now()),
             visible=True
-        )
+        ).order_by('-date')
     
 api_router.register(r'announcement', AnnouncementViewSet)
 
