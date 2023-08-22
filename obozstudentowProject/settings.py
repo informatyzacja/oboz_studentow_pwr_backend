@@ -33,6 +33,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 from django.core.management.utils import get_random_secret_key
 SECRET_KEY = get_secret("SECRET_KEY", get_random_secret_key())
 
+ADMINS = [('Marvin', 'marvin@prasa-polska.com')]
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", 'true').lower() == 'true'
 
@@ -217,6 +219,13 @@ if CSRF_TRUSTED_ORIGINS == [""]:
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 3600 * 24 * 14 # 14 days
+    SECURE_HSTS_PRELOAD = True
+
 LOGGING = {
     'version': 1,
     'disable_existing_logger': False,
@@ -240,6 +249,8 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
         },
     },
     'root': {'level': 'INFO'},
