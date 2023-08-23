@@ -55,6 +55,10 @@ def activate(modeladmin, request, queryset):
 def deactivate(modeladmin, request, queryset):
     queryset.update(is_active=False)
 
+@admin.action(description='Usuń opaski')
+def remove_bands(modeladmin, request, queryset):
+    queryset.update(bandId=None)
+
 class UserFCMTokenInline(admin.TabularInline):
     model = UserFCMToken
     extra = 0
@@ -156,6 +160,8 @@ class KadraAdmin(ParticipantAdmin):
     )
 
     list_filter = ('groups', 'bus', "is_active")
+
+    actions = [activate, deactivate, remove_bands]
     
 admin.site.register(Kadra, KadraAdmin)
    
@@ -219,6 +225,8 @@ class Sztab(User):
 class SztabAdmin(CustomUserAdmin):
     def get_queryset(self, request):
         return self.model.objects.filter(groups__name__in=['Sztab'])
+    
+    actions = [activate, deactivate, remove_bands]
     
 admin.site.register(Sztab, SztabAdmin)
 

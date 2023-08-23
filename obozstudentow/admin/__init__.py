@@ -40,6 +40,10 @@ admin.site.register(ScheduleItem, ScheduleItemAdmin)
         
 from ..models import Announcement
 
+@admin.action(description='Ukryj')
+def hide_announncements(modeladmin, request, queryset):
+    queryset.update(visible=False)
+
 @admin.register(Announcement)
 class AnnouncementAdmin(admin.ModelAdmin):
     list_display = ('title', 'content', 'date', 'addedBy', 'group', 'visible')
@@ -49,6 +53,8 @@ class AnnouncementAdmin(admin.ModelAdmin):
         form = super(AnnouncementAdmin, self).get_form(request, obj, **kwargs)
         form.base_fields['addedBy'].queryset = User.objects.filter(groups__name__in=('Kadra','Sztab','Bajer'))
         return form
+    
+    actions = [hide_announncements]
 
 from ..models import DailyQuest
 
