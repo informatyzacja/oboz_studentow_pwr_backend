@@ -55,3 +55,15 @@ def get_visible_announcements(request):
     announcements = Announcement.objects.filter(visible=True).filter(Q(hide_date=None) | Q(hide_date__gt=timezone.now())).order_by('-date')
 
     return Response(AnnouncementSerializer(announcements, many=True, context={'request': request}).data)
+
+
+@api_view(['PUT'])
+@permission_required('obozstudentow.can_add_announcement')
+def hide_announcement(request, id):
+    try:
+        announcement = Announcement.objects.get(id=id)
+        announcement.visible = False
+        announcement.save()
+    except Announcement.DoesNotExist:
+        return Response({'success': False, 'error': 'Nie znaleziono ogłoszenia o podanym id'})
+    return Response({'success': True})

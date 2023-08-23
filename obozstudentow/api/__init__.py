@@ -55,7 +55,7 @@ class AnnouncementSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Announcement
-        fields = ('id', 'title', 'content', 'date', 'addedBy', 'group')
+        fields = ('id', 'title', 'content', 'date', 'addedBy', 'group', 'hide_date')
 
 class AnnouncementViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Announcement.objects.all()
