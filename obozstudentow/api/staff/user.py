@@ -4,9 +4,30 @@ from django.contrib.auth.decorators import permission_required
 
 
 from ...models import User, GroupType, GroupMember
-from .. import ProfileSerializer
+
+from rest_framework import serializers
+
+from ...api.group import GroupSerializer, Group
+from ...api import GroupWithMembersSerializer
+
+from django.db.models import Q
 
 
+class ParticipantInfoSerializer(serializers.HyperlinkedModelSerializer):
+    fraction = serializers.SerializerMethodField()
+    groups = serializers.SerializerMethodField()
+
+    def get_fraction(self, obj):
+        return GroupSerializer( Group.objects.filter(Q(groupmember__user=obj) | Q(groupwarden__user=obj), type__name="Frakcja").first(), context=self.context ).data
+    
+    def get_groups(self, obj):
+        return GroupWithMembersSerializer( Group.objects.filter(Q(groupmember__user=obj) | Q(groupwarden__user=obj), ~Q(type__name="Frakcja")), context=self.context, many=True ).data
+
+
+    class Meta:
+        model = User
+        fields = ('id', 'first_name', 'last_name', 'groups', 'fraction', 'bandId', 'photo', 'title', 'bus')
+        depth = 1
 
 @api_view(['GET'])
 @permission_required('obozstudentow.can_view_user_info')
@@ -16,7 +37,7 @@ def get_user_info(request):
         return Response({'success':False, 'error': 'Nie podano ID użytkownika'})
     try:
         user = User.objects.get(bandId=user_id.zfill(6))
-        return Response(ProfileSerializer(user, context={'request': request}).data)
+        return Response(ParticipantInfoSerializer(user, context={'request': request}).data)
     except User.DoesNotExist:
         return Response({'success':False, 'error': 'Użytkownik nie istnieje'})
 
