@@ -55,10 +55,6 @@ class User(AbstractUser):
     def has_image(self):
         return bool(self.photo)
     
-    def save(self, *args, **kwargs):
-        if self.bandId:
-            self.bandId = self.bandId.zfill(6)
-        super().save(*args, **kwargs)
     
 class UserFCMToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

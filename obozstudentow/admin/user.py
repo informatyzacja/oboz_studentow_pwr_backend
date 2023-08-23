@@ -66,9 +66,17 @@ class Participant(User):
         verbose_name = 'Uczestnik'
         verbose_name_plural = 'Uczestnicy'
 
+from django.contrib.auth.forms import UserChangeForm
+
+class CustomUserChangeForm(UserChangeForm):
     
+    def clean_bandId(self):
+        bandId = self.cleaned_data['bandId']
+        bandId = bandId.zfill(6)
+        return bandId
 
 class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
+    form = CustomUserChangeForm
     def get_queryset(self, request):
         return self.model.objects.filter(groups=None)
 
@@ -114,6 +122,8 @@ class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
     inlines = [GroupMemberInlineAdmin, GroupWardenInline, UserFCMTokenInline]
     actions = [activate, deactivate]
 
+
+
 admin.site.register(Participant, ParticipantAdmin)
 
 
@@ -150,6 +160,7 @@ class KadraAdmin(ParticipantAdmin):
 admin.site.register(Kadra, KadraAdmin)
    
 class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
+    form = CustomUserChangeForm
     def frakcja(self, user):
         groups = []
         for group in GroupMember.objects.filter(user=user, group__type=GroupType.objects.get(name='Frakcja')):
