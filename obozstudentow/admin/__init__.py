@@ -59,7 +59,7 @@ class DailyQuestAdmin(admin.ModelAdmin):
 
     def get_form(self, request, obj=None, **kwargs):
         form = super(DailyQuestAdmin, self).get_form(request, obj, **kwargs)
-        form.base_fields['addedBy'].queryset = User.objects.filter(groups__name__in=('Sztab'))
+        form.base_fields['addedBy'].queryset = User.objects.filter(groups__name__in=('Sztab',))
         return form
 
 
