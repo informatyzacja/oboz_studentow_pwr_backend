@@ -140,7 +140,7 @@ class Kadra(User):
 
 class KadraAdmin(ParticipantAdmin):
     def get_queryset(self, request):
-        return self.model.objects.filter(groups__name__in=['Kadra','Bajer'])
+        return self.model.objects.filter(groups__name__in=['Kadra','Bajer','Fotograf'])
     
     list_display = ('id', "email", 'first_name', 'last_name', 'bandId', 'frakcja', 'title', 'is_active', 'has_image')
     
