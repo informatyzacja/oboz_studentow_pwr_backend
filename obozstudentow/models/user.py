@@ -28,7 +28,7 @@ class User(AbstractUser):
     username=None
     email = models.EmailField(unique=True)
     phoneNumber = models.CharField(max_length=9, blank=True, null=True)
-    bandId = models.CharField(max_length=10, blank=True, null=True)
+    bandId = models.CharField(max_length=10, blank=True, null=True, unique=True)
     photo = ResizedImageField(upload_to='users', blank=True, null=True) 
     title = models.CharField(max_length=100, blank=True, null=True) # e.g. "Koordynator"
     diet = models.CharField(max_length=100, blank=True, null=True) # e.g. "wegetariańska"
