@@ -102,3 +102,15 @@ class Partners(models.Model):
     class Meta:
         verbose_name = "Partner"
         verbose_name_plural = "Partnerzy"
+
+
+class House(models.Model):
+    name = models.CharField(max_length=10)
+    key_collected = models.BooleanField(default=False, verbose_name="Klucz odebrany")
+
+    def __str__(self):
+        return 'Domek nr ' + self.name
+
+    class Meta:
+        verbose_name = "Domek"
+        verbose_name_plural = "Domki"

@@ -29,7 +29,6 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     phoneNumber = models.CharField(max_length=9, blank=True, null=True)
     bandId = models.CharField(max_length=10, blank=True, null=True)
-    houseNumber = models.CharField(max_length=10, blank=True, null=True)
     photo = ResizedImageField(upload_to='users', blank=True, null=True) 
     title = models.CharField(max_length=100, blank=True, null=True) # e.g. "Koordynator"
     diet = models.CharField(max_length=100, blank=True, null=True) # e.g. "wegetariańska"
@@ -37,6 +36,8 @@ class User(AbstractUser):
     birthDate = models.DateField(blank=True, null=True)
     freenow_code = models.CharField(max_length=20, blank=True, null=True)
     gender = models.CharField(max_length=1, blank=True, null=True)
+
+    house = models.ForeignKey('House', on_delete=models.SET_NULL, null=True, blank=True)
 
     
     USERNAME_FIELD = 'email'

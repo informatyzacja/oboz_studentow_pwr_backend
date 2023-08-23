@@ -89,3 +89,11 @@ from ..models import Partners
 class PartnersAdmin(admin.ModelAdmin):
     list_display = ('name', 'logo', 'link')
     search_fields = ('name', 'logo', 'link')
+
+from ..models import House
+@admin.register(House)
+class HouseAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    list_display = ('name', 'key_collected')
+    search_fields = ('name',)
+
+    list_filter = ('key_collected',)
