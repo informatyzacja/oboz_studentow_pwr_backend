@@ -43,7 +43,9 @@ class WorkshopUserSignedUpViewSet(mixins.ListModelMixin, viewsets.GenericViewSet
     serializer_class = WorkshopSerializer
 
     def get_queryset(self):
-        return self.queryset.filter(Q(id__in=WorkshopSignup.objects.filter(user=self.request.user).values('workshop')) | Q(id__in=WorkshopLeader.objects.filter(user=self.request.user).values('workshop')), visible=True, end__gt=timezone.now())
+        return self.queryset.filter(
+            Q(id__in=WorkshopSignup.objects.filter(user=self.request.user).values('workshop')) | Q(id__in=WorkshopLeader.objects.filter(user=self.request.user).values('workshop')
+        ), visible=True, end__gt=timezone.now()).order_by('start')
 
 
 class WorkshopSignupSerializer(serializers.HyperlinkedModelSerializer):
