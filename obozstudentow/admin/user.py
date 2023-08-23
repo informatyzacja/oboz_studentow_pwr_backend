@@ -76,7 +76,8 @@ class CustomUserChangeForm(UserChangeForm):
     
     def clean_bandId(self):
         bandId = self.cleaned_data['bandId']
-        bandId = bandId.zfill(6)
+        if bandId:
+            bandId = bandId.zfill(6)
         return bandId
 
 class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
