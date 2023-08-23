@@ -80,7 +80,7 @@ class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
     frakcja.short_description = 'Frakcja'
 
     list_display = ('id', "email", 'first_name', 'last_name', 'bandId', 'frakcja', 'is_active')
-    search_fields = ('first_name', "email", 'last_name', 'title', 'phoneNumber', 'bandId', 'houseNumber', 'title')
+    search_fields = ('first_name', "email", 'last_name', 'title', 'phoneNumber', 'bandId', 'title')
 
     list_filter = ('bus', "is_active")
     ordering = ("last_name",'first_name')
@@ -100,7 +100,7 @@ class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         (_("Personal info"), {"fields": ("first_name", "last_name")}),
-        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "houseNumber", "photo", "title", "diet", "bus", 'birthDate', 'freenow_code')}),
+        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "diet", "bus", 'birthDate', 'freenow_code')}),
         (
             _("Permissions"),
             {
@@ -132,7 +132,7 @@ class KadraAdmin(ParticipantAdmin):
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         (_("Personal info"), {"fields": ("first_name", "last_name")}),
-        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "houseNumber", "photo", "title", "diet", "bus", 'birthDate', 'freenow_code')}),
+        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "diet", "bus", 'birthDate', 'freenow_code')}),
         (
             _("Permissions"),
             {
@@ -158,7 +158,7 @@ class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
     frakcja.short_description = 'Frakcja'
 
     list_display = ('id', "email", 'first_name', 'last_name', 'bandId', 'frakcja', 'title', 'is_active', "is_staff", 'has_image')
-    search_fields = ('first_name', "email", 'last_name', 'title', 'phoneNumber', 'bandId', 'houseNumber', 'title')
+    search_fields = ('first_name', "email", 'last_name', 'title', 'phoneNumber', 'bandId', 'title')
 
     list_filter = ("groups", 'bus', "is_staff", "is_active")
     ordering = ("last_name",'first_name')
@@ -178,7 +178,7 @@ class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         (_("Personal info"), {"fields": ("first_name", "last_name")}),
-        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "houseNumber", "photo", "title", "diet", "bus", 'birthDate', 'freenow_code')}),
+        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "diet", "bus", 'birthDate', 'freenow_code')}),
         (
             _("Permissions"),
             {
