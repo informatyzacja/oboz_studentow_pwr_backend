@@ -22,10 +22,10 @@ def check_meal_validation(request):
     if 'user_id' not in request.GET:
         return Response({'success': False, 'error': 'Nie podano ID użytkownika'})
 
-    if not User.objects.filter(bandId=int(request.GET['user_id'])).exists():
+    if not User.objects.filter(bandId=request.GET['user_id'].zfill(6)).exists():
         return Response({'success': False, 'error': 'Użytkownik nie istnieje'})
 
-    user = User.objects.get(bandId=int(request.GET['user_id']))
+    user = User.objects.get(bandId=request.GET['user_id'].zfill(6))
 
     if not Meal.objects.filter(id=request.GET['meal_id']).exists():
         return Response({'success': False, 'error': 'Posiłek nie istnieje', 'user': user.first_name + ' ' + user.last_name, 'user_title': user.title, 'user_diet': user.diet})
@@ -48,10 +48,10 @@ def validate_meal(request):
     if 'user_id' not in request.data:
         return Response({'success': False, 'error': 'Nie podano ID użytkownika'})
 
-    if not User.objects.filter(bandId=int(request.data['user_id'])).exists():
+    if not User.objects.filter(bandId=request.data['user_id'].zfill(6)).exists():
         return Response({'success': False, 'error': 'Użytkownik nie istnieje'})
 
-    user = User.objects.get(bandId=int(request.data['user_id']))
+    user = User.objects.get(bandId=request.data['user_id'].zfill(6))
 
     if not Meal.objects.filter(id=request.data['meal_id']).exists():
         return Response({'success': False, 'error': 'Posiłek nie istnieje', 'user': user.first_name + ' ' + user.last_name, 'user_title': user.title, 'user_diet': user.diet})

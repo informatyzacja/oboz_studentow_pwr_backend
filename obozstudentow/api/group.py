@@ -92,7 +92,7 @@ def signup_group(request):
 
         # user making request
         nightGameSignup = NightGameSignup.objects.create(
-            user_band = request.user.bandId,
+            user_band = request.user.bandId.zfill(6),
             user_first_name = request.user.first_name,
             user_last_name = request.user.last_name,
 
@@ -131,8 +131,8 @@ def signup_group(request):
             )
             userError = ""
 
-            if User.objects.filter(bandId=person['band'],first_name=person['first_name'].strip(),last_name=person['last_name'].strip()).exists():
-                user = User.objects.get(bandId=person['band'],first_name=person['first_name'].strip(),last_name=person['last_name'].strip())
+            if User.objects.filter(bandId=person['band'].zfill(6),first_name=person['first_name'].strip(),last_name=person['last_name'].strip()).exists():
+                user = User.objects.get(bandId=person['band'].zfill(6),first_name=person['first_name'].strip(),last_name=person['last_name'].strip())
 
                 if user.birthDate and (night_game_start.year - user.birthDate.year - ((night_game_start.month, night_game_start.day) < (user.birthDate.month, user.birthDate.day)) < 18):
                     nightGameSignup.failed = True
@@ -148,20 +148,20 @@ def signup_group(request):
                     GroupMember.objects.create(user=user, group=group).save()
                     
 
-            elif User.objects.filter(bandId=person['band'], last_name=person['last_name'].strip()).exists():
-                user = User.objects.get(bandId=person['band'], last_name=person['last_name'].strip())
+            elif User.objects.filter(bandId=person['band'].zfill(6), last_name=person['last_name'].strip()).exists():
+                user = User.objects.get(bandId=person['band'].zfill(6), last_name=person['last_name'].strip())
                 nightGameSignup.failed = True
                 nightGameSignup.error = f"Nie znaleziono użytkownika o podanym imieniu. Znaleziony użytkownik to: {user.first_name} {user.last_name}, ID: {user.pk}, opaska: {user.bandId if user.bandId else 'brak numeru opaski'}"
                 userError = f"Nie znaleziono użytkownika o podanych danych: {person['first_name'].strip()} {person['last_name'].strip()}, opaska: {person['band']}"
 
-            elif User.objects.filter(bandId=person['band'], first_name=person['first_name'].strip()).exists():
-                user = User.objects.get(bandId=person['band'], first_name=person['first_name'].strip())
+            elif User.objects.filter(bandId=person['band'].zfill(6), first_name=person['first_name'].strip()).exists():
+                user = User.objects.get(bandId=person['band'].zfill(6), first_name=person['first_name'].strip())
                 nightGameSignup.failed = True
                 nightGameSignup.error = f"Nie znaleziono użytkownika o podanym nazwisku. Znaleziony użytkownik to: {user.first_name} {user.last_name}, ID: {user.pk}, opaska: {user.bandId if user.bandId else 'brak numeru opaski'}"
                 userError = f"Nie znaleziono użytkownika o podanych danych: {person['first_name'].strip()} {person['last_name'].strip()}, opaska: {person['band']}"
 
-            elif User.objects.filter(bandId=person['band']).exists():
-                user = User.objects.get(bandId=person['band'])
+            elif User.objects.filter(bandId=person['band'].zfill(6)).exists():
+                user = User.objects.get(bandId=person['band'].zfill(6))
                 nightGameSignup.failed = True
                 nightGameSignup.error = f"Nie znaleziono użytkownika o podanym imieniu i nazwisku. Znaleziony użytkownik to: {user.first_name} {user.last_name}, ID: {user.pk}, opaska: {user.bandId if user.bandId else 'brak numeru opaski'}"
                 userError = f"Nie znaleziono użytkownika o podanych danych: {person['first_name'].strip()} {person['last_name'].strip()}, opaska: {person['band']}"
