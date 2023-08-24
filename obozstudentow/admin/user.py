@@ -124,7 +124,7 @@ class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
         ),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
-    inlines = [GroupMemberInlineAdmin, GroupWardenInline, UserFCMTokenInline]
+    inlines = [GroupMemberInlineAdmin, UserFCMTokenInline]
     actions = [activate, deactivate]
 
 
@@ -163,6 +163,7 @@ class KadraAdmin(ParticipantAdmin):
     list_filter = ('groups', 'bus', "is_active")
 
     actions = [activate, deactivate, remove_bands]
+    inlines = [GroupMemberInlineAdmin, GroupWardenInline, UserFCMTokenInline]
     
 admin.site.register(Kadra, KadraAdmin)
    
