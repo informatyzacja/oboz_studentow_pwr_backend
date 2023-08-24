@@ -93,7 +93,7 @@ class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
     frakcja.short_description = 'Frakcja'
 
     list_display = ('id', "email", 'first_name', 'last_name', 'bandId', 'frakcja', 'is_active')
-    search_fields = ('first_name', "email", 'last_name', 'title', 'phoneNumber', 'bandId', 'title')
+    search_fields = ('id', 'first_name', "email", 'last_name', 'title', 'phoneNumber', 'bandId', 'title')
 
     list_filter = ('bus', "is_active")
     ordering = ("last_name",'first_name')
@@ -177,7 +177,7 @@ class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
     frakcja.short_description = 'Frakcja'
 
     list_display = ('id', "email", 'first_name', 'last_name', 'bandId', 'frakcja', 'title', 'is_active', "is_staff", 'has_image')
-    search_fields = ('first_name', "email", 'last_name', 'title', 'phoneNumber', 'bandId', 'title')
+    search_fields = ('id', 'first_name', "email", 'last_name', 'title', 'phoneNumber', 'bandId', 'title')
 
     list_filter = ("groups", 'bus', "is_staff", "is_active")
     ordering = ("last_name",'first_name')
