@@ -14,6 +14,12 @@
     <meta name="supported-color-schemes" content="light" />
     <style type="text/css">
       /* CLIENT-SPECIFIC STYLES */
+
+      @font-face {
+        font-family: "Sui Generis";
+        src: url('https://appka.obozstudentowpwr.com/static/sui\ generis\ rg.ttf') format("truetype");
+    }
+
       body,
       table,
       td,
@@ -43,7 +49,6 @@
       }
       body {
         background-color: #751500;
-        background:  linear-gradient(180deg, #761500 22.92%, #751500 22.93%, #2F0A01 100%);
         height: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
@@ -107,7 +112,6 @@
         background: #DC7D28;
         color: #5F1404 !important;
     
-        font-family: 'Sui Generis';
         font-size: 15px;
         /* line-height: 30px; */
         text-transform: uppercase;
@@ -117,15 +121,13 @@
         
         box-sizing: border-box;
 
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        text-align: center;
     }
 
 
     .pill {
         width: 100%;
-        height: 60px;
+        padding: 10px 20px;
         margin-top: 10px;
         margin-bottom: 10px;
         border-radius: 30px;
@@ -150,7 +152,7 @@
       }
     </style>
   </head>
-  <body style="margin: 0 !important; padding: 0 !important;">
+  <body style="margin: 0 !important; padding: 0 !important; background-color: #751500 !important;">
     <!-- Some preview text. -->
     <div style="display: none; max-height: 0; overflow: hidden;">Rejestracja na Oboz Studentów PWR 2023</div>
     <!-- Get rid of unwanted preview text. -->
@@ -162,14 +164,14 @@
         <![endif] -->
     <!-- The role and aria-label attributes are added to wrap the email content as an article for screen readers. Some of them will read out the aria-label as the title of the document, so use something like "An email from Your Brand Name" to make it recognizable. -->
     <!-- Default styling of text is applied to the wrapper div. Be sure to use text that is large enough and has a high contrast with the background color for people with visual impairments. -->
-    <div role="article" aria-label="Email rejestracyjny na Obóz Studentów PWR" lang="en" style="background-color: transparent; color: white; font-family: 'Sui Generis', 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; font-size: 15px; font-weight: 400; line-height: 28px; margin: 0 auto; max-width: 600px; padding: 40px 20px 40px 20px;">
+    <div role="article" aria-label="Email rejestracyjny na Obóz Studentów PWR" lang="pl" style="background-color: transparent; color: white; font-family: 'Sui Generis', 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; font-size: 15px; font-weight: 400; line-height: 28px; margin: 0 auto; max-width: 600px; padding: 40px 20px 40px 20px;">
       <!-- Logo section and header. Headers are useful landmark elements. -->
       <header>
         <!-- Since this is a purely decorative image, we can leave the alternative text blank. -->
         <!-- Linking images also helps with Gmail displaying download links next to them. -->
         <a href="https://appka.obozstudentowpwr.com">
           <center>
-            <img src="https://appka.obozstudentowpwr.com/static/logowanie%20logo%20obozu.svg" alt="Logo obozu" height="150" width="150" />
+            <img src="https://appka.obozstudentowpwr.com/static/logowanie%20logo%20obozu.png" alt="Logo" title="Logo" height="150" width="150" />
           </center>
         </a>
         <!-- The h1 is the main heading of the document and should come first. -->
@@ -180,7 +182,7 @@
       <!-- Main content section. Main is a useful landmark element. -->
       <main>
         <!-- This div is purely presentational, providing a container for the message. -->
-        <div class="content" style="border-radius: 4px; padding: 18px 24px; padding-bottom:24px;">
+        <div class="content" style="border-radius: 4px; padding: 18px 24px; padding-bottom:24px; color: white !important;">
           <!-- This ghost table is used solely for padding in Word-based Outlook clients. -->
           <!--  [if (gte mso 9)|(IE)]>
                     <table cellspacing="0" cellpadding="0" border="0" width="600" align="center" role="presentation"><tr><td style="background-color: ghostwhite;font-family: 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; padding: 24px 48px 24px 48px;">
@@ -219,9 +221,9 @@
       <footer>
         <!-- Since this is a transactional email, you aren't required to include opt-out language. -->
 
-        <p style="font-size: 12px; font-weight: 300; line-height: 24px; margin-top: 16px; color:#777">
+        <p style="font-size: 12px; font-weight: 300; line-height: 24px; margin-top: 16px; color: #ffffffaa !important">
          Jeżeli powyższy link nie działa, skopiuj i wklej poniższy adres do przeglądarki:
-         {{ protocol }}://{{ domain }}{% url 'register_confirm' uidb64=uid token=token %}
+         <span style="color: #DC7D28 !important;">{{ protocol }}://{{ domain }}{% url 'register_confirm' uidb64=uid token=token %}</span>
         </p>
 
          <p style="font-size: 16px; font-weight: 400; line-height: 24px; margin-top: 32px;">
