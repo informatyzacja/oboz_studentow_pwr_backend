@@ -50,8 +50,9 @@ def get_group_signup_info(request):
     group_user_max = int(Setting.objects.get(name="group_user_max").value)
     user_in_group = GroupMember.objects.filter(user=request.user).filter(~Q(group__type__name="Frakcja")).exists()
     night_game_date = Setting.objects.get(name="night_game_date").value
+    night_game_signup_active = Setting.objects.get(name="night_game_signup_active").value.lower() == 'true'
 
-    return Response({'free_places': free_places, 'group_user_min': group_user_min, 'group_user_max': group_user_max, 'user_in_group': user_in_group, 'night_game_date': night_game_date})
+    return Response({'free_places': free_places, 'group_user_min': group_user_min, 'group_user_max': group_user_max, 'user_in_group': user_in_group, 'night_game_date': night_game_date, 'night_game_signup_active':night_game_signup_active})
 
 from ..models import NightGameSignup
 
@@ -59,9 +60,12 @@ from ..models import NightGameSignup
 def signup_group(request):
     with transaction.atomic():
         free_places = Group.objects.filter(~Q(type__name="Frakcja")).count() < int(Setting.objects.get(name="group_limit").value)
-
         if not free_places:
             return Response({'success':False, 'error': 'Brak wolnych miejsc','error_code': 1})
+        
+        night_game_signup_active = Setting.objects.get(name="night_game_signup_active").value.lower() == 'true'
+        if not night_game_signup_active:
+            return Response({'success':False, 'error': 'Zapisy nieaktywne','error_code': 10})
         
         if not 'group_name' in request.data:
             return Response({'success':False, 'error': 'Brak nazwy grupy','error_code': 2})
