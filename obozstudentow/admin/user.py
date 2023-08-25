@@ -92,8 +92,8 @@ class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
         return ' '.join(groups)
     frakcja.short_description = 'Frakcja'
 
-    list_display = ('id', "email", 'first_name', 'last_name', 'bandId', 'frakcja', 'is_active')
-    search_fields = ('id', 'first_name', "email", 'last_name', 'title', 'phoneNumber', 'bandId', 'title')
+    list_display = ('id', "email", 'first_name', 'last_name', 'bandId', 'frakcja', 'is_active', 'has_house')
+    search_fields = ('id', 'first_name', "email", 'last_name', 'title', 'phoneNumber', 'bandId', 'title', 'house')
 
     list_filter = ('bus', "is_active")
     ordering = ("last_name",'first_name')
@@ -113,7 +113,7 @@ class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         (_("Personal info"), {"fields": ("first_name", "last_name")}),
-        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "diet", "bus", 'birthDate', 'freenow_code')}),
+        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "diet", "bus", 'birthDate', 'freenow_code', 'house')}),
         (
             _("Permissions"),
             {
@@ -142,12 +142,12 @@ class KadraAdmin(ParticipantAdmin):
     def get_queryset(self, request):
         return self.model.objects.filter(groups__name__in=['Kadra','Bajer','Fotograf'])
     
-    list_display = ('id', "email", 'first_name', 'last_name', 'bandId', 'frakcja', 'title', 'is_active', 'has_image')
+    list_display = ('id', "email", 'first_name', 'last_name', 'bandId', 'frakcja', 'title', 'is_active', 'has_image', 'has_house')
     
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         (_("Personal info"), {"fields": ("first_name", "last_name")}),
-        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "diet", "bus", 'birthDate', 'freenow_code')}),
+        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "diet", "bus", 'birthDate', 'freenow_code', 'house')}),
         (
             _("Permissions"),
             {
@@ -197,7 +197,7 @@ class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         (_("Personal info"), {"fields": ("first_name", "last_name")}),
-        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "diet", "bus", 'birthDate', 'freenow_code')}),
+        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "diet", "bus", 'birthDate', 'freenow_code', 'house')}),
         (
             _("Permissions"),
             {
@@ -232,3 +232,32 @@ class SztabAdmin(CustomUserAdmin):
     
 admin.site.register(Sztab, SztabAdmin)
 
+
+
+from ..models import HouseCollocationForImport, House
+from django.contrib import messages
+
+@admin.action(description='Przypisz domki do uczestników')
+def assign_houses(modeladmin, request, queryset):
+    added = 0
+    for house in queryset:
+        try:
+            user = User.objects.get(bandId=house.bandId)
+            user.house = House.objects.get(name=house.house)
+            user.save()
+            house.delete()
+            added += 1
+        except User.DoesNotExist:
+            messages.error(request, f'Nie znaleziono uczestnika z opaską {house.bandId}')
+        except House.DoesNotExist:
+            messages.error(request, f'Nie znaleziono domku {house.house}')
+
+    messages.success(request, f'Przypisano {added} z {queryset.count()} domków')
+
+
+@admin.register(HouseCollocationForImport)
+class HouseCollocationForImportAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    list_display = ('house', 'bandId')
+    list_per_page = 400
+
+    actions = [assign_houses]

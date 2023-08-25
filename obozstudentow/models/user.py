@@ -28,7 +28,7 @@ class User(AbstractUser):
     username=None
     email = models.EmailField(unique=True)
     phoneNumber = models.CharField(max_length=9, blank=True, null=True)
-    bandId = models.CharField(max_length=10, blank=True, null=True, unique=True)
+    bandId = models.CharField(max_length=6, blank=True, null=True, unique=True)
     photo = ResizedImageField(upload_to='users', blank=True, null=True) 
     title = models.CharField(max_length=100, blank=True, null=True) # e.g. "Koordynator"
     diet = models.CharField(max_length=100, blank=True, null=True) # e.g. "wegetariańska"
@@ -55,6 +55,20 @@ class User(AbstractUser):
     def has_image(self):
         return bool(self.photo)
     
+    @admin.display(
+        boolean=True,
+        description='Ma opaske?',
+    )
+    def has_band(self):
+        return bool(self.bandId)
+    
+    @admin.display(
+        boolean=True,
+        description='Ma domek?',
+    )
+    def has_house(self):
+        return bool(self.house)
+        
     
 class UserFCMToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

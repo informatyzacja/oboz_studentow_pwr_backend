@@ -114,3 +114,7 @@ class House(models.Model):
     class Meta:
         verbose_name = "Domek"
         verbose_name_plural = "Domki"
+
+class HouseCollocationForImport(models.Model):
+    house = models.CharField(max_length=10)
+    bandId = models.CharField(max_length=6, blank=True, null=True, unique=True)
