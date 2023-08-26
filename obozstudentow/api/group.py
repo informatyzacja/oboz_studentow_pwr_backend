@@ -12,7 +12,7 @@ from django.utils import timezone
 
 from django.db import transaction
 
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
+class GroupSerializer(serializers.ModelSerializer):
     wardens = serializers.SerializerMethodField()
 
     def get_wardens(self, obj):
@@ -28,7 +28,7 @@ class GroupViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = GroupSerializer
 
 
-class GroupTypeSerializer(serializers.HyperlinkedModelSerializer):
+class GroupTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = GroupType
         fields = ('id', 'name')

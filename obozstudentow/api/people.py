@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from ..models import SoberDuty, LifeGuard, Staff, User
 
-class PersonSerializer(serializers.HyperlinkedModelSerializer):
+class PersonSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'first_name', 'last_name', 'phoneNumber', 'photo', 'title')

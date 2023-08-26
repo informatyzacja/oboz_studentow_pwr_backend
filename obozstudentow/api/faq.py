@@ -5,7 +5,7 @@ from django.db.models import Q
 
 
 from ..models import FAQ
-class FAQSerializer(serializers.HyperlinkedModelSerializer):
+class FAQSerializer(serializers.ModelSerializer):
     class Meta:
         model = FAQ
         fields = ('id', 'question', 'answer')

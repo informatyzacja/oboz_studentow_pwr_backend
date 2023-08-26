@@ -9,7 +9,7 @@ from .people import PersonSerializer
 
 from ..models import Workshop, WorkshopSignup, WorkshopLeader, User
 
-class WorkshopSerializer(serializers.HyperlinkedModelSerializer):
+class WorkshopSerializer(serializers.ModelSerializer):
     userCount = serializers.SerializerMethodField('workshop_user_count')
     workshopleaders = serializers.SerializerMethodField()
     userSignUpId = serializers.SerializerMethodField()
@@ -48,7 +48,7 @@ class WorkshopUserSignedUpViewSet(mixins.ListModelMixin, viewsets.GenericViewSet
         ), visible=True, end__gt=timezone.now()).order_by('start')
 
 
-class WorkshopSignupSerializer(serializers.HyperlinkedModelSerializer):
+class WorkshopSignupSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkshopSignup
         fields = ('id', 'workshop', 'user')

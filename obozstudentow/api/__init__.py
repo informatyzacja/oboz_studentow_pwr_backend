@@ -3,7 +3,7 @@ from django.db.models import Q
 
 from .group import get_group_signup_info
 
-api_router = routers.DefaultRouter()
+api_router = routers.SimpleRouter()
 
 from .faq import *
 api_router.register(r'faq', FAQViewSet)
@@ -28,7 +28,7 @@ api_router.register(r'permissions', PermissionsViewSet)
 from ..views import *
 
 from ..models import ScheduleItem
-class ScheduleItemSerializer(serializers.HyperlinkedModelSerializer):
+class ScheduleItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ScheduleItem
         fields = ('id', 'name', 'description', 'start', 'end', 'location', 'photo')
@@ -43,7 +43,7 @@ api_router.register(r'schedule', ScheduleItemViewSet)
 from .people import PersonSerializer
 
 from ..models import Announcement
-class AnnouncementSerializer(serializers.HyperlinkedModelSerializer):
+class AnnouncementSerializer(serializers.ModelSerializer):
     addedBy = serializers.SerializerMethodField()
     group = serializers.SerializerMethodField()
 
@@ -73,7 +73,7 @@ class AnnouncementViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 api_router.register(r'announcement', AnnouncementViewSet)
 
 from ..models import DailyQuest
-class DailyQuestSerializer(serializers.HyperlinkedModelSerializer):
+class DailyQuestSerializer(serializers.ModelSerializer):
     class Meta:
         model = DailyQuest
         fields = ('id', 'title', 'description', 'points', 'finish', 'addedBy')
@@ -93,7 +93,7 @@ class DailyQuestViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 api_router.register(r'dailyQuest', DailyQuestViewSet)
 
 from ..models import Bus
-class BusSerializer(serializers.HyperlinkedModelSerializer):
+class BusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bus
         fields = "__all__"
@@ -106,7 +106,7 @@ api_router.register(r'bus', BusViewSet)
 
 
 
-class GroupWithMembersSerializer(serializers.HyperlinkedModelSerializer):
+class GroupWithMembersSerializer(serializers.ModelSerializer):
     wardens = serializers.SerializerMethodField()
     members = serializers.SerializerMethodField()
 
@@ -123,7 +123,7 @@ class GroupWithMembersSerializer(serializers.HyperlinkedModelSerializer):
 
 from ..models import Group
 
-class ProfileSerializer(serializers.HyperlinkedModelSerializer):
+class ProfileSerializer(serializers.ModelSerializer):
     fraction = serializers.SerializerMethodField()
     groups = serializers.SerializerMethodField()
 
@@ -136,7 +136,7 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'email', 'groups', 'fraction', 'bandId', 'photo', 'title', 'bus', 'diet', 'freenow_code')
+        fields = ('id', 'first_name', 'last_name', 'email', 'groups', 'fraction', 'bandId', 'photo', 'title', 'bus', 'diet', 'freenow_code', 'house')
         depth = 1
 
 class ProfileViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -154,7 +154,7 @@ api_router.register(r'profile', ProfileViewSet)
 
 
 from ..models import Link
-class LinkSerializer(serializers.HyperlinkedModelSerializer):
+class LinkSerializer(serializers.ModelSerializer):
     icon = serializers.ImageField(source='icon.icon')
 
     class Meta:
@@ -170,7 +170,7 @@ api_router.register(r'link', LinkViewSet)
 
 
 from ..models import HomeLink
-class HomeLinkSerializer(serializers.HyperlinkedModelSerializer):
+class HomeLinkSerializer(serializers.ModelSerializer):
     icon = serializers.ImageField(source='icon.icon', required=False)
 
     class Meta:
@@ -185,7 +185,7 @@ api_router.register(r'home-link', HomeLinkViewSet)
 
 
 from ..models import Image
-class ImageSerializer(serializers.HyperlinkedModelSerializer):
+class ImageSerializer(serializers.ModelSerializer):
     downloadLink = serializers.SerializerMethodField()
 
     def get_downloadLink(self, obj):

@@ -6,7 +6,7 @@ from django.contrib.auth.models import Permission
 from rest_framework.response import Response
 
 # from ...models import CustomPermissions
-class PermissionsSerializer(serializers.HyperlinkedModelSerializer):
+class PermissionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Permission
         fields = ('name','codename')

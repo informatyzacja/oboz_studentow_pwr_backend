@@ -13,7 +13,7 @@ from ...api import GroupWithMembersSerializer
 from django.db.models import Q
 
 
-class ParticipantInfoSerializer(serializers.HyperlinkedModelSerializer):
+class ParticipantInfoSerializer(serializers.ModelSerializer):
     fraction = serializers.SerializerMethodField()
     groups = serializers.SerializerMethodField()
 
