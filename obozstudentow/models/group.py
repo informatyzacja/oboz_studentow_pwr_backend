@@ -10,8 +10,10 @@ class GroupType(models.Model):
 
     def __str__(self):
         return self.name
+    
+from orderable.models import Orderable
 
-class Group(models.Model):
+class Group(Orderable):
     name = models.CharField(max_length=100)
     type = models.ForeignKey(GroupType, on_delete=models.PROTECT)
     logo = models.FileField(upload_to='groups', blank=True, null=True)
@@ -20,7 +22,7 @@ class Group(models.Model):
     messenger = models.URLField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
 
-    class Meta:
+    class Meta(Orderable.Meta):
         verbose_name = "Grupa"
         verbose_name_plural = "Grupy"
     

@@ -41,6 +41,6 @@ def get_groups(request):
 @api_view(['GET'])
 @permission_required('obozstudentow.can_view_fractions')
 def get_fractions(request):
-    return Response(GroupSerializer(Group.objects.filter(type__name="Frakcja"), context={'request': request}, many=True).data)
+    return Response(GroupSerializer(Group.objects.filter(type__name="Frakcja").order_by('sort_order'), context={'request': request}, many=True).data)
 
 

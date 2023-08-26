@@ -8,6 +8,8 @@ from typing import Any
 
 from ..models import GroupType, Group, GroupMember, GroupWarden, User
 
+from orderable.admin import OrderableAdmin
+
 @admin.register(GroupType)
 class GroupTypeAdmin(admin.ModelAdmin):
     list_display = ('id', 'name',)
@@ -35,8 +37,8 @@ class GroupMemberAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_filter = ('group','group__type')
 
 @admin.register(Group)
-class GroupAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    list_display = ('id', 'name', 'type', 'logo', 'map', 'messenger')
+class GroupAdmin(ImportExportModelAdmin, OrderableAdmin):
+    list_display = ('id', 'name', 'type', 'logo', 'map', 'messenger', 'sort_order_display')
     search_fields = ('name', 'type')
     list_filter = ('type',)
     inlines = [GroupWardenInline, GroupMemberInline]
