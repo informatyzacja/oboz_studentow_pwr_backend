@@ -11,7 +11,7 @@ class FAQSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('id', 'question', 'answer')
 
 class FAQViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = FAQ.objects.all()
+    queryset = FAQ.objects.order_by('sort_order')
     serializer_class = FAQSerializer
 
     

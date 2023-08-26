@@ -2,6 +2,9 @@ from django.db import models
 from django_resized import ResizedImageField
 from django.contrib import admin
 
+
+from orderable.models import Orderable
+
 # Separate models
 
 class Icons(models.Model):
@@ -24,7 +27,7 @@ class Link(models.Model):
     def __str__(self):
         return self.name
     
-class FAQ(models.Model):
+class FAQ(Orderable):
     question = models.CharField(max_length=100)
     answer = models.TextField()
 

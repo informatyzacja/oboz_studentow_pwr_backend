@@ -6,6 +6,8 @@ from .user import *
 
 from import_export.admin import ImportExportModelAdmin
 
+from orderable.admin import OrderableAdmin
+
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from ..models import Link, FAQ, ScheduleItem, User, Icons
@@ -19,8 +21,8 @@ class LinkAdmin(admin.ModelAdmin):
     list_display = ('name', 'url', 'icon')
     search_fields = ('name', 'url', 'icon')
 
-class FAQAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    list_display = ('question', 'answer')
+class FAQAdmin(ImportExportModelAdmin, OrderableAdmin):
+    list_display = ('question', 'answer', 'sort_order_display')
     search_fields = ('question', 'answer')
 
 class ScheduleItemAdmin(ImportExportModelAdmin, admin.ModelAdmin):
