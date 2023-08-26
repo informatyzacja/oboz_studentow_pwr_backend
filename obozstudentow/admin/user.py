@@ -242,7 +242,7 @@ def assign_houses(modeladmin, request, queryset):
     added = 0
     for house in queryset:
         try:
-            user = User.objects.get(bandId=house.bandId)
+            user = User.objects.get(bandId=house.bandId.zfill(6))
             user.house = House.objects.get(name=house.house)
             user.save()
             house.delete()
