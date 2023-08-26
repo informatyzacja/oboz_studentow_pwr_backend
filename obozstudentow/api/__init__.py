@@ -162,10 +162,26 @@ class LinkSerializer(serializers.HyperlinkedModelSerializer):
         fields = ("id","name", "url", "icon")
 
 class LinkViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = Link.objects.all()
+    queryset = Link.objects.order_by('sort_order')
     serializer_class = LinkSerializer
 
 api_router.register(r'link', LinkViewSet)
+
+
+
+from ..models import HomeLink
+class HomeLinkSerializer(serializers.HyperlinkedModelSerializer):
+    icon = serializers.ImageField(source='icon.icon', required=False)
+
+    class Meta:
+        model = HomeLink
+        fields = ("id","name", "url", "icon", 'image')
+
+class HomeLinkViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = HomeLink.objects.filter(visible=True).order_by('sort_order')
+    serializer_class = HomeLinkSerializer
+
+api_router.register(r'home-link', HomeLinkViewSet)
 
 
 from ..models import Image

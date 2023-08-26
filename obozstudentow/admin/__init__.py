@@ -10,15 +10,20 @@ from orderable.admin import OrderableAdmin
 
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
-from ..models import Link, FAQ, ScheduleItem, User, Icons
+from ..models import Link, FAQ, ScheduleItem, User, Icons, HomeLink
 
 
 admin.site.site_header = "Panel administracyjny Obozu Studentów PWR 2023"
 admin.site.site_title = "Panel administracyjny Obozu Studentów PWR 2023"
 admin.site.index_title = "Witaj w panelu administracyjnym Obozu Studentów PWR 2023"
 
-class LinkAdmin(admin.ModelAdmin):
-    list_display = ('name', 'url', 'icon')
+class LinkAdmin(OrderableAdmin):
+    list_display = ('name', 'url', 'icon', 'sort_order_display')
+    search_fields = ('name', 'url', 'icon')
+
+@admin.register(HomeLink)
+class HomeLinkAdmin(OrderableAdmin):
+    list_display = ('name', 'url', 'image', 'icon', 'visible', 'sort_order_display')
     search_fields = ('name', 'url', 'icon')
 
 class FAQAdmin(ImportExportModelAdmin, OrderableAdmin):

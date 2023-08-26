@@ -19,13 +19,32 @@ class Icons(models.Model):
         verbose_name_plural = "Ikonki"
 
 
-class Link(models.Model):
+class Link(Orderable):
     name = models.CharField(max_length=100)
     url = models.URLField()
     icon = models.ForeignKey(Icons, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.name
+    
+    class Meta(Orderable.Meta):
+        verbose_name = "Link w profilu"
+        verbose_name_plural = "Linki w profilu"
+
+
+class HomeLink(Orderable):
+    name = models.CharField(max_length=100)
+    url = models.CharField(max_length=500, blank=True, null=True)
+    image = models.ImageField(upload_to='home_links', blank=True, null=True)
+    icon = models.ForeignKey(Icons, on_delete=models.SET_NULL, null=True, blank=True)
+    visible = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
+    
+    class Meta(Orderable.Meta):
+        verbose_name = "Link w home"
+        verbose_name_plural = "Linki w home"
     
 class FAQ(Orderable):
     question = models.CharField(max_length=100)
