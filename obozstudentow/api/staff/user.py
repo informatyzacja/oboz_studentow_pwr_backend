@@ -26,7 +26,7 @@ class ParticipantInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'groups', 'fraction', 'bandId', 'photo', 'title', 'bus')
+        fields = ('id', 'first_name', 'last_name', 'groups', 'fraction', 'bandId', 'photo', 'title', 'bus', 'house')
         depth = 1
 
 @api_view(['GET'])
