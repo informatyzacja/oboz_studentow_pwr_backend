@@ -93,7 +93,7 @@ class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
     frakcja.short_description = 'Frakcja'
 
     list_display = ('id', "email", 'first_name', 'last_name', 'bandId', 'frakcja', 'is_active', 'has_house')
-    search_fields = ('id', 'first_name', "email", 'last_name', 'title', 'phoneNumber', 'bandId', 'title', 'house')
+    search_fields = ('id', 'first_name', "email", 'last_name', 'title', 'phoneNumber', 'bandId', 'title', 'house__name')
 
     list_filter = ('bus', "is_active")
     ordering = ("last_name",'first_name')
