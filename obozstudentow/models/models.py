@@ -61,6 +61,7 @@ class ScheduleItem(models.Model):
     location = models.CharField(max_length=100, null=True, blank=True)
     photo = ResizedImageField(upload_to='schedule', blank=True)
     visible = models.BooleanField(default=True)
+    hide_map = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Harmonogram"

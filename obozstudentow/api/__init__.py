@@ -31,7 +31,7 @@ from ..models import ScheduleItem
 class ScheduleItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ScheduleItem
-        fields = ('id', 'name', 'description', 'start', 'end', 'location', 'photo')
+        fields = ('id', 'name', 'description', 'start', 'end', 'location', 'photo', 'hide_map')
 
 class ScheduleItemViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = ScheduleItem.objects.filter(visible=True)
