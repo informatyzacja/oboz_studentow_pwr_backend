@@ -92,6 +92,7 @@ class Bus(models.Model):
 class Image(models.Model):
     name = models.CharField(max_length=100)
     image = models.FileField(upload_to='images')
+    visible = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name

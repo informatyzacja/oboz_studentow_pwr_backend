@@ -196,7 +196,7 @@ class ImageSerializer(serializers.ModelSerializer):
         fields = ("id","name", "image", "downloadLink")
 
 class ImageViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = Image.objects.all()
+    queryset = Image.objects.filter(visible=True)
     serializer_class = ImageSerializer
 
 api_router.register(r'image', ImageViewSet)

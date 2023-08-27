@@ -87,8 +87,9 @@ class BusAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 from ..models import Image
 @admin.register(Image)
 class ImageAdmin(admin.ModelAdmin):
-    list_display = ('name', 'image')
+    list_display = ('name', 'image', 'visible')
     search_fields = ('name', 'image')
+    list_filter = ('visible',)
 
 
 from ..models import Setting
