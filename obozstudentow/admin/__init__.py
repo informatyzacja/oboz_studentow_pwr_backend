@@ -105,9 +105,24 @@ class PartnersAdmin(admin.ModelAdmin):
     search_fields = ('name', 'logo', 'link')
 
 from ..models import House
+class HouseMemberInline(admin.TabularInline):
+    model = User
+    extra = 0
+    # autocomplete_fields = ('person',)
+    verbose_name = "Lokator"
+    verbose_name_plural = "Lokatorowie"
+    fields = ('first_name', 'last_name', 'email')
+    readonly_fields = ('first_name', 'last_name', 'email')
+    can_delete = False
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
 @admin.register(House)
 class HouseAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('name', 'key_collected')
     search_fields = ('name',)
 
     list_filter = ('key_collected',)
+
+    inlines = [HouseMemberInline]
