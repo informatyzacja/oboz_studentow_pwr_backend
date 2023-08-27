@@ -41,7 +41,7 @@ class GroupAdmin(ImportExportModelAdmin, OrderableAdmin):
     list_display = ('id', 'name', 'type', 'logo', 'map', 'messenger', 'sort_order_display')
     search_fields = ('name', 'type')
     list_filter = ('type',)
-    inlines = [GroupWardenInline, GroupMemberInline]
+    inlines = [GroupWardenInline]
 
 
 from ..models import PointType, Point
