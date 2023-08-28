@@ -4,5 +4,5 @@ from django.contrib.auth.views import LoginView, LogoutView
 
 
 urlpatterns = [
-	path("", chat_views.chatPage, name="chat-page"),
+	# path("", chat_views.chatPage, name="chat-page"),
 ]

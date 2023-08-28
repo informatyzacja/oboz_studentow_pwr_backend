@@ -1,15 +1,58 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 
+from asgiref.sync import sync_to_async
+
+import django
+django.setup()
+
+from obozstudentow.models import User
+
+from channels.db import database_sync_to_async
+
+from django.contrib.auth.models import AnonymousUser
+
+@database_sync_to_async
+def get_user(user_id):
+    try:
+        return User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return AnonymousUser()
+    
+@database_sync_to_async
+def get_user_house(user):
+	if not user.house:
+		return None
+	return user.house.pk
+
 class ChatConsumer(AsyncWebsocketConsumer):
+
 	async def connect(self):
-		print("connected")
-		self.roomGroupName = "group_chat_gfg"
-		await self.channel_layer.group_add(
-			self.roomGroupName ,
-			self.channel_name
-		)
-		await self.accept()
+		try:
+			print("connected")
+			self.user = self.scope["user"]
+
+			if self.user.is_anonymous:
+				await self.close()
+				return
+			
+			user = await get_user(self.user.id)
+			house = await get_user_house(user)
+			if not house:
+				await self.close()
+				return
+			
+			self.roomGroupName = "house_" + str(house)
+			
+			await self.channel_layer.group_add(
+				self.roomGroupName ,
+				self.channel_name
+			)
+			await self.accept()
+		except Exception as e:
+			print(e)
+			await self.close()
+			return
 
 	async def disconnect(self , close_code):
 		print("disconnected")
@@ -19,7 +62,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
 		)
 
 	async def receive(self, text_data):
-		print("received", text_data)
+		print("received", text_data, self)
+		if self.user.is_anonymous:
+			await self.close()
+			return
+		
 		text_data_json = json.loads(text_data)
 		message = text_data_json["message"]
 		username = text_data_json["username"]
@@ -28,10 +75,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
 				"type" : "sendMessage" ,
 				"message" : message ,
 				"username" : username ,
+				"user_id" : self.user.id ,
 			})
 		
 	async def sendMessage(self , event):
 		print("send message", event)
 		message = event["message"]
 		username = event["username"]
-		await self.send(text_data = json.dumps({"message":message ,"username":username}))
+		user_id = event["user_id"]
+		await self.send(text_data = json.dumps({"message":message ,"username":username, "user_id":user_id}))

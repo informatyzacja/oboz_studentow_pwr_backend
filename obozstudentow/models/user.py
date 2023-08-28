@@ -68,6 +68,9 @@ class User(AbstractUser):
     )
     def has_house(self):
         return bool(self.house)
+
+    class Meta:
+        app_label = 'obozstudentow'
         
     
 class UserFCMToken(models.Model):

@@ -54,9 +54,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    'channels',
-
     "obozstudentow",
+    "chat",
+
+    'channels',
 
     "rest_framework",
     "corsheaders",
@@ -66,6 +67,7 @@ INSTALLED_APPS = [
 
 if DEBUG:
     INSTALLED_APPS.append("rest_framework.authtoken")
+
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
