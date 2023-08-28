@@ -23,6 +23,9 @@ api_router.register(r'workshopSignUps', WorkshopSignupViewSet, 'workshopSignupVi
 from .staff.permissions import *
 api_router.register(r'permissions', PermissionsViewSet)
 
+from .chat import *
+api_router.register(r'chat', MessageViewSet, 'chat')
+
 
 #home
 from ..views import *
