@@ -63,6 +63,8 @@ urlpatterns = [
     path('api/', include(obozstudentow.api.api_router.urls)),
     path('api2/', include('obozstudentow.api.urls')),
 
+    path("chat/", include("chat.urls")),
+
     path('download-image/<int:image_id>/', obozstudentow.views.download_image, name='download'),
 
 

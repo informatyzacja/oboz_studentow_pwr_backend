@@ -45,6 +45,8 @@ CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost").spl
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -53,6 +55,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     "obozstudentow",
+    "chat",
+
+    'channels',
 
     "rest_framework",
     "corsheaders",
@@ -62,6 +67,7 @@ INSTALLED_APPS = [
 
 if DEBUG:
     INSTALLED_APPS.append("rest_framework.authtoken")
+
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -94,6 +100,14 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "obozstudentowProject.wsgi.application"
+ASGI_APPLICATION = "obozstudentowProject.asgi.application"
+
+CHANNEL_LAYERS = {
+	"default": {
+		"BACKEND": "channels.layers.InMemoryChannelLayer"
+	}
+}
+
 
 AUTHENTICATION_BACKENDS = ['obozstudentowProject.urls.EmailLoginBackend']
 

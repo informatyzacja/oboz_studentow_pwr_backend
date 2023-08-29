@@ -7,3 +7,5 @@ django-resized
 django-import-export
 firebase-admin
 django-orderable
+channels
+daphne
