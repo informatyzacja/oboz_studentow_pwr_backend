@@ -6,7 +6,8 @@ from asgiref.sync import sync_to_async
 import django
 django.setup()
 
-from obozstudentow.models import User
+from obozstudentow.models import User, UserFCMToken
+from obozstudentow.api.notifications import send_notification
 
 from channels.db import database_sync_to_async
 
@@ -41,11 +42,21 @@ def save_message(message, user, group_name):
 		Message.objects.filter(group_name=group_name).order_by('date')[0].delete()
 	return message
 
+@database_sync_to_async
+def send_message_notification(title, content, house, excludeUser=None):
+	try:
+		# print("send message notification", title, content, house)
+		tokens = list(UserFCMToken.objects.filter(user__in=User.objects.filter(house__pk=house).exclude(id=excludeUser)).values_list('token', flat=True))
+		
+		response = send_notification(title, content, tokens)
+	except:
+		pass
+
 class ChatConsumer(AsyncWebsocketConsumer):
 
 	async def connect(self):
 		try:
-			print("connected")
+			# print("connected")
 			self.user = self.scope["user"]
 
 			if self.user.is_anonymous:
@@ -53,12 +64,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
 				return
 			
 			user = await get_user(self.user.id)
-			house = await get_user_house(user)
-			if not house:
+			self.house = await get_user_house(user)
+			if not self.house:
 				await self.close()
 				return
 			
-			self.roomGroupName = "house_" + str(house)
+			self.roomGroupName = "house_" + str(self.house)
 			
 			await self.channel_layer.group_add(
 				self.roomGroupName ,
@@ -71,7 +82,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 			return
 
 	async def disconnect(self , close_code):
-		print("disconnected")
+		# print("disconnected")
 		await self.channel_layer.group_discard(
 			self.roomGroupName ,
 			self.channel_layer
@@ -79,7 +90,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 	async def receive(self, text_data):
 		try:
-			print("received", text_data, self)
+			# print("received", text_data, self)
 			if self.user.is_anonymous:
 				await self.close()
 				return
@@ -97,11 +108,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
 					"user_id" : self.user.id ,
 					"date": str(timezone.now())
 				})
+			
+			#send notifications
+			await send_message_notification(f"{username} napisał/a:", message, self.house, self.user.id)
 		except Exception as e:
 			print(e)
 		
 	async def sendMessage(self , event):
-		print("send message", event)
+		# print("send message", event)
 		message = event["message"]
 		username = event["username"]
 		user_id = event["user_id"]
