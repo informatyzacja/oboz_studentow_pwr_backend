@@ -14,6 +14,7 @@ api_router.register(r'groupType', GroupTypeViewSet)
 
 from .people import *
 api_router.register(r'contact', ContactViewSet, 'contact')
+api_router.register(r'myHouseMembers', MyHouseMembers, 'myHouseMembers')
 
 from .workshop import *
 api_router.register(r'workshop', WorkshopViewSet, 'workshop')

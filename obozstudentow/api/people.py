@@ -18,3 +18,10 @@ class ContactViewSet(viewsets.GenericViewSet):
             'lifeGuard': PersonSerializer(User.objects.filter(id__in=LifeGuard.objects.all().values('user')), many=True, context=self.get_serializer_context()).data, 
             'currentSoberDuty': PersonSerializer(User.objects.filter(id__in=SoberDuty.objects.filter(start__lte=timezone.now(), end__gte=timezone.now()).values('user')), many=True, context=self.get_serializer_context()).data
         })
+    
+
+class MyHouseMembers(viewsets.GenericViewSet):
+    def list(self, request):
+        return Response(
+            PersonSerializer(User.objects.filter(house=request.user.house), many=True, context=self.get_serializer_context()).data
+        )
