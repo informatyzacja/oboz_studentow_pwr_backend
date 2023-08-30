@@ -125,11 +125,17 @@ class GroupWithMembersSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'type', 'logo', 'map', 'wardens', 'members', 'description', 'messenger')
         depth = 1
 
-from ..models import Group
+from ..models import Group, SoberDuty
+
+class SoberDutySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SoberDuty
+        fields = ('start','end')
 
 class ProfileSerializer(serializers.ModelSerializer):
     fraction = serializers.SerializerMethodField()
     groups = serializers.SerializerMethodField()
+    sober_duty = serializers.SerializerMethodField()
 
     def get_fraction(self, obj):
         return GroupSerializer( Group.objects.filter(Q(groupmember__user=obj) | Q(groupwarden__user=obj), type__name="Frakcja").first(), context=self.context ).data
@@ -137,10 +143,12 @@ class ProfileSerializer(serializers.ModelSerializer):
     def get_groups(self, obj):
         return GroupWithMembersSerializer( Group.objects.filter(Q(groupmember__user=obj) | Q(groupwarden__user=obj), ~Q(type__name="Frakcja")), context=self.context, many=True ).data
 
+    def get_sober_duty(self, obj):
+        return SoberDutySerializer(SoberDuty.objects.filter(user=obj), many=True).data
 
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'email', 'groups', 'fraction', 'bandId', 'photo', 'title', 'bus', 'diet', 'freenow_code', 'house')
+        fields = ('id', 'first_name', 'last_name', 'email', 'groups', 'fraction', 'bandId', 'photo', 'title', 'bus', 'diet', 'freenow_code', 'house', 'sober_duty')
         depth = 1
 
 class ProfileViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
