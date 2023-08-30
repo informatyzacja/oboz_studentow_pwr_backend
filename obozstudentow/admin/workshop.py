@@ -31,7 +31,11 @@ class WorkshopLeaderAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
 @admin.register(Workshop)
 class WorkshopAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    list_display = ('name', 'visible', 'has_image', 'start', 'end', 'location', 'signupsOpen', 'signupsOpenTime')
+    def signups(self, obj):
+        return str(obj.workshopsignup_set.count()) + '/' + str(obj.userLimit)
+
+    list_display = ('name', 'visible', 'has_image', 'start', 'end', 'location', 'signups', 'signupsOpen', 'signupsOpenTime')
+    readonly_fields = ('signups',)
     search_fields = ('name', 'visible', 'location')
     list_filter = ('visible', 'signupsOpen', 'start', 'end', 'location', 'signupsOpenTime')
     inlines = [WorkshopLeaderInline, WorkshopSignupInline]
