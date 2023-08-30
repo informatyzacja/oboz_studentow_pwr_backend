@@ -110,9 +110,9 @@ class HouseMemberInline(admin.TabularInline):
     extra = 0
     # autocomplete_fields = ('person',)
     verbose_name = "Lokator"
-    verbose_name_plural = "Lokatorowie"
-    fields = ('first_name', 'last_name', 'email')
-    readonly_fields = ('first_name', 'last_name', 'email')
+    verbose_name_plural = "Lokatorzy"
+    fields = ('first_name', 'last_name', 'email', 'bandId')
+    readonly_fields = ('first_name', 'last_name', 'email', 'bandId')
     can_delete = False
 
     def has_add_permission(self, request, obj=None):
