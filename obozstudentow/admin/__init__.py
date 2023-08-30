@@ -66,7 +66,7 @@ class AnnouncementAdmin(admin.ModelAdmin):
 from ..models import DailyQuest
 
 @admin.register(DailyQuest)
-class DailyQuestAdmin(admin.ModelAdmin):
+class DailyQuestAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('title', 'description', 'finish', 'addedBy', 'group', 'visible')
     search_fields = ('title', 'description', 'finish', 'addedBy', 'group', 'visible')
 

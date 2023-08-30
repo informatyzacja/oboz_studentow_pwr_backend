@@ -108,8 +108,8 @@ class DailyQuest(models.Model):
     title = models.CharField(max_length=200)
     group = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True, null=True)
     description = models.TextField(null=True, blank=True)
-    finish = models.DateTimeField()
-    points = models.FloatField()
+    finish = models.DateTimeField(null=True, blank=True)
+    points = models.FloatField(null=True, blank=True)
     addedBy = models.ForeignKey('obozstudentow.User', on_delete=models.SET_NULL, null=True)
     visible = models.BooleanField(default=True)
 
