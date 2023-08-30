@@ -59,6 +59,13 @@ def deactivate(modeladmin, request, queryset):
 def remove_bands(modeladmin, request, queryset):
     queryset.update(bandId=None)
 
+@admin.action(description='Stwórz opaski tymczasowe')
+def create_temporary_bands(modeladmin, request, queryset):
+    for user in queryset:
+        if not user.bus and not user.bandId:
+            user.bandId = str(200000+user.id)
+            user.save()
+
 class UserFCMTokenInline(admin.TabularInline):
     model = UserFCMToken
     extra = 0
@@ -125,7 +132,7 @@ class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
     inlines = [GroupMemberInlineAdmin, UserFCMTokenInline]
-    actions = [activate, deactivate]
+    actions = [activate, deactivate, create_temporary_bands]
 
 
 
