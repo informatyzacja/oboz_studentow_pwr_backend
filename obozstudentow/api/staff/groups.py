@@ -39,7 +39,7 @@ def get_groups(request):
     return Response(GroupSerializer(Group.objects.filter(~Q(type__name="Frakcja")), context={'request': request}, many=True).data)
 
 @api_view(['GET'])
-@permission_required('obozstudentow.can_view_fractions')
+# @permission_required('obozstudentow.can_view_fractions')
 def get_fractions(request):
     return Response(GroupSerializer(Group.objects.filter(type__name="Frakcja").order_by('sort_order'), context={'request': request}, many=True).data)
 
