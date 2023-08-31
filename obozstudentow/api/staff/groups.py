@@ -10,7 +10,7 @@ from django.db.models import Q
 
 
 @api_view(['GET'])
-@permission_required('obozstudentow.can_view_fractions')
+# @permission_required('obozstudentow.can_view_fractions')
 def get_fraction(request):
     group_id = request.GET.get('group_id')
     if group_id is None:
