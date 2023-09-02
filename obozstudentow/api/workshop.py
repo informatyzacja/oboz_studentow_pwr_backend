@@ -69,17 +69,21 @@ class WorkshopSignupViewSet(viewsets.GenericViewSet):
     def create(self, request):
         if request.data.get('workshop'):
             workshop = Workshop.objects.get(id=request.data.get('workshop'))
+
+            if WorkshopSignup.objects.filter(user = request.user, workshop__start = workshop.start).exists():
+                return Response({'error': 'Jesteś już zapisany/a na inne warsztaty w tym samym czasie', 'success':False})
+
             if WorkshopSignup.objects.filter(workshop=workshop).count() < workshop.userLimit and not WorkshopSignup.objects.filter(workshop=workshop, user=request.user).exists() and workshop.visible and workshop.signupsOpen and (workshop.signupsOpenTime == None or workshop.signupsOpenTime <= timezone.now()) and workshop.end > timezone.now():
                 WorkshopSignup.objects.create(workshop=workshop, user=request.user)
-                return Response(status=status.HTTP_201_CREATED) 
+                return Response({}, status=status.HTTP_201_CREATED) 
             
-            return Response(status=status.HTTP_409_CONFLICT)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Błąd zapisu'}, status=status.HTTP_409_CONFLICT)
+        return Response({}, status=status.HTTP_400_BAD_REQUEST)
     
     def destroy(self, request, pk=None):
         if WorkshopSignup.objects.filter(id=pk, user=request.user).exists():
             WorkshopSignup.objects.get(id=pk).delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+        return Response({}, status=status.HTTP_404_NOT_FOUND)
     
     
