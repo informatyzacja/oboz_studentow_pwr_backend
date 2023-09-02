@@ -33,7 +33,7 @@ class GroupWardenInline(admin.TabularInline):
 @admin.register(GroupMember)
 class GroupMemberAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('id', 'group', 'user')
-    search_fields = ('group', 'user')
+    search_fields = ('group__name', 'user__first_name', 'user__last_name', 'user__bandId')
     list_filter = ('group','group__type')
 
 @admin.register(Group)
