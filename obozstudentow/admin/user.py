@@ -104,7 +104,14 @@ class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
     registered.short_description = 'Zarejestrowany'
     registered.boolean = True
 
-    list_display = ('id', "email", 'first_name', 'last_name', 'bandId', 'frakcja', 'is_active', 'has_house', 'registered')
+    def push_notifications_registered(self, user):
+        return user.userfcmtoken_set.exists()
+    push_notifications_registered.short_description = 'Powiadomienia'
+    push_notifications_registered.boolean = True
+    
+    
+
+    list_display = ('id', "email", 'first_name', 'last_name', 'bandId', 'frakcja', 'is_active', 'has_house', 'registered', 'push_notifications_registered')
     search_fields = ('id', 'first_name', "email", 'last_name', 'title', 'phoneNumber', 'bandId', 'title', 'house__name')
 
     list_filter = ('bus', "is_active", 'groups')
