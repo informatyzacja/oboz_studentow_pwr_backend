@@ -13,6 +13,7 @@ class WorkshopSerializer(serializers.ModelSerializer):
     userCount = serializers.SerializerMethodField('workshop_user_count')
     workshopleaders = serializers.SerializerMethodField()
     userSignUpId = serializers.SerializerMethodField()
+    workshopusers = serializers.SerializerMethodField()
 
     def get_userSignUpId(self, obj):
         signup = WorkshopSignup.objects.filter(workshop=obj, user=self.context['request'].user)
@@ -24,9 +25,14 @@ class WorkshopSerializer(serializers.ModelSerializer):
     def get_workshopleaders(self, obj):
         return PersonSerializer( User.objects.filter(id__in=obj.workshopleader_set.values('user')), context=self.context, many=True).data
 
+    def get_workshopusers(self, obj):
+        return PersonSerializer(
+            User.objects.filter(id__in = obj.workshopsignup_set.values('user') ) if (self.context['request'].user.id in obj.workshopleader_set.values_list('user', flat=True)) else User.objects.none()
+        ,context=self.context, many=True ).data
+
     class Meta:
         model = Workshop
-        fields = ('id', 'name', 'description', 'start', 'end', 'location', 'photo', 'userLimit', 'userCount', 'signupsOpen', 'signupsOpenTime', 'userSignUpId', 'workshopleaders', 'itemsToTake')
+        fields = ('id', 'name', 'description', 'start', 'end', 'location', 'photo', 'userLimit', 'userCount', 'signupsOpen', 'signupsOpenTime', 'userSignUpId', 'workshopleaders', 'itemsToTake', 'workshopusers')
 
 class WorkshopViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Workshop.objects.filter(visible=True)
