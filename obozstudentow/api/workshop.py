@@ -70,7 +70,7 @@ class WorkshopSignupViewSet(viewsets.GenericViewSet):
         if request.data.get('workshop'):
             workshop = Workshop.objects.get(id=request.data.get('workshop'))
 
-            if WorkshopSignup.objects.filter(user = request.user, workshop__start = workshop.start).exists():
+            if WorkshopSignup.objects.filter(user = request.user, workshop__start__lt = workshop.end, workshop__end__gt = workshop.start).exists():
                 return Response({'error': 'Jesteś już zapisany/a na inne warsztaty w tym samym czasie', 'success':False})
 
             if WorkshopSignup.objects.filter(workshop=workshop).count() < workshop.userLimit and not WorkshopSignup.objects.filter(workshop=workshop, user=request.user).exists() and workshop.visible and workshop.signupsOpen and (workshop.signupsOpenTime == None or workshop.signupsOpenTime <= timezone.now()) and workshop.end > timezone.now():
