@@ -89,8 +89,8 @@ class CustomUserChangeForm(UserChangeForm):
 
 class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
     form = CustomUserChangeForm
-    def get_queryset(self, request):
-        return self.model.objects.filter(groups=None)
+    # def get_queryset(self, request):
+    #     return self.model.objects.filter(groups=None)
 
     def frakcja(self, user):
         groups = []
@@ -99,10 +99,15 @@ class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
         return ' '.join(groups)
     frakcja.short_description = 'Frakcja'
 
-    list_display = ('id', "email", 'first_name', 'last_name', 'bandId', 'frakcja', 'is_active', 'has_house')
+    def registered(self, user):
+        return user.last_login is not None
+    registered.short_description = 'Zarejestrowany'
+    registered.boolean = True
+
+    list_display = ('id', "email", 'first_name', 'last_name', 'bandId', 'frakcja', 'is_active', 'has_house', 'registered')
     search_fields = ('id', 'first_name', "email", 'last_name', 'title', 'phoneNumber', 'bandId', 'title', 'house__name')
 
-    list_filter = ('bus', "is_active")
+    list_filter = ('bus', "is_active", 'groups')
     ordering = ("last_name",'first_name')
 
     add_fieldsets = (
