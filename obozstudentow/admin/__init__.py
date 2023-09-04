@@ -120,7 +120,16 @@ class HouseMemberInline(admin.TabularInline):
 
 @admin.register(House)
 class HouseAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    list_display = ('name', 'key_collected')
+    def locators(self, obj):
+        return obj.user_set.count()
+    locators.short_description = 'Lokatorzy'
+    
+    def full(self, obj):
+        return obj.user_set.count() == obj.places
+    full.short_description = 'Pełny'
+    full.boolean = True
+
+    list_display = ('name', 'key_collected', 'locators', 'places', 'full')
     search_fields = ('name',)
 
     list_filter = ('key_collected',)
