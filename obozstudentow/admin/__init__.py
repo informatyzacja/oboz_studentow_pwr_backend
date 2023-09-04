@@ -67,13 +67,8 @@ from ..models import DailyQuest
 
 @admin.register(DailyQuest)
 class DailyQuestAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    list_display = ('title', 'description', 'finish', 'addedBy', 'group', 'visible')
-    search_fields = ('title', 'description', 'finish', 'addedBy', 'group', 'visible')
-
-    def get_form(self, request, obj=None, **kwargs):
-        form = super(DailyQuestAdmin, self).get_form(request, obj, **kwargs)
-        form.base_fields['addedBy'].queryset = User.objects.filter(groups__name__in=('Sztab',))
-        return form
+    list_display = ('title', 'description', 'start', 'finish', 'group', 'visible')
+    search_fields = ('title', 'description', 'start', 'finish', 'group__name', 'visible')
 
 
 from ..models import Bus

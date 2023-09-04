@@ -80,7 +80,7 @@ from ..models import DailyQuest
 class DailyQuestSerializer(serializers.ModelSerializer):
     class Meta:
         model = DailyQuest
-        fields = ('id', 'title', 'description', 'points', 'finish', 'addedBy')
+        fields = ('id', 'title', 'description', 'points', 'finish')
 
 class DailyQuestViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = DailyQuest.objects.all()
@@ -91,7 +91,9 @@ class DailyQuestViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             Q(group__in=self.request.user.groupmember_set.values('group')) | 
             Q(group__in=self.request.user.groupwarden_set.values('group')) | 
             Q(group=None), 
-            visible=True
+            Q(start__lte = timezone.now()) | Q(start = None),
+            visible=True,
+            finish__gte = timezone.now()
         )
     
 api_router.register(r'dailyQuest', DailyQuestViewSet)
