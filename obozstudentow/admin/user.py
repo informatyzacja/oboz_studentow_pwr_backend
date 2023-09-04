@@ -262,6 +262,9 @@ def assign_houses(modeladmin, request, queryset):
     for house in queryset:
         try:
             user = User.objects.get(bandId=house.bandId.zfill(6))
+            if user.house:
+                messages.error(request, f'Uczestnik z opaską {user.bandId} ma już przypisany domek {user.house}')
+                continue
             user.house = House.objects.get(name=house.house)
             user.save()
             house.delete()
