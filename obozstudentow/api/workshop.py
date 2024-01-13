@@ -7,7 +7,7 @@ from rest_framework import status
 
 from .people import PersonSerializer
 
-from ..models import Workshop, WorkshopSignup, WorkshopLeader, User
+from ..models import Workshop, WorkshopSignup, WorkshopLeader, User, Setting
 
 class WorkshopSerializer(serializers.ModelSerializer):
     userCount = serializers.SerializerMethodField('workshop_user_count')
@@ -71,7 +71,10 @@ class WorkshopSignupViewSet(viewsets.GenericViewSet):
             workshop = Workshop.objects.get(id=request.data.get('workshop'))
 
             if WorkshopSignup.objects.filter(user = request.user, workshop__start__lt = workshop.end, workshop__end__gt = workshop.start).exists():
-                return Response({'error': 'Jesteś już zapisany/a na inne warsztaty w tym samym czasie', 'success':False})
+                return Response({'error': 'Jesteś już zapisany/a na inną rzecz w tym samym czasie', 'success':False})
+            
+            if Setting.objects.get(name="allow_multiple_workshops_same_day").value.lower() == 'false' and WorkshopSignup.objects.filter(user = request.user, workshop__start__date = workshop.start).exists():
+                return Response({'error': 'Jesteś już zapisany/a na inną rzecz w tym samym dniu', 'success':False})
 
             if WorkshopSignup.objects.filter(workshop=workshop).count() < workshop.userLimit and not WorkshopSignup.objects.filter(workshop=workshop, user=request.user).exists() and workshop.visible and workshop.signupsOpen and (workshop.signupsOpenTime == None or workshop.signupsOpenTime <= timezone.now()) and workshop.end > timezone.now():
                 WorkshopSignup.objects.create(workshop=workshop, user=request.user)
