@@ -189,7 +189,7 @@ class HomeLinkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = HomeLink
-        fields = ("id","name", "url", "icon", 'image')
+        fields = ("id","name", "url", "icon", 'image', 'font_size')
 
 class HomeLinkViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = HomeLink.objects.filter(visible=True).order_by('sort_order')

@@ -38,6 +38,7 @@ class HomeLink(Orderable):
     image = models.ImageField(upload_to='home_links', blank=True, null=True)
     icon = models.ForeignKey(Icons, on_delete=models.SET_NULL, null=True, blank=True)
     visible = models.BooleanField(default=False)
+    font_size = models.CharField(max_length=10, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -131,14 +132,15 @@ class Partners(models.Model):
 class House(models.Model):
     name = models.CharField(max_length=10)
     key_collected = models.BooleanField(default=False, verbose_name="Klucz odebrany")
-    places = models.IntegerField(default=0, verbose_name="Liczba miejsc")
+    places = models.SmallIntegerField(default=0, verbose_name="Liczba miejsc")
+    floor = models.CharField(max_length=50, default=None, verbose_name="Piętro", blank=True, null=True)
 
     def __str__(self):
-        return 'Domek nr ' + self.name
+        return 'Pokój nr ' + self.name
 
     class Meta:
-        verbose_name = "Domek"
-        verbose_name_plural = "Domki"
+        verbose_name = "Pokój"
+        verbose_name_plural = "Pokoje"
 
 class HouseCollocationForImport(models.Model):
     house = models.CharField(max_length=10)

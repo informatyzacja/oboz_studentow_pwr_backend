@@ -1,4 +1,3 @@
-
 :root {
 
   --bg-gradient: linear-gradient(180deg, #761500 22.92%, #751500 22.93%, #2F0A01 100%);
@@ -15,9 +14,9 @@
 
   --radial-gradient: radial-gradient(50% 50% at 55.81% 50%, #DEA766 0%, #DE7539 100%);
   --radial-gradient-circle: radial-gradient(circle, #DEA766 0%, #DE7539 80%);
-  --theme-dark:#DE7539;
-  --theme-light:#DEA766;
-  --text-gray:#8D8D8D;
+  --theme-dark: #DE7539;
+  --theme-light: #DEA766;
+  --text-gray: #8D8D8D;
 }
 
 
@@ -27,7 +26,7 @@ html {
 
   background-color: var(--red);
   background: var(--bg-gradient);
-  height: 100vh;                              
+  height: 100vh;
 }
 
 
