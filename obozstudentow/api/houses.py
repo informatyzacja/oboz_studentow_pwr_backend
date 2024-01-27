@@ -79,8 +79,29 @@ def signup_user_for_house(request, id):
         
         return Response({'success': False, 'error': f'Ten użytkownik jest już zapisany do jakiegoś {"pokoju" if room_instead_of_house else "domku"}. Jeżeli chcesz go/ją zapisać do tego {"pokoju" if room_instead_of_house else "domku"}, najpierw poproś go/ją, aby opuścił/a obecny {"pokój" if room_instead_of_house else "domek"}. Może to zrobić w zapisach na {"pokoje" if room_instead_of_house else "domki"} w swojej aplikacji.'})
     
+    if user.house == house:
+        return Response({'success': False, 'error': f'Jesteś już zapisany/a do tego {"pokoju" if room_instead_of_house else "domku"}'})
+    
     with transaction.atomic():
-        HouseSignupProgress.objects.filter(user=request.user).delete()
+
+        channel_layer = get_channel_layer()
+
+        if HouseSignupProgress.objects.filter(user=request.user).exists():
+            progress = HouseSignupProgress.objects.get(user=request.user)
+
+            if progress.house != house:
+                async_to_sync(channel_layer.group_send)(
+                    'house-signups',
+                    {
+                        'type': 'send',
+                        'event': 'update',
+                        'house': progress.house.id,
+                        'progress': None,
+                        'locators': progress.house.locators(),
+                        'locators_data': UserSerializer( User.objects.filter(house=progress.house), many=True ).data,
+                    }
+                )
+                progress.delete()
 
         if HouseSignupProgress.objects.filter(house=house).exists():
             progress = HouseSignupProgress.objects.get(house=house)
@@ -97,7 +118,6 @@ def signup_user_for_house(request, id):
         user.house = house
         user.save()
 
-        channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             'house-signups',
             {
