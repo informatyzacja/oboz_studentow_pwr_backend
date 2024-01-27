@@ -128,20 +128,3 @@ class Partners(models.Model):
         verbose_name = "Partner"
         verbose_name_plural = "Partnerzy"
 
-
-class House(models.Model):
-    name = models.CharField(max_length=10)
-    key_collected = models.BooleanField(default=False, verbose_name="Klucz odebrany")
-    places = models.SmallIntegerField(default=0, verbose_name="Liczba miejsc")
-    floor = models.CharField(max_length=50, default=None, verbose_name="Piętro", blank=True, null=True)
-
-    def __str__(self):
-        return 'Pokój nr ' + self.name
-
-    class Meta:
-        verbose_name = "Pokój"
-        verbose_name_plural = "Pokoje"
-
-class HouseCollocationForImport(models.Model):
-    house = models.CharField(max_length=10)
-    bandId = models.CharField(max_length=6, blank=True, null=True, unique=True)

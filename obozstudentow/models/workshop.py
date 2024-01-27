@@ -22,7 +22,6 @@ class Workshop(models.Model):
     def __str__(self):
         return self.name
     
-
     @admin.display(
         boolean=True,
         description='Ma zdjęcie?',

@@ -1,0 +1,146 @@
+from rest_framework import serializers, viewsets, mixins
+from django.db.models import Q, F, Count
+from django.utils import timezone
+
+from rest_framework.response import Response
+from rest_framework import status
+
+from .people import PersonSerializer, UserSerializer
+
+from ..models import House, HouseSignupProgress, User
+
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+
+class HouseSignupProgressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HouseSignupProgress
+        fields = '__all__'
+
+class HouseSerializer(serializers.ModelSerializer):
+    locators_data = serializers.SerializerMethodField()
+
+    def get_locators_data(self, obj):
+        return UserSerializer( User.objects.filter(house=obj), many=True, context=self.context ).data
+
+    class Meta:
+        model = House
+        fields = ('id', 'name', 'places', 'floor', 'locators', 'locators_data', 'housesignupprogress')
+        depth = 1
+
+class HouseViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+    queryset = House.objects.all()
+    serializer_class = HouseSerializer
+    
+
+    def get_queryset(self):
+        house_signups_active = Setting.objects.get_or_create(name='house_signups_active', defaults={'value': 'false', 'description': 'Czy zapisy na domki/pokoje są aktywne?'})[0].value.lower() == 'true'
+
+        if not house_signups_active:
+            return self.queryset.none()
+
+        return self.queryset.annotate(Count("user")).filter(Q(places__gt=F("user__count")) | Q(id = self.request.user.house.id if self.request.user.house else None)).order_by('floor','name')
+    
+
+from ..models import Setting
+from rest_framework.decorators import api_view
+from django.db import transaction
+
+
+@api_view(['PUT'])
+def signup_user_for_house(request, id):
+    room_instead_of_house = Setting.objects.get_or_create(name='room_instead_of_house', defaults={'value': 'false', 'description': 'Czy zamienić nazwę "domek" na "pokój" w opisach?'})[0].value.lower() == 'true'
+
+    house_signups_active = Setting.objects.get_or_create(name='house_signups_active', defaults={'value': 'false', 'description': 'Czy zapisy na domki/pokoje są aktywne?'})[0].value.lower() == 'true'
+
+    if not house_signups_active:
+        return Response({'success': False, 'error': f'Zapisy na {"pokoje" if room_instead_of_house else "domki"} są obecnie wyłączone'})
+    
+    if not request.data.get('bandId'):
+        return Response({'success': False, 'error': 'Nie podano ID użytkownika'})
+
+    if not House.objects.filter(id=id).exists():
+        return Response({'success': False, 'error': f'Nie znaleziono {"pokoju" if room_instead_of_house else "domku"} o podanym id'})
+    
+    if not User.objects.filter(bandId=request.data.get('bandId')).exists():
+        return Response({'success': False, 'error': 'Nie znaleziono użytkownika o podanym ID'})
+    
+    house = House.objects.get(id=id)
+
+    if house.full():
+        return Response({'success': False, 'error': f'{"Pokój" if room_instead_of_house else "Domek"} jest już pełny'})
+    
+    user = User.objects.get(bandId=request.data.get('bandId'))
+
+    
+    if user != request.user and user.house is not None:
+        if user.house == house:
+            return Response({'success': False, 'error': f'Ten użytkownik jest już zapisany do tego {"pokoju" if room_instead_of_house else "domku"}'})
+        
+        return Response({'success': False, 'error': f'Ten użytkownik jest już zapisany do jakiegoś {"pokoju" if room_instead_of_house else "domku"}. Jeżeli chcesz go/ją zapisać do tego {"pokoju" if room_instead_of_house else "domku"}, najpierw poproś go/ją, aby opuścił/a obecny {"pokój" if room_instead_of_house else "domek"}. Może to zrobić w zapisach na {"pokoje" if room_instead_of_house else "domki"} w swojej aplikacji.'})
+    
+    with transaction.atomic():
+        HouseSignupProgress.objects.filter(user=request.user).delete()
+
+        if HouseSignupProgress.objects.filter(house=house).exists():
+            progress = HouseSignupProgress.objects.get(house=house)
+
+            if progress.user != request.user and not progress.free():
+                return Response({'success': False, 'error': f'Ktoś inny aktualnie zapisuje się do tego {"pokoju" if room_instead_of_house else "domku"}'})
+            
+            progress.user = request.user
+            progress.save()
+        else:
+            progress = HouseSignupProgress(house=house, user=request.user)
+            progress.save()
+
+        user.house = house
+        user.save()
+
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            'house-signups',
+            {
+                'type': 'send',
+                'event': 'update',
+                'house': house.id,
+                'progress': HouseSignupProgressSerializer(progress).data,
+                'locators': house.locators(),
+                'locators_data': UserSerializer( User.objects.filter(house=house), many=True ).data,
+            }
+        )
+        
+        return Response({'success': True, 'progress_last_updated': progress.last_updated})
+    
+
+@api_view(['PUT'])
+def leave_house(request):
+
+    room_instead_of_house = Setting.objects.get_or_create(name='room_instead_of_house', defaults={'value': 'false', 'description': 'Czy zamienić nazwę "domek" na "pokój" w opisach?'})[0].value.lower() == 'true'
+
+    if request.user.house is None:
+        return Response({'success': False, 'error': f'Nie jesteś zapisany do żadnego {"pokoju" if room_instead_of_house else "domku"}'})
+    
+    house_signups_active = Setting.objects.get_or_create(name='house_signups_active', defaults={'value': 'false', 'description': 'Czy zapisy na domki/pokoje są aktywne?'})[0].value.lower() == 'true'
+
+    if not house_signups_active:
+        return Response({'success': False, 'error': f'Zapisy na {"pokoje" if room_instead_of_house else "domki"} są obecnie wyłączone'})
+    
+    house = request.user.house
+    
+    request.user.house = None
+    request.user.save()
+
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        'house-signups',
+        {
+            'type': 'send',
+            'event': 'update',
+            'house': house.id,
+            'locators': house.locators(),
+            'locators_data': UserSerializer( User.objects.filter(house=house), many=True ).data,
+        }
+    )
+
+    return Response({'success': True})

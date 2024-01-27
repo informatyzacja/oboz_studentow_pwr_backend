@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
-import os
+import os, json
 from dotenv import load_dotenv
 
 def get_secret(key, default):
@@ -102,12 +102,13 @@ TEMPLATES = [
 WSGI_APPLICATION = "obozstudentowProject.wsgi.application"
 ASGI_APPLICATION = "obozstudentowProject.asgi.application"
 
-CHANNEL_LAYERS = {
-	"default": {
+# Channels
+# In-memory channel layer only for development
+CHANNEL_LAYERS = json.loads(os.getenv("CHANNEL_LAYERS", '''{
+    "default": {
 		"BACKEND": "channels.layers.InMemoryChannelLayer"
 	}
-}
-
+}'''))
 
 AUTHENTICATION_BACKENDS = ['obozstudentowProject.urls.EmailLoginBackend']
 

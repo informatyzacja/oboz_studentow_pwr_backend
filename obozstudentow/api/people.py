@@ -6,6 +6,11 @@ from rest_framework.response import Response
 
 from ..models import SoberDuty, LifeGuard, Staff, User
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('bandId', 'first_name', 'last_name')
+
 class PersonSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

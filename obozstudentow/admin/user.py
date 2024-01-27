@@ -277,9 +277,9 @@ def assign_houses(modeladmin, request, queryset):
     messages.success(request, f'Przypisano {added} z {queryset.count()} domków')
 
 
-@admin.register(HouseCollocationForImport)
-class HouseCollocationForImportAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    list_display = ('house', 'bandId')
-    list_per_page = 400
+# @admin.register(HouseCollocationForImport)
+# class HouseCollocationForImportAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+#     list_display = ('house', 'bandId')
+#     list_per_page = 400
 
-    actions = [assign_houses]
+#     actions = [assign_houses]

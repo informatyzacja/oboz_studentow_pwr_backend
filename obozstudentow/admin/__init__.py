@@ -13,9 +13,9 @@ from django.utils.translation import gettext_lazy as _
 from ..models import Link, FAQ, ScheduleItem, User, Icons, HomeLink
 
 
-admin.site.site_header = "Panel administracyjny Obozu Studentów PWR 2023"
-admin.site.site_title = "Panel administracyjny Obozu Studentów PWR 2023"
-admin.site.index_title = "Witaj w panelu administracyjnym Obozu Studentów PWR 2023"
+admin.site.site_header = "Panel administracyjny Obozu Zimowego PWr 2024"
+admin.site.site_title = "Panel administracyjny Obozu  Zimowego PWr 2024"
+admin.site.index_title = "Witaj w panelu administracyjnym Obozu Zimowego PWr 2024"
 
 class LinkAdmin(OrderableAdmin):
     list_display = ('name', 'url', 'icon', 'sort_order_display')
@@ -115,18 +115,9 @@ class HouseMemberInline(admin.TabularInline):
 
 @admin.register(House)
 class HouseAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    def locators(self, obj):
-        return obj.user_set.count()
-    locators.short_description = 'Lokatorzy'
-    
-    def full(self, obj):
-        return obj.user_set.count() == obj.places
-    full.short_description = 'Pełny'
-    full.boolean = True
+    list_display = ('name', 'key_collected', 'locators', 'places', 'full', 'floor')
+    search_fields = ('name','floor')
 
-    list_display = ('name', 'key_collected', 'locators', 'places', 'full')
-    search_fields = ('name',)
-
-    list_filter = ('key_collected',)
+    list_filter = ('key_collected','floor')
 
     inlines = [HouseMemberInline]

@@ -71,6 +71,19 @@ class User(AbstractUser):
 
     class Meta:
         app_label = 'obozstudentow'
+
+    def generate_bandId(self):
+        from random import randint
+        from django.db.models import Q
+        while True:
+            bandId = str(randint(0, 999999)).zfill(6)
+            if not User.objects.filter(Q(bandId=bandId)).exists():
+                return bandId
+
+    def save(self, *args, **kwargs):
+        if not self.bandId:
+            self.bandId = self.generate_bandId()
+        super(User, self).save(*args, **kwargs)
         
     
 class UserFCMToken(models.Model):

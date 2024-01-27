@@ -8,3 +8,5 @@ from .people import *
 from .workshop import *
 
 from .permissions import *
+
+from .houses import *

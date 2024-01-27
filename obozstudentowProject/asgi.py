@@ -24,13 +24,29 @@ from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter , URLRouter
 from chat import routing
 
-application = ProtocolTypeRouter(
-	{
-		"http" : get_asgi_application() ,
-		"websocket" : AuthMiddlewareStack(
-			URLRouter(
-				routing.websocket_urlpatterns
-			)
-		)
-	}
-)
+# application = ProtocolTypeRouter(
+# 	{
+# 		"http" : get_asgi_application() ,
+# 		"websocket" : AuthMiddlewareStack(
+# 			URLRouter(
+# 				routing.websocket_urlpatterns
+# 			)
+# 		)
+# 	}
+# )
+
+from channels.security.websocket import AllowedHostsOriginValidator
+from channels.routing import ProtocolTypeRouter, URLRouter
+from .middleware import TokenAuthMiddleware
+# from django.conf.urls import url
+
+application = ProtocolTypeRouter({
+		"http" : get_asgi_application(),
+        'websocket': AuthMiddlewareStack(
+            TokenAuthMiddleware(
+                URLRouter(
+                    routing.websocket_urlpatterns
+                )
+            )
+        )
+    })
