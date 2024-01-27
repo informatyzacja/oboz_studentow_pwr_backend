@@ -2,7 +2,7 @@ from rest_framework import serializers, routers, viewsets, mixins
 from django.db.models import Q
 
 
-from chat.models import Message
+from obozstudentow_async.models import Message
 from ..models import User
 
 class MessageSerializer(serializers.ModelSerializer):

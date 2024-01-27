@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     "obozstudentow",
-    "chat",
+    "obozstudentow_async",
 
     'channels',
 
