@@ -48,7 +48,7 @@
         border-collapse: collapse !important;
       }
       body {
-        background-color: #751500;
+        background-color: #254582;
         height: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
@@ -88,7 +88,7 @@
       /* These rules set the link and hover states, making it clear that links are, in fact, links. */
       /* Embrace established conventions like underlines on links to keep emails accessible. */
       a {
-        color: #DC7D28;
+        color: #84c6e7;
         font-weight: 600;
         text-decoration: none !important;
       }
@@ -97,10 +97,10 @@
       }
       
       h1 {
-        color: #DC7D28;
+        color: #84c6e7;
       }
       .content {
-        background-color: #5F1404;
+        background-color: #17305e;
         box-shadow: 4px 4px 6px 0px rgba(0, 0, 0, 0.25);
       }
       address {
@@ -109,8 +109,8 @@
 
 
     .button {
-        background: #DC7D28;
-        color: #5F1404 !important;
+        background: #84c6e7;
+        color: #254582 !important;
     
         font-size: 15px;
         /* line-height: 30px; */
@@ -152,7 +152,7 @@
       }
     </style>
   </head>
-  <body style="margin: 0 !important; padding: 0 !important; background-color: #751500 !important;">
+  <body style="margin: 0 !important; padding: 0 !important; background-color: #254582 !important;">
     <!-- Some preview text. -->
     <div style="display: none; max-height: 0; overflow: hidden;">Rejestracja na Obóz Zimowy PWR 2024</div>
     <!-- Get rid of unwanted preview text. -->
@@ -200,7 +200,7 @@
           <p>
           
             {% block reset_link %}
-            <a href="{{ protocol }}://{{ domain }}{% url 'register_confirm' uidb64=uid token=token %}" style="color: #5F1404">
+            <a href="{{ protocol }}://{{ domain }}{% url 'register_confirm' uidb64=uid token=token %}" style="color: #254582">
                 <div class="pill button" >
                     Ustal swoje hasło
                 </div>
@@ -223,7 +223,7 @@
 
         <p style="font-size: 12px; font-weight: 300; line-height: 24px; margin-top: 16px; color: #ffffffaa !important">
          Jeżeli powyższy link nie działa, skopiuj i wklej poniższy adres do przeglądarki:
-         <span style="color: #DC7D28 !important;">{{ protocol }}://{{ domain }}{% url 'register_confirm' uidb64=uid token=token %}</span>
+         <span style="color: #84c6e7 !important;">{{ protocol }}://{{ domain }}{% url 'register_confirm' uidb64=uid token=token %}</span>
         </p>
 
          <p style="font-size: 16px; font-weight: 400; line-height: 24px; margin-top: 32px;">
