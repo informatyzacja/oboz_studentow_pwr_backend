@@ -1,46 +1,57 @@
-
 <!DOCTYPE html>
 <html>
-
-<head>
-    <meta charset="UTF-8">
-    <meta lang="pl">
-    <link rel="icon" href="/favicon.ico">
+  <head>
+    <meta charset="UTF-8" />
+    <meta lang="pl" />
+    <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
     {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'base.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'font.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'base.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'font.css' %}" />
 
-    {% block stylesheets %} {% endblock %}
-    
+    {% block stylesheets %}
 
-    <title>{% block title %}Obóz Studentów PWR{% endblock %}</title>
+    {% endblock %}
 
-    <link rel="manifest" href="{% static 'manifest.webmanifest' %}">
-    
+    <title>
+      {% block title %}
+        Obóz Studentów PWR
+      {% endblock %}
+    </title>
+
+    <link rel="manifest" href="{% static 'manifest.webmanifest' %}" />
 
     {% comment %} <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/logo/web/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/logo/web/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/logo/web/favicon-16x16.png">
-    <link rel="manifest" href="/logo/web/site.webmanifest">
-    <link rel="mask-icon" href="/logo/web/safari-pinned-tab.svg" color="#000000">
-    <link rel="shortcut icon" href="/logo/web/favicon.ico">
-    <meta name="msapplication-TileColor" content="#000000">
-    <meta name="msapplication-config" content="/logo/web/browserconfig.xml">
-    <meta name="theme-color" content="#0c0e1d" media="(prefers-color-scheme: dark)">
-    <meta name="theme-color" content="#ffffff"> {% endcomment %}
-</head>
+    <link rel="apple-touch-icon" sizes="180x180" href="/logo/web/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/logo/web/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/logo/web/favicon-16x16.png" />
+    <link rel="manifest" href="/logo/web/site.webmanifest" />
+    <link rel="mask-icon" href="/logo/web/safari-pinned-tab.svg" color="#000000" />
+    <link rel="shortcut icon" href="/logo/web/favicon.ico" />
+    <meta name="msapplication-TileColor" content="#000000" />
+    <meta name="msapplication-config" content="/logo/web/browserconfig.xml" />
+    <meta name="theme-color" content="#0c0e1d" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#ffffff" /> {% endcomment %}
 
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=zima2024" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=zima2024" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png?v=zima2024" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=zima2024" />
+    <link rel="manifest" href="/site.webmanifest?v=zima2024" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg?v=zima2024" color="#5bbad5" />
+    <link rel="shortcut icon" href="/favicon.ico?v=zima2024" />
+    <meta name="msapplication-TileColor" content="#b4e1ff" />
+    <meta name="theme-color" content="#b4e1ff" />
+  </head>
 
-
-<body>
+  <body>
     <main>
-        {% block content %} {% endblock %}
-    </main>
-</body>
+      {% block content %}
 
+      {% endblock %}
+    </main>
+  </body>
 </html>
