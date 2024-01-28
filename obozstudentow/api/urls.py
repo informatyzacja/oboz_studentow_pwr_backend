@@ -4,6 +4,7 @@ from .group import *
 from .notifications import *
 from .houses import *
 
+# /api2/
 urlpatterns = [
     path('get-group-signup-info/', get_group_signup_info),
     path('signup-group/', signup_group),
@@ -12,4 +13,5 @@ urlpatterns = [
 
     path('signup-user-for-house/<int:id>/', signup_user_for_house),
     path('leave-house/', leave_house),
+    path('get-house-signups-info/', get_house_signups_info),
 ]

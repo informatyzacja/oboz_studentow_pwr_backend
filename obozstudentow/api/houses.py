@@ -164,3 +164,13 @@ def leave_house(request):
     )
 
     return Response({'success': True})
+
+
+
+@api_view(['GET'])
+def get_house_signups_info(request):
+    room_instead_of_house = Setting.objects.get_or_create(name='room_instead_of_house', defaults={'value': 'false', 'description': 'Czy zamienić nazwę "domek" na "pokój" w opisach?'})[0].value.lower() == 'true'
+
+    house_signups_active = Setting.objects.get_or_create(name='house_signups_active', defaults={'value': 'false', 'description': 'Czy zapisy na domki/pokoje są aktywne?'})[0].value.lower() == 'true'
+
+    return Response({'room_instead_of_house': room_instead_of_house, 'house_signups_active': house_signups_active, })
