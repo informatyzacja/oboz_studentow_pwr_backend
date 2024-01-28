@@ -1,32 +1,27 @@
-
-
 {% extends 'base.html' %}
-{% comment %} login view {% endcomment %}
+{% comment %}login view{% endcomment %}
 {% load static %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{% static 'register.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'register.css' %}" />
 {% endblock %}
 
-
 {% block content %}
-<center>
-<img id="logo" src="{% static 'logowanie logo obozu.svg' %}" alt="logo">
+  <center>
+    <img id="logo" src="{% static 'logowanie logo obozu.png' %}" alt="logo" />
 
-{% comment %} <h1>Obóz Studentów PWR</h1> {% endcomment %}
+    {% comment %} <h1>Obóz Studentów PWR</h1> {% endcomment %}
 
-<form method="POST">
-    {% csrf_token %}    
-    
-    <div>
+    <form method="POST">
+      {% csrf_token %}
+
+      <div>
         <div class="text-gradient">
-            <h2> Email wysłany </h2>
-            <p> Na podany adres email została wysłana wiadomość z instrukcjami dotyczącymi zakładania konta. </p>
-            <p class="p2"> Jeśli nie otrzymałeś/aś wiadomości, sprawdź folder ze spamem oraz sprawdź czy podałeś/aś poprawny adres email (działają tylko emaile podane przy zapisach na obóz). W przypadku dalszych problemów skontaktuj się ze sztabem obozu. </p>
+          <h2>Email wysłany</h2>
+          <p>Na podany adres email została wysłana wiadomość z instrukcjami dotyczącymi zakładania konta.</p>
+          <p class="p2">Jeśli nie otrzymałeś/aś wiadomości, sprawdź folder ze spamem oraz sprawdź czy podałeś/aś poprawny adres email (działają tylko emaile podane przy zapisach na obóz). W przypadku dalszych problemów skontaktuj się ze sztabem obozu.</p>
         </div>
-
-    </div>
-</form>
-
-</center>
+      </div>
+    </form>
+  </center>
 {% endblock %}

@@ -1,22 +1,31 @@
 :root {
 
-  --bg-gradient: linear-gradient(180deg, #761500 22.92%, #751500 22.93%, #2F0A01 100%);
+  --bg-gradient: linear-gradient(180deg, #002d76 22.92%, #002d76 22.93%, #010c2f 100%);
+  --bg-gradient-translusent: linear-gradient(180deg, rgba(28, 86, 179, 0.478) 22.92%, rgba(28, 86, 179, 0.478) 22.93%, #1960abaa 100%);
   --red: #751500;
   --orange: #DC7D28;
+  --yellow: rgb(222, 186, 136);
+  --theme-text: #002d76;
 
   --red-dark: #5F1404;
-  /* --red: #6a2323;
-  --red-action: #9a2929; */
 
-  --bg: #131313;
-  --bg-lighter: #1b1b1b;
-  --bg-light: #292929;
+  --bg: #111e33;
+  --bg-translusent: #0f112194;
+  --bg-lighter: #272e3f;
+  --bg-light: #324a6c;
+  --bg-light-translusent: rgba(150, 154, 185, 0.222);
+  --bg-light-translusent-hover: rgba(39, 46, 90, 0.177);
 
-  --radial-gradient: radial-gradient(50% 50% at 55.81% 50%, #DEA766 0%, #DE7539 100%);
-  --radial-gradient-circle: radial-gradient(circle, #DEA766 0%, #DE7539 80%);
-  --theme-dark: #DE7539;
-  --theme-light: #DEA766;
-  --text-gray: #8D8D8D;
+  --radial-gradient: radial-gradient(50% 50% at 55.81% 50%, #84c6e7 0%, #3f6cc0 100%);
+  --radial-gradient-circle: radial-gradient(circle, #84c6e7 0%, #3f6cc0 80%);
+  --theme-dark: #254582;
+  --theme-light: #84c6e7;
+  --text-gray: #98a3b3a5;
+
+  --light-text: #a6cbecd1;
+  --text-selection: #6692de84;
+
+  --red-action: #9a2929;
 }
 
 
@@ -43,8 +52,8 @@ body {
 
 
 .button {
-  background: var(--orange);
-  color: var(--red);
+  background: var(--theme-light);
+  color: var(--theme-dark);
 
   font-family: 'Sui Generis';
   font-size: 15px;
@@ -67,10 +76,10 @@ body {
 
 input {
   padding: 0 22px;
-  background-color: var(--red-dark);
-  border: 1px solid var(--red-dark-dark);
+  background-color: var(--theme-dark);
+  border: 1px solid var(--theme-dark);
   font-size: 12px;
-  color: var(--orange);
+  color: var(--theme-light);
 
   font-family: 'Sui Generis';
 
@@ -91,5 +100,5 @@ input:focus {
 }
 
 input::selection {
-  background: #dea86684;
+  background: var(--text-selection)
 }

@@ -1,56 +1,41 @@
-
-
 {% extends 'base.html' %}
-{% comment %} login view {% endcomment %}
+{% comment %}login view{% endcomment %}
 {% load static %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{% static 'register.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'register.css' %}" />
 {% endblock %}
 
-
 {% block content %}
-<center>
-<img id="logo" src="{% static 'logowanie logo obozu.svg' %}" alt="logo">
+  <center>
+    <img id="logo" src="{% static 'logowanie logo obozu.png' %}" alt="logo" />
 
-{% comment %} <h1>Obóz Studentów PWR</h1> {% endcomment %}
+    {% comment %} <h1>Obóz Studentów PWR</h1> {% endcomment %}
 
-{% if validlink %}
+    {% if validlink %}
+      <form method="POST">
+        {% csrf_token %}
+        <input class="hidden" autocomplete="email" value="{{ form.user.email }}" />
 
-<form method="POST">
-    {% csrf_token %}    
-    <input class="hidden" autocomplete="email" value="{{ form.user.email }}">
-    
-    <div>
-    <div class="text-gradient">
-        <h2> Rejestracja </h2>
-        <p> Utwórz hasło do konta. </p>
-    </div>
+        <div>
+          <div class="text-gradient">
+            <h2>Rejestracja</h2>
+            <p>Utwórz hasło do konta.</p>
+          </div>
 
-    <span class="errors">
-    {{ form.new_password1.errors }}
-    </span>
-    <input id="id_new_password1" name="new_password1" type="password" autocomplete="new-password" required class="pill" placeholder="HASŁO">
+          <span class="errors">{{ form.new_password1.errors }}</span>
+          <input id="id_new_password1" name="new_password1" type="password" autocomplete="new-password" required class="pill" placeholder="HASŁO" />
 
-    <span class="errors">
-    {{ form.new_password2.errors }}
-    </span>
-    <input id="id_new_password2" name="new_password2" type="password" autocomplete="new-password" required class="pill" placeholder="POWTÓRZ HASŁO">
+          <span class="errors">{{ form.new_password2.errors }}</span>
+          <input id="id_new_password2" name="new_password2" type="password" autocomplete="new-password" required class="pill" placeholder="POWTÓRZ HASŁO" />
 
-
-    <button type="submit" class="pill button">
-        Utwórz konto
-    </button>
-
-    </div>
-</form>
-
-
-{% else %}
-<div class="text-gradient">
-    <h2> Link jest niepoprawny lub wygasł.  </h2>
-</div>
-{% endif %}
-
-</center>
+          <button type="submit" class="pill button">Utwórz konto</button>
+        </div>
+      </form>
+    {% else %}
+      <div class="text-gradient">
+        <h2>Link jest niepoprawny lub wygasł.</h2>
+      </div>
+    {% endif %}
+  </center>
 {% endblock %}

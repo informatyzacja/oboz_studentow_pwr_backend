@@ -1,33 +1,27 @@
-
-
 {% extends 'base.html' %}
-{% comment %} index view {% endcomment %}
+{% comment %}index view{% endcomment %}
 {% load static %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{% static 'index.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'index.css' %}" />
 {% endblock %}
 
 {% block content %}
-<div class="center">
-    <img id="logo" src="{% static 'logowanie logo obozu.svg' %}" alt="logo">
+  <div class="center">
+    <img id="logo" src="{% static 'logowanie logo obozu.png' %}" alt="logo" />
 
     <div id="main">
+      <a href="{% url 'login' %}">
+        <div class="pill button">
+          <p>Zaloguj się</p>
+        </div>
+      </a>
 
-
-        <a  href="{% url 'login' %}">
-            <div class="pill button">
-            <p>Zaloguj się</p>
-            </div>
-        </a>
-
-        <a  href="{% url 'register' %}">
-            <div class="pill button">
-                <p>ZAREJESTRUJ SIĘ </p>
-            </div>
-        </a>
-
+      <a href="{% url 'register' %}">
+        <div class="pill button">
+          <p>ZAREJESTRUJ SIĘ</p>
+        </div>
+      </a>
     </div>
-
-</div>
+  </div>
 {% endblock %}

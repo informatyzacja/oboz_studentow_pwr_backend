@@ -1,37 +1,32 @@
-
-
 {% extends 'base.html' %}
-{% comment %} login view {% endcomment %}
+{% comment %}login view{% endcomment %}
 {% load static %}
 
 {% block stylesheets %}
-<link rel="stylesheet" type="text/css" href="{% static 'register.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'register.css' %}" />
 {% endblock %}
 
-
 {% block content %}
-<center>
-<img id="logo" src="{% static 'logowanie logo obozu.svg' %}" alt="logo">
+  <center>
+    <img id="logo" src="{% static 'logowanie logo obozu.png' %}" alt="logo" />
 
-{% comment %} <h1>Obóz Studentów PWR</h1> {% endcomment %}
+    {% comment %} <h1>Obóz Studentów PWR</h1> {% endcomment %}
 
-<form method="POST">
-    {% csrf_token %}    
-    
-    <div>
+    <form method="POST">
+      {% csrf_token %}
+
+      <div>
         <div class="text-gradient">
-            <h2> Dziękujemy za utworzenie konta. </h2>
-            <p> Kliknij poniżej, aby przejść do aplikacji </p>
+          <h2>Dziękujemy za utworzenie konta.</h2>
+          <p>Kliknij poniżej, aby przejść do aplikacji</p>
         </div>
 
-        <a  href="{% url 'index' %}">
-            <div class="pill button">
-                <p>Otwórz aplikację</p>
-            </div>
+        <a href="{% url 'index' %}">
+          <div class="pill button">
+            <p>Otwórz aplikację</p>
+          </div>
         </a>
-
-    </div>
-</form>
-
-</center>
+      </div>
+    </form>
+  </center>
 {% endblock %}
