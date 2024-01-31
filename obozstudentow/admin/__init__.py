@@ -1,3 +1,4 @@
+from django.http.request import HttpRequest
 from .group import *
 from .meals import *
 from .people import *
@@ -99,6 +100,9 @@ class PartnersAdmin(admin.ModelAdmin):
     list_display = ('name', 'logo', 'link')
     search_fields = ('name', 'logo', 'link')
 
+
+
+
 from ..models import House
 class HouseMemberInline(admin.TabularInline):
     model = User
@@ -121,3 +125,29 @@ class HouseAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_filter = ('key_collected','floor')
 
     inlines = [HouseMemberInline]
+
+
+class HouseView(House):
+    class Meta:
+        proxy = True
+        verbose_name = "Pokój (widok)"
+        verbose_name_plural = "Pokoje (widok)"
+        ordering = ('floor', 'name')
+
+@admin.register(HouseView)
+class HouseViewAdmin(admin.ModelAdmin):
+    list_display = ('name', 'key_collected', 'locators', 'places', 'full', 'floor')
+    search_fields = ('name','floor')
+
+    readonly_fields = ('name', 'locators', 'places', 'full', 'floor')
+
+    list_filter = ('key_collected','floor')
+
+    inlines = [HouseMemberInline]
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+    
