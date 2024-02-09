@@ -25,11 +25,11 @@ class HouseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = House
-        fields = ('id', 'name', 'places', 'floor', 'locators', 'locators_data', 'housesignupprogress')
+        fields = ('id', 'name', 'places', 'floor', 'locators', 'locators_data', 'housesignupprogress', 'description')
         depth = 1
 
 class HouseViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
-    queryset = House.objects.all()
+    queryset = House.objects.order_by('floor','name')
     serializer_class = HouseSerializer
     
 

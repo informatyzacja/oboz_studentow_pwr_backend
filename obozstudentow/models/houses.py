@@ -5,6 +5,7 @@ class House(models.Model):
     key_collected = models.BooleanField(default=False, verbose_name="Klucz odebrany")
     places = models.SmallIntegerField(default=0, verbose_name="Liczba miejsc")
     floor = models.CharField(max_length=50, default=None, verbose_name="Piętro", blank=True, null=True)
+    description = models.TextField(default=None, verbose_name="Opis", blank=True, null=True)
 
     def __str__(self):
         return 'Pokój nr ' + self.name
