@@ -130,18 +130,18 @@ class HouseAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 class HouseView(House):
     class Meta:
         proxy = True
-        verbose_name = "Pokój (widok)"
-        verbose_name_plural = "Pokoje (widok)"
+        verbose_name = "Pokój/domek (widok)"
+        verbose_name_plural = "Pokoje/domki (widok)"
         ordering = ('floor', 'name')
 
 @admin.register(HouseView)
 class HouseViewAdmin(admin.ModelAdmin):
-    list_display = ('name', 'key_collected', 'locators', 'places', 'full', 'floor')
+    list_display = ('name', 'key_collected', 'locators', 'places', 'full', 'floor', 'signup_open', 'signout_open')
     search_fields = ('name','floor')
 
-    readonly_fields = ('name', 'locators', 'places', 'full', 'floor')
+    readonly_fields = ('name', 'locators', 'places', 'full', 'floor', 'description')
 
-    list_filter = ('key_collected','floor')
+    list_filter = ('key_collected','floor', 'places', 'signup_open', 'signout_open')
 
     inlines = [HouseMemberInline]
 
@@ -150,4 +150,9 @@ class HouseViewAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+    
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(HouseViewAdmin, self).get_form(request, obj, **kwargs)
+        form.base_fields['user_key_collected'].queryset = User.objects.filter(house=obj)
+        return form
     

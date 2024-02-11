@@ -25,7 +25,7 @@ class HouseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = House
-        fields = ('id', 'name', 'places', 'floor', 'locators', 'locators_data', 'housesignupprogress', 'description')
+        fields = ('id', 'name', 'places', 'floor', 'locators', 'locators_data', 'housesignupprogress', 'description', 'signup_open', 'signout_open')
         depth = 1
 
 class HouseViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -55,20 +55,25 @@ def signup_user_for_house(request, id):
 
     if not house_signups_active:
         return Response({'success': False, 'error': f'Zapisy na {"pokoje" if room_instead_of_house else "domki"} są obecnie wyłączone'})
-    
-    if not request.data.get('bandId'):
-        return Response({'success': False, 'error': 'Nie podano ID użytkownika'})
 
     if not House.objects.filter(id=id).exists():
         return Response({'success': False, 'error': f'Nie znaleziono {"pokoju" if room_instead_of_house else "domku"} o podanym id'})
     
-    if not User.objects.filter(bandId=request.data.get('bandId')).exists():
-        return Response({'success': False, 'error': 'Nie znaleziono użytkownika o podanym ID'})
-    
     house = House.objects.get(id=id)
+
+    if not house.signup_open:
+        return Response({'success': False, 'error': f'Zapisy do tego {"pokoju" if room_instead_of_house else "domku"} są obecnie zamknięte'})
 
     if house.full():
         return Response({'success': False, 'error': f'{"Pokój" if room_instead_of_house else "Domek"} jest już pełny'})
+    
+    if not request.data.get('bandId'):
+        return Response({'success': False, 'error': 'Nie podano ID użytkownika'})
+    
+    if not User.objects.filter(bandId=request.data.get('bandId')).exists():
+        return Response({'success': False, 'error': 'Nie znaleziono użytkownika o podanym ID'})
+    
+
     
     user = User.objects.get(bandId=request.data.get('bandId'))
 
@@ -147,6 +152,9 @@ def leave_house(request):
         return Response({'success': False, 'error': f'Zapisy na {"pokoje" if room_instead_of_house else "domki"} są obecnie wyłączone'})
     
     house = request.user.house
+
+    if not house.signout_open:
+        return Response({'success': False, 'error': f'Wypisywanie się z tego {"pokoju" if room_instead_of_house else "domku"} jest zablokowane'})
     
     request.user.house = None
     request.user.save()

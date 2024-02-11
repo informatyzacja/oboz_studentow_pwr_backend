@@ -1,14 +1,18 @@
 from django.db import models
 
 class House(models.Model):
-    name = models.CharField(max_length=10, verbose_name="Numer pokoju", unique=True)
+    name = models.CharField(max_length=10, verbose_name="Numer domku/pokoju", unique=True)
     key_collected = models.BooleanField(default=False, verbose_name="Klucz odebrany")
+    user_key_collected = models.ForeignKey('User', on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Kto odebrał klucz", related_name='user_key_collected')
     places = models.SmallIntegerField(default=0, verbose_name="Liczba miejsc")
     floor = models.CharField(max_length=50, default=None, verbose_name="Piętro", blank=True, null=True)
     description = models.TextField(default=None, verbose_name="Opis", blank=True, null=True)
+    signup_open = models.BooleanField(default=True, verbose_name="Czy można się zapisać?")
+    signout_open = models.BooleanField(default=True, verbose_name="Czy można się wypisać?")
+
 
     def __str__(self):
-        return 'Pokój nr ' + self.name
+        return 'Pokój/domek nr ' + self.name
     
     def locators(self):
         return self.user_set.count()
@@ -20,8 +24,8 @@ class House(models.Model):
     full.boolean = True
 
     class Meta:
-        verbose_name = "Pokój"
-        verbose_name_plural = "Pokoje"
+        verbose_name = "Pokój/domek"
+        verbose_name_plural = "Pokoje/domki"
 
 class HouseCollocationForImport(models.Model):
     house = models.CharField(max_length=10)
