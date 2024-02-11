@@ -120,7 +120,7 @@ class HouseMemberInline(admin.TabularInline):
 @admin.register(House)
 class HouseAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('name', 'key_collected', 'locators', 'places', 'full', 'floor')
-    search_fields = ('name','floor')
+    search_fields = ('name','floor', 'user__first_name', 'user__last_name', 'user__email')
 
     list_filter = ('key_collected','floor')
 
@@ -137,7 +137,7 @@ class HouseView(House):
 @admin.register(HouseView)
 class HouseViewAdmin(admin.ModelAdmin):
     list_display = ('name', 'key_collected', 'locators', 'places', 'full', 'floor', 'signup_open', 'signout_open')
-    search_fields = ('name','floor')
+    search_fields = ('name','floor', 'user__first_name', 'user__last_name', 'user__email')
 
     readonly_fields = ('name', 'locators', 'places', 'full', 'floor', 'description')
 
