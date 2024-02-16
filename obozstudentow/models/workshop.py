@@ -4,10 +4,10 @@ from django.contrib import admin
 
 class Workshop(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
     start = models.DateTimeField()
     end = models.DateTimeField()
-    location = models.CharField(max_length=100)
+    location = models.CharField(max_length=100, blank=True, null=True)
     visible = models.BooleanField(default=True)
     signupsOpen = models.BooleanField(default=False)
     signupsOpenTime = models.DateTimeField(blank=True, null=True)
