@@ -31,11 +31,22 @@ class FAQAdmin(ImportExportModelAdmin, OrderableAdmin):
     list_display = ('question', 'answer', 'sort_order_display')
     search_fields = ('question', 'answer')
 
+
+@admin.action(description='Ukryj mapki')
+def hide_maps(modeladmin, request, queryset):
+    queryset.update(hide_map=True)
+
+@admin.action(description='Pokaż mapki')
+def show_maps(modeladmin, request, queryset):
+    queryset.update(hide_map=False)
+
 class ScheduleItemAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('name', 'description', 'start', 'end', 'location', 'visible', 'has_image')
     search_fields = ('name', 'description', 'start', 'end', 'location', 'visible')
     # filter_vertical = ('has_image',)
     ordering = ('start','end')
+
+    actions = [hide_maps, show_maps]
 
 @admin.register(Icons)
 class IconsAdmin(admin.ModelAdmin):
@@ -117,6 +128,25 @@ class HouseMemberInline(admin.TabularInline):
     def has_add_permission(self, request, obj=None):
         return False
 
+
+
+@admin.action(description='Otwórz zapisy')
+def open_signup(modeladmin, request, queryset):
+    queryset.update(signup_open=True)
+
+@admin.action(description='Zamknij zapisy')
+def close_signup(modeladmin, request, queryset):
+    queryset.update(signup_open=False)
+
+@admin.action(description='Otwórz wypisy')
+def open_signout(modeladmin, request, queryset):
+    queryset.update(signout_open=True)
+
+@admin.action(description='Zamknij wypisy')
+def close_signout(modeladmin, request, queryset):
+    queryset.update(signout_open=False)
+
+
 @admin.register(House)
 class HouseAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('name', 'key_collected', 'locators', 'places', 'full', 'floor')
@@ -126,6 +156,7 @@ class HouseAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
     inlines = [HouseMemberInline]
 
+    actions = [open_signup, close_signup, open_signout, close_signout]
 
 class HouseView(House):
     class Meta:
@@ -144,6 +175,8 @@ class HouseViewAdmin(admin.ModelAdmin):
     list_filter = ('key_collected','floor', 'places', 'signup_open', 'signout_open')
 
     inlines = [HouseMemberInline]
+
+    actions = [open_signup, close_signup, open_signout, close_signout]
 
     def has_add_permission(self, request, obj=None):
         return False
