@@ -141,6 +141,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     fraction = serializers.SerializerMethodField()
     groups = serializers.SerializerMethodField()
     sober_duty = serializers.SerializerMethodField()
+    push_notifications_registered = serializers.SerializerMethodField()
 
     def get_fraction(self, obj):
         return GroupSerializer( Group.objects.filter(Q(groupmember__user=obj) | Q(groupwarden__user=obj), type__name="Frakcja").first(), context=self.context ).data
@@ -150,10 +151,13 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     def get_sober_duty(self, obj):
         return SoberDutySerializer(SoberDuty.objects.filter(user=obj), many=True).data
+    
+    def get_push_notifications_registered(self, user):
+        return user.userfcmtoken_set.exists()
 
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'email', 'groups', 'fraction', 'bandId', 'photo', 'title', 'bus', 'diet', 'freenow_code', 'house', 'sober_duty')
+        fields = ('id', 'first_name', 'last_name', 'email', 'groups', 'fraction', 'bandId', 'photo', 'title', 'bus', 'diet', 'freenow_code', 'house', 'sober_duty', 'push_notifications_registered')
         depth = 1
 
 class ProfileViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):

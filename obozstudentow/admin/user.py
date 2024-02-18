@@ -89,8 +89,6 @@ class CustomUserChangeForm(UserChangeForm):
 
 class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
     form = CustomUserChangeForm
-    # def get_queryset(self, request):
-    #     return self.model.objects.filter(groups=None)
 
     def frakcja(self, user):
         groups = []
