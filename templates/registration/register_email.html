@@ -15,10 +15,6 @@
     <style type="text/css">
       /* CLIENT-SPECIFIC STYLES */
 
-      @font-face {
-        font-family: "Sui Generis";
-        src: url('https://appka.obozstudentowpwr.com/static/sui\ generis\ rg.ttf') format("truetype");
-    }
 
       body,
       table,
@@ -48,6 +44,7 @@
         border-collapse: collapse !important;
       }
       body {
+        /* THEME COLORS */
         background-color: #254582;
         height: 100% !important;
         margin: 0 !important;
@@ -88,6 +85,7 @@
       /* These rules set the link and hover states, making it clear that links are, in fact, links. */
       /* Embrace established conventions like underlines on links to keep emails accessible. */
       a {
+        /* THEME COLORS */
         color: #84c6e7;
         font-weight: 600;
         text-decoration: none !important;
@@ -97,6 +95,7 @@
       }
       
       h1 {
+        /* THEME COLORS */
         color: #84c6e7;
       }
       .content {
@@ -110,6 +109,7 @@
 
     .button {
         background: #84c6e7;
+        /* THEME COLORS */
         color: #254582 !important;
     
         font-size: 15px;
@@ -152,6 +152,7 @@
       }
     </style>
   </head>
+  {% comment %} THEME COLORS {% endcomment %}
   <body style="margin: 0 !important; padding: 0 !important; background-color: #254582 !important;">
     <!-- Some preview text. -->
     <div style="display: none; max-height: 0; overflow: hidden;">Rejestracja na Obóz Zimowy PWR 2024</div>
@@ -164,7 +165,7 @@
         <![endif] -->
     <!-- The role and aria-label attributes are added to wrap the email content as an article for screen readers. Some of them will read out the aria-label as the title of the document, so use something like "An email from Your Brand Name" to make it recognizable. -->
     <!-- Default styling of text is applied to the wrapper div. Be sure to use text that is large enough and has a high contrast with the background color for people with visual impairments. -->
-    <div role="article" aria-label="Email rejestracyjny na Obóz Studentów PWR" lang="pl" style="background-color: transparent; color: white; font-family: 'Sui Generis', 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; font-size: 15px; font-weight: 400; line-height: 28px; margin: 0 auto; max-width: 600px; padding: 40px 20px 40px 20px;">
+    <div role="article" aria-label="Email rejestracyjny na Obóz Studentów PWR" lang="pl" style="background-color: transparent; color: white; font-family: 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; font-size: 15px; font-weight: 400; line-height: 28px; margin: 0 auto; max-width: 600px; padding: 40px 20px 40px 20px;">
       <!-- Logo section and header. Headers are useful landmark elements. -->
       <header>
         <!-- Since this is a purely decorative image, we can leave the alternative text blank. -->
@@ -200,6 +201,7 @@
           <p>
           
             {% block reset_link %}
+            {% comment %} THEME COLORS {% endcomment %}
             <a href="{{ protocol }}://{{ domain }}{% url 'register_confirm' uidb64=uid token=token %}" style="color: #254582">
                 <div class="pill button" >
                     Ustal swoje hasło
@@ -223,6 +225,7 @@
 
         <p style="font-size: 12px; font-weight: 300; line-height: 24px; margin-top: 16px; color: #ffffffaa !important">
          Jeżeli powyższy link nie działa, skopiuj i wklej poniższy adres do przeglądarki:
+          {% comment %} /* THEME COLORS */ {% endcomment %}
          <span style="color: #84c6e7 !important;">{{ protocol }}://{{ domain }}{% url 'register_confirm' uidb64=uid token=token %}</span>
         </p>
 

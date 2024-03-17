@@ -7,6 +7,7 @@
     "lang": "pl",
     "scope": "/",
     "themeColor": "#84c6e7",
+    "comment1": "/* THEME COLORS */",
     "msTileColor": "#000000",
     "orientation": "portrait-primary",
     "description": "Aplikacja mobilna Obóz Studentów PWr",
