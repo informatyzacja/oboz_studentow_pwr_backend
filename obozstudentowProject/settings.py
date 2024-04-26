@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import os, json
 from dotenv import load_dotenv
+from datetime import timedelta
 
 def get_secret(key, default):
     value = os.getenv(key, default)
@@ -63,7 +64,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     'import_export',
-    'orderable'
+    'orderable',
+    'rest_framework_simplejwt',
 ]
 
 if DEBUG:
@@ -111,7 +113,6 @@ CHANNEL_LAYERS = json.loads(os.getenv("CHANNEL_LAYERS", '''{
 	}
 }'''))
 
-AUTHENTICATION_BACKENDS = ['obozstudentowProject.urls.EmailLoginBackend']
 
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "webmaster@localhost")
 EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
@@ -204,7 +205,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.AnonRateThrottle',
@@ -219,8 +221,13 @@ REST_FRAMEWORK = {
     )
 }
 
-if DEBUG:
-    REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'].append('rest_framework.authentication.TokenAuthentication')
+SIMPLE_JWT = {
+    "REFRESH_TOKEN_LIFETIME": timedelta(weeks=250),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+}
+
+# if DEBUG:
+#     REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'].append('rest_framework.authentication.TokenAuthentication')
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 25*1024*1024
 

@@ -28,61 +28,52 @@ from django.shortcuts import redirect
 
 import obozstudentow.views
 
-class EmailLoginBackend(ModelBackend):
-    def authenticate(self, request, username=None, password=None, **kwargs):
-        UserModel = get_user_model()
-        try:
-            user = UserModel.objects.get(email=username)
-        except UserModel.DoesNotExist:
-            return None
-        else:
-            if user.check_password(password):
-                return user
-        return None
-    
-def app(request, resource=None):
-    if request.user.is_authenticated:
-        return render(request, 'app.html')
-    return redirect('login')
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenVerifyView
+)
 
 def index(request, resource=None):
     if request.user.is_authenticated:
-        return redirect('app')
+        return redirect('admin')
     return render(request, 'index.html')
 
 urlpatterns = [
 
     path('', index, name="index"),
-    path('app/', app, name="app"),
-    path('app/<path:resource>', app, name="app2"),
+
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
 
     path('staff-api/', include('obozstudentow.api.staff.urls')),
 
-    path("admin/", admin.site.urls),
-    path('api-auth/', include('rest_framework.urls')),
+    path("admin/", admin.site.urls, name="admin"),
+    # path('api-auth/', include('rest_framework.urls')),
     path('api/', include(obozstudentow.api.api_router.urls)),
     path('api2/', include('obozstudentow.api.urls')),
 
     path('download-image/<int:image_id>/', obozstudentow.views.download_image, name='download'),
 
 
-    # login/logout
-    path("login/", auth_views.LoginView.as_view(redirect_authenticated_user=True), name="login"),
-    path("logout/", auth_views.LogoutView.as_view(), name="logout"),
+    # # login/logout
+    # path("login/", auth_views.LoginView.as_view(redirect_authenticated_user=True), name="login"),
+    # path("logout/", auth_views.LogoutView.as_view(), name="logout"),
 
-    # register
-    path('register/', auth_views.PasswordResetView.as_view(template_name='registration/register.html', email_template_name='registration/register_email.txt', html_email_template_name='registration/register_email.html', subject_template_name='registration/register_email_subject.txt' , success_url='done/'), name='register'),
-    path('register/done/', auth_views.PasswordResetDoneView.as_view(template_name='registration/register_done.html'), name='register_done'),
+    # # register
+    # path('register/', auth_views.PasswordResetView.as_view(template_name='registration/register.html', email_template_name='registration/register_email.txt', html_email_template_name='registration/register_email.html', subject_template_name='registration/register_email_subject.txt' , success_url='done/'), name='register'),
+    # path('register/done/', auth_views.PasswordResetDoneView.as_view(template_name='registration/register_done.html'), name='register_done'),
 
-    path('register/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='registration/register_confirm.html', success_url=reverse_lazy('register_complete'), post_reset_login=True), name='register_confirm'),
-    path('register/complete/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/register_complete.html'), name='register_complete'),
+    # path('register/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='registration/register_confirm.html', success_url=reverse_lazy('register_complete'), post_reset_login=True), name='register_confirm'),
+    # path('register/complete/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/register_complete.html'), name='register_complete'),
 
-    # password reset
-    path('password_reset/', auth_views.PasswordResetView.as_view(template_name='password_reset/password_reset.html', email_template_name='password_reset/password_reset_email.html', success_url='done/'), name='password_reset'),
-    path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='password_reset/password_reset_done.html'), name='password_reset_done'),
+    # # password reset
+    # path('password_reset/', auth_views.PasswordResetView.as_view(template_name='password_reset/password_reset.html', email_template_name='password_reset/password_reset_email.html', success_url='done/'), name='password_reset'),
+    # path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='password_reset/password_reset_done.html'), name='password_reset_done'),
 
-    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='password_reset/password_reset_confirm.html', success_url=reverse_lazy('password_reset_complete')), name='password_reset_confirm'),
-    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='password_reset/password_reset_complete.html'), name='password_reset_complete'),
+    # path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='password_reset/password_reset_confirm.html', success_url=reverse_lazy('password_reset_complete')), name='password_reset_confirm'),
+    # path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='password_reset/password_reset_complete.html'), name='password_reset_complete'),
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
