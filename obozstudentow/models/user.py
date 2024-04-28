@@ -39,6 +39,8 @@ class User(AbstractUser):
 
     house = models.ForeignKey('House', on_delete=models.SET_NULL, null=True, blank=True)
 
+    verification_code = models.IntegerField(null=True, blank=True)
+    verification_code_valid_until_datetime = models.DateTimeField(null=True, blank=True)
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -57,7 +59,7 @@ class User(AbstractUser):
     
     @admin.display(
         boolean=True,
-        description='Ma opaske?',
+        description='Ma opaskę?',
     )
     def has_band(self):
         return bool(self.bandId)
