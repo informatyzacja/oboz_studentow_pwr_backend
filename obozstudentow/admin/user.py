@@ -130,7 +130,7 @@ class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         (_("Personal info"), {"fields": ("first_name", "last_name")}),
-        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "diet", "bus", 'birthDate', 'freenow_code', 'house')}),
+        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "diet", "bus", 'birthDate', 'house')}),
         (
             _("Permissions"),
             {
@@ -164,7 +164,7 @@ class KadraAdmin(ParticipantAdmin):
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         (_("Personal info"), {"fields": ("first_name", "last_name")}),
-        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "diet", "bus", 'birthDate', 'freenow_code', 'house')}),
+        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "diet", "bus", 'birthDate', 'house')}),
         (
             _("Permissions"),
             {
@@ -214,7 +214,7 @@ class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         (_("Personal info"), {"fields": ("first_name", "last_name")}),
-        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "diet", "bus", 'birthDate', 'freenow_code', 'house')}),
+        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "diet", "bus", 'birthDate', 'house')}),
         (
             _("Permissions"),
             {

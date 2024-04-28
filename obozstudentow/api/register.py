@@ -45,11 +45,12 @@ def send_email_verification(request):
 
     if not user:
         return Response({'exists': False})
+    
+    if not user.verification_code or user.verification_code_valid_until_datetime < timezone.now():
+        user.verification_code = random.randint(10000000, 99999999)
+        user.verification_code_valid_until_datetime = timezone.now() + timezone.timedelta(minutes=30)
 
-    user.verification_code = random.randint(10000000, 99999999)
-    user.verification_code_valid_until_datetime = timezone.now() + timezone.timedelta(minutes=30)
-
-    user.save()
+        user.save()
 
     # send email to user with verification code
     response = send_verification_email(user)

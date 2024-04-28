@@ -157,7 +157,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'email', 'groups', 'fraction', 'bandId', 'photo', 'title', 'bus', 'diet', 'freenow_code', 'house', 'sober_duty', 'push_notifications_registered')
+        fields = ('id', 'first_name', 'last_name', 'email', 'groups', 'fraction', 'bandId', 'photo', 'title', 'bus', 'diet', 'house', 'sober_duty', 'push_notifications_registered')
         depth = 1
 
 class ProfileViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
