@@ -20,11 +20,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from django.contrib.auth import views as auth_views
-from django.shortcuts import render
-from django.contrib.auth import get_user_model
-from django.contrib.auth.backends import ModelBackend
 from django.urls import reverse_lazy
-from django.shortcuts import redirect
+from django.views.generic import RedirectView
 
 import obozstudentow.views
 
@@ -34,15 +31,13 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView
 )
 
-def index(request, resource=None):
-    if request.user.is_authenticated:
-        return redirect('admin')
-    return render(request, 'index.html')
+admin.site.site_header = "Panel administracyjny Obozu Studentów PWr"
+admin.site.site_title = "Panel administracyjny Obozu Studentów PWr"
+admin.site.index_title = "Witaj w panelu administracyjnym Obozu Studentów PWr"
+
+auth_views.site_header = "ObozStudentow"
 
 urlpatterns = [
-
-    path('', index, name="index"),
-
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
@@ -50,30 +45,20 @@ urlpatterns = [
     path('staff-api/', include('obozstudentow.api.staff.urls')),
 
     path("admin/", admin.site.urls, name="admin"),
-    # path('api-auth/', include('rest_framework.urls')),
     path('api/', include(obozstudentow.api.api_router.urls)),
     path('api2/', include('obozstudentow.api.urls')),
 
     path('download-image/<int:image_id>/', obozstudentow.views.download_image, name='download'),
 
 
-    # # login/logout
-    # path("login/", auth_views.LoginView.as_view(redirect_authenticated_user=True), name="login"),
-    # path("logout/", auth_views.LogoutView.as_view(), name="logout"),
-
     # # register
-    # path('register/', auth_views.PasswordResetView.as_view(template_name='registration/register.html', email_template_name='registration/register_email.txt', html_email_template_name='registration/register_email.html', subject_template_name='registration/register_email_subject.txt' , success_url='done/'), name='register'),
-    # path('register/done/', auth_views.PasswordResetDoneView.as_view(template_name='registration/register_done.html'), name='register_done'),
+    path('register/', auth_views.PasswordResetView.as_view(email_template_name='registration/register_email.txt', subject_template_name='registration/register_email_subject.txt' , success_url='done/', title='Rejestracja'), name='register'),
 
-    # path('register/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='registration/register_confirm.html', success_url=reverse_lazy('register_complete'), post_reset_login=True), name='register_confirm'),
-    # path('register/complete/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/register_complete.html'), name='register_complete'),
+    path('register/done/', auth_views.PasswordResetDoneView.as_view(), name='register_done'),
 
-    # # password reset
-    # path('password_reset/', auth_views.PasswordResetView.as_view(template_name='password_reset/password_reset.html', email_template_name='password_reset/password_reset_email.html', success_url='done/'), name='password_reset'),
-    # path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(template_name='password_reset/password_reset_done.html'), name='password_reset_done'),
+    path('register/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(success_url=reverse_lazy('register_complete'), post_reset_login=True), name='register_confirm'),
 
-    # path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='password_reset/password_reset_confirm.html', success_url=reverse_lazy('password_reset_complete')), name='password_reset_confirm'),
-    # path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='password_reset/password_reset_complete.html'), name='password_reset_complete'),
+    path('register/complete/', auth_views.PasswordResetCompleteView.as_view(title = "Hasło ustawione"), name='register_complete'),
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

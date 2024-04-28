@@ -14,9 +14,6 @@ from django.utils.translation import gettext_lazy as _
 from ..models import Link, FAQ, ScheduleItem, User, Icons, HomeLink
 
 
-admin.site.site_header = "Panel administracyjny Obozu Zimowego PWr 2024"
-admin.site.site_title = "Panel administracyjny Obozu  Zimowego PWr 2024"
-admin.site.index_title = "Witaj w panelu administracyjnym Obozu Zimowego PWr 2024"
 
 class LinkAdmin(OrderableAdmin):
     list_display = ('name', 'url', 'icon', 'sort_order_display')

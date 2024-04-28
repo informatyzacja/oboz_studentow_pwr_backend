@@ -195,10 +195,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "obozstudentow.User"
 
-LOGIN_URL = "/login/"
-LOGOUT_URL = "/logout/"
-LOGIN_REDIRECT_URL = "/app/"
-LOGOUT_REDIRECT_URL = "/"
+LOGIN_URL = "/admin/login/"
+LOGOUT_URL = "/admin/logout/"
+LOGIN_REDIRECT_URL = "/admin/"
+LOGOUT_REDIRECT_URL = "/admin/login/"
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
