@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import permission_required
 from rest_framework import serializers
 
 from ...models import Point, PointType, GroupType, Group
-from .. import PersonSerializer, GroupSerializer, GroupTypeSerializer
+from .. import StaffSerializer, GroupSerializer, GroupTypeSerializer
 
 from django.utils import timezone
 
@@ -14,10 +14,10 @@ class PointsSerializer(serializers.ModelSerializer):
     validatedBy = serializers.SerializerMethodField()
 
     def get_addedBy(self, obj):
-        return PersonSerializer(obj.addedBy).data
+        return StaffSerializer(obj.addedBy).data
     
     def get_validatedBy(self, obj):
-        return PersonSerializer(obj.validatedBy).data
+        return StaffSerializer(obj.validatedBy).data
 
     class Meta:
         model = Point

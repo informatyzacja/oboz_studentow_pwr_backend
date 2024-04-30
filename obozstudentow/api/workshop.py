@@ -5,7 +5,7 @@ from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework import status
 
-from .people import PersonSerializer
+from .people import StaffSerializer, ParticipantForStaffSerializer
 
 from ..models import Workshop, WorkshopSignup, WorkshopLeader, User, Setting
 
@@ -23,10 +23,10 @@ class WorkshopSerializer(serializers.ModelSerializer):
         return obj.workshopsignup_set.count()
     
     def get_workshopleaders(self, obj):
-        return PersonSerializer( User.objects.filter(id__in=obj.workshopleader_set.values('user')), context=self.context, many=True).data
+        return StaffSerializer( User.objects.filter(id__in=obj.workshopleader_set.values('user')), context=self.context, many=True).data
 
     def get_workshopusers(self, obj):
-        return PersonSerializer(
+        return ParticipantForStaffSerializer(
             User.objects.filter(id__in = obj.workshopsignup_set.values('user') ) if (self.context['request'].user.id in obj.workshopleader_set.values_list('user', flat=True)) else User.objects.none()
         ,context=self.context, many=True ).data
 

@@ -27,16 +27,20 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     username=None
     email = models.EmailField(unique=True)
-    phoneNumber = models.CharField(max_length=9, blank=True, null=True)
+    phoneNumber = models.CharField(max_length=12, blank=True, null=True)
     bandId = models.CharField(max_length=6, blank=True, null=True, unique=True)
     photo = ResizedImageField(upload_to='users', blank=True, null=True, force_format=None) 
     title = models.CharField(max_length=100, blank=True, null=True) # e.g. "Koordynator"
     diet = models.CharField(max_length=100, blank=True, null=True) # e.g. "wegetariańska"
     bus = models.ForeignKey(Bus, on_delete=models.SET_NULL, null=True, blank=True)
-    birthDate = models.DateField(blank=True, null=True)
-    gender = models.CharField(max_length=1, blank=True, null=True)
 
     house = models.ForeignKey('House', on_delete=models.SET_NULL, null=True, blank=True)
+
+    # poufne
+    birthDate = models.DateField(blank=True, null=True)
+    gender = models.CharField(max_length=1, blank=True, null=True)
+    ice_number = models.CharField(max_length=12, blank=True, null=True)
+    additional_health_info = models.TextField(blank=True, null=True)
 
     verification_code = models.IntegerField(null=True, blank=True)
     verification_code_valid_until_datetime = models.DateTimeField(null=True, blank=True)

@@ -47,7 +47,7 @@ class ScheduleItemViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 api_router.register(r'schedule', ScheduleItemViewSet)
 
 
-from .people import PersonSerializer
+from .people import StaffSerializer
 
 from ..models import Announcement
 class AnnouncementSerializer(serializers.ModelSerializer):
@@ -55,7 +55,7 @@ class AnnouncementSerializer(serializers.ModelSerializer):
     group = serializers.SerializerMethodField()
 
     def get_addedBy(self, obj):
-        return PersonSerializer(obj.addedBy, context={'request': self.context['request']}).data
+        return StaffSerializer(obj.addedBy, context={'request': self.context['request']}).data
     
     def get_group(self, obj):
         return GroupSerializer(obj.group, context={'request': self.context['request']}).data
@@ -120,10 +120,10 @@ class GroupWithMembersSerializer(serializers.ModelSerializer):
     members = serializers.SerializerMethodField()
 
     def get_wardens(self, obj):
-        return PersonSerializer( User.objects.filter(id__in=GroupWarden.objects.filter(group=obj).values('user')), many=True, context=self.context ).data
+        return StaffSerializer( User.objects.filter(id__in=GroupWarden.objects.filter(group=obj).values('user')), many=True, context=self.context ).data
     
     def get_members(self, obj):
-        return PersonSerializer( User.objects.filter(id__in=GroupMember.objects.filter(group=obj).values('user')), many=True, context=self.context ).data
+        return ParticipantForAnotherParticipantSerializer( User.objects.filter(id__in=GroupMember.objects.filter(group=obj).values('user')), many=True, context=self.context ).data
 
     class Meta:
         model = Group

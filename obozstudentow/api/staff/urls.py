@@ -8,7 +8,9 @@ from .announcements import *
 urlpatterns = [
     path('meal-validation/', include('obozstudentow.api.staff.meals')),
     path('get-user-info/', get_user_info),
+    path('get-confidential-user-info/', get_user_confidential_info),
     path('get-user-group/', get_user_group),
+    path('get-house-info/', get_house_info),
 
     path('get-fraction/', get_fraction),
     path('get-fractions/', get_fractions),

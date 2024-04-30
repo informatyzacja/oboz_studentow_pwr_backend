@@ -5,12 +5,15 @@ from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework import status
 
-from .people import PersonSerializer, UserSerializer
-
 from ..models import House, HouseSignupProgress, User
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+
+class HouseLocatorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('bandId', 'first_name', 'last_name')
 
 class HouseSignupProgressSerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,7 +24,7 @@ class HouseSerializer(serializers.ModelSerializer):
     locators_data = serializers.SerializerMethodField()
 
     def get_locators_data(self, obj):
-        return UserSerializer( User.objects.filter(house=obj), many=True, context=self.context ).data
+        return HouseLocatorSerializer( User.objects.filter(house=obj), many=True, context=self.context ).data
 
     class Meta:
         model = House
@@ -103,7 +106,7 @@ def signup_user_for_house(request, id):
                         'house': progress.house.id,
                         'progress': None,
                         'locators': progress.house.locators(),
-                        'locators_data': UserSerializer( User.objects.filter(house=progress.house), many=True ).data,
+                        'locators_data': HouseLocatorSerializer( User.objects.filter(house=progress.house), many=True ).data,
                     }
                 )
                 progress.delete()
@@ -131,7 +134,7 @@ def signup_user_for_house(request, id):
                 'house': house.id,
                 'progress': HouseSignupProgressSerializer(progress).data,
                 'locators': house.locators(),
-                'locators_data': UserSerializer( User.objects.filter(house=house), many=True ).data,
+                'locators_data': HouseLocatorSerializer( User.objects.filter(house=house), many=True ).data,
             }
         )
         
@@ -167,7 +170,7 @@ def leave_house(request):
             'event': 'update',
             'house': house.id,
             'locators': house.locators(),
-            'locators_data': UserSerializer( User.objects.filter(house=house), many=True ).data,
+            'locators_data': HouseLocatorSerializer( User.objects.filter(house=house), many=True ).data,
         }
     )
 

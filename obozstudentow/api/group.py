@@ -5,7 +5,7 @@ from ..models import Group, GroupMember, GroupWarden, GroupType, UserFCMToken
 
 from .notifications import send_notification
 
-from .people import PersonSerializer
+from .people import StaffSerializer
 from ..models import User
 
 from django.utils import timezone
@@ -16,7 +16,7 @@ class GroupSerializer(serializers.ModelSerializer):
     wardens = serializers.SerializerMethodField()
 
     def get_wardens(self, obj):
-        return PersonSerializer( User.objects.filter(id__in=GroupWarden.objects.filter(group=obj).values('user')), many=True, context=self.context ).data
+        return StaffSerializer( User.objects.filter(id__in=GroupWarden.objects.filter(group=obj).values('user')), many=True, context=self.context ).data
 
     class Meta:
         model = Group
