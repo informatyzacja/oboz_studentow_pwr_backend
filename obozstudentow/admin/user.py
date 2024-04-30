@@ -215,7 +215,7 @@ class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
         (None, {"fields": ("email", "password")}),
         (_("Personal info"), {"fields": ("first_name", "last_name")}),
         ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "diet", "bus", 'house')}),
-        ("Poufne informacje", {"fields": ('birthDate', 'ice_number', 'additional_health_info', 'gender'), 'classes': ('collapse',)}),
+        ("Poufne informacje", {"fields": ('birthDate', 'ice_number', 'additional_health_info', 'gender', 'pesel'), 'classes': ('collapse',)}),
         (
             _("Permissions"),
             {

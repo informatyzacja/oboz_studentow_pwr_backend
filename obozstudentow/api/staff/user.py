@@ -44,7 +44,7 @@ def get_user_info(request):
 class ParticipantConfidentialInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'birthDate', 'gender', 'ice_number', 'additional_health_info')
+        fields = ('id', 'birthDate', 'gender', 'ice_number', 'additional_health_info', 'pesel')
         depth = 1
 
 @api_view(['GET'])

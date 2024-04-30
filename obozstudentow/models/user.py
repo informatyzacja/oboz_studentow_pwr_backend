@@ -41,6 +41,7 @@ class User(AbstractUser):
     gender = models.CharField(max_length=1, blank=True, null=True)
     ice_number = models.CharField(max_length=12, blank=True, null=True)
     additional_health_info = models.TextField(blank=True, null=True)
+    pesel = models.CharField(max_length=11, blank=True, null=True)
 
     verification_code = models.IntegerField(null=True, blank=True)
     verification_code_valid_until_datetime = models.DateTimeField(null=True, blank=True)
