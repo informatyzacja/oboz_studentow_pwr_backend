@@ -1,4 +1,5 @@
 
+from django.http import HttpRequest
 from import_export.admin import ImportExportModelAdmin
 
 from django.contrib import admin
@@ -251,34 +252,30 @@ class SztabAdmin(CustomUserAdmin):
 admin.site.register(Sztab, SztabAdmin)
 
 
+class Opaski(User):
+    class Meta:
+        proxy = True
+        verbose_name = 'Opaski'
+        verbose_name_plural = 'Opaski'
 
-from ..models import HouseCollocationForImport, House
-from django.contrib import messages
+@admin.register(Opaski)
+class OpaskiAdmin(CustomUserAdmin):
+    actions = [remove_bands, create_temporary_bands]
 
-@admin.action(description='Przypisz domki do uczestników')
-def assign_houses(modeladmin, request, queryset):
-    added = 0
-    for house in queryset:
-        try:
-            user = User.objects.get(bandId=house.bandId.zfill(6))
-            if user.house:
-                messages.error(request, f'Uczestnik z opaską {user.bandId} ma już przypisany domek {user.house}')
-                continue
-            user.house = House.objects.get(name=house.house)
-            user.save()
-            house.delete()
-            added += 1
-        except User.DoesNotExist:
-            messages.error(request, f'Nie znaleziono uczestnika z opaską {house.bandId}')
-        except House.DoesNotExist:
-            messages.error(request, f'Nie znaleziono domku {house.house}')
+    list_display = ('first_name', 'last_name', 'bandId', 'bus')
 
-    messages.success(request, f'Przypisano {added} z {queryset.count()} domków')
+    list_filter = ('bus',)
 
+    search_fields = ('first_name', 'last_name', 'bandId', 'bus__name')
 
-# @admin.register(HouseCollocationForImport)
-# class HouseCollocationForImportAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-#     list_display = ('house', 'bandId')
-#     list_per_page = 400
+    fieldsets = (
+        (None, {"fields": ("bandId",)}),
+        ("Informacje", {"fields": ("bus",)}),
+    )
 
-#     actions = [assign_houses]
+    readonly_fields = ('bus', )
+
+    inlines = []
+
+    def has_delete_permission(self, *args, **kwargs) -> bool:
+        return False
