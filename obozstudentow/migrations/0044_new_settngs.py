@@ -7,7 +7,7 @@ def create_settings(apps, schema_editor):
 
     Setting.objects.create(name="night_game_date", value="2023-09-06", description="Data nocnej gry (między innymi do weryfikacji wieku +18)")
     
-    Setting.objects.filter(name="group_limit").update(description = "Liczba grup, które mogą się zapisać na grę nocną (zostawić 0 do czasu startu zapisów)")
+    Setting.objects.filter(name="group_limit").update(description = "Liczba grup, które mogą się zapisać na grę nocną")
     Setting.objects.filter(name="group_user_min").update(description = "Minimalna liczba osób w grupie na grę nocną")
     Setting.objects.filter(name="group_user_max").update(description = "Maksymalna liczba osób w grupie na grę nocną")
     

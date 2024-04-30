@@ -42,6 +42,12 @@ from ..models import Setting
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+def night_game_signup_active():
+    active = Setting.objects.get(name="night_game_signup_active").value.lower() == 'true'
+    if active and Setting.objects.get(name="night_game_signup_start_datetime").value:
+        active = timezone.datetime.strptime(Setting.objects.get(name="night_game_signup_start_datetime").value, '%Y-%m-%d %H:%M') <= timezone.now()
+
+    return active
 
 @api_view(['GET'])
 def get_group_signup_info(request):
@@ -50,9 +56,9 @@ def get_group_signup_info(request):
     group_user_max = int(Setting.objects.get(name="group_user_max").value)
     user_in_group = GroupMember.objects.filter(user=request.user).filter(~Q(group__type__name="Frakcja")).exists()
     night_game_date = Setting.objects.get(name="night_game_date").value
-    night_game_signup_active = Setting.objects.get(name="night_game_signup_active").value.lower() == 'true'
+    night_game_signup_start_datetime = Setting.objects.get(name="night_game_signup_start_datetime").value
 
-    return Response({'free_places': free_places, 'group_user_min': group_user_min, 'group_user_max': group_user_max, 'user_in_group': user_in_group, 'night_game_date': night_game_date, 'night_game_signup_active':night_game_signup_active})
+    return Response({'free_places': free_places, 'group_user_min': group_user_min, 'group_user_max': group_user_max, 'user_in_group': user_in_group, 'night_game_date': night_game_date, 'night_game_signup_active':night_game_signup_active(), 'night_game_signup_start_datetime': night_game_signup_start_datetime})
 
 from ..models import NightGameSignup
 
@@ -63,8 +69,7 @@ def signup_group(request):
         if not free_places:
             return Response({'success':False, 'error': 'Brak wolnych miejsc','error_code': 1})
         
-        night_game_signup_active = Setting.objects.get(name="night_game_signup_active").value.lower() == 'true'
-        if not night_game_signup_active:
+        if not night_game_signup_active():
             return Response({'success':False, 'error': 'Zapisy nieaktywne','error_code': 10})
         
         if not 'group_name' in request.data:

@@ -31,15 +31,20 @@ class HouseSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'places', 'floor', 'locators', 'locators_data', 'housesignupprogress', 'description', 'signup_open', 'signout_open')
         depth = 1
 
+def house_signups_active():
+    active = Setting.objects.get(name='house_signups_active').value.lower() == 'true'
+    if active and Setting.objects.get(name='house_signup_start_datetime').value:
+        active = timezone.datetime.strptime(Setting.objects.get(name='house_signup_start_datetime').value, '%Y-%m-%d %H:%M') <= timezone.now()
+
+    return active
+
 class HouseViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = House.objects.order_by('floor','name')
     serializer_class = HouseSerializer
     
 
     def get_queryset(self):
-        house_signups_active = Setting.objects.get_or_create(name='house_signups_active', defaults={'value': 'false', 'description': 'Czy zapisy na domki/pokoje są aktywne?'})[0].value.lower() == 'true'
-
-        if not house_signups_active:
+        if not house_signups_active():
             return self.queryset.none()
 
         return self.queryset.annotate(Count("user")).filter(Q(places__gt=F("user__count")) | Q(id = self.request.user.house.id if self.request.user.house else None)).order_by('floor','name')
@@ -54,9 +59,7 @@ from django.db import transaction
 def signup_user_for_house(request, id):
     room_instead_of_house = Setting.objects.get_or_create(name='room_instead_of_house', defaults={'value': 'false', 'description': 'Czy zamienić nazwę "domek" na "pokój" w opisach?'})[0].value.lower() == 'true'
 
-    house_signups_active = Setting.objects.get_or_create(name='house_signups_active', defaults={'value': 'false', 'description': 'Czy zapisy na domki/pokoje są aktywne?'})[0].value.lower() == 'true'
-
-    if not house_signups_active:
+    if not house_signups_active():
         return Response({'success': False, 'error': f'Zapisy na {"pokoje" if room_instead_of_house else "domki"} są obecnie wyłączone'})
 
     if not House.objects.filter(id=id).exists():
@@ -148,10 +151,8 @@ def leave_house(request):
 
     if request.user.house is None:
         return Response({'success': False, 'error': f'Nie jesteś zapisany do żadnego {"pokoju" if room_instead_of_house else "domku"}'})
-    
-    house_signups_active = Setting.objects.get_or_create(name='house_signups_active', defaults={'value': 'false', 'description': 'Czy zapisy na domki/pokoje są aktywne?'})[0].value.lower() == 'true'
 
-    if not house_signups_active:
+    if not house_signups_active():
         return Response({'success': False, 'error': f'Zapisy na {"pokoje" if room_instead_of_house else "domki"} są obecnie wyłączone'})
     
     house = request.user.house
@@ -182,6 +183,4 @@ def leave_house(request):
 def get_house_signups_info(request):
     room_instead_of_house = Setting.objects.get_or_create(name='room_instead_of_house', defaults={'value': 'false', 'description': 'Czy zamienić nazwę "domek" na "pokój" w opisach?'})[0].value.lower() == 'true'
 
-    house_signups_active = Setting.objects.get_or_create(name='house_signups_active', defaults={'value': 'false', 'description': 'Czy zapisy na domki/pokoje są aktywne?'})[0].value.lower() == 'true'
-
-    return Response({'room_instead_of_house': room_instead_of_house, 'house_signups_active': house_signups_active, })
+    return Response({'room_instead_of_house': room_instead_of_house, 'house_signups_active': house_signups_active(), 'house_signup_start_datetime': Setting.objects.get(name='house_signup_start_datetime').value })
