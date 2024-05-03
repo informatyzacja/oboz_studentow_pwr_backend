@@ -14,8 +14,6 @@ import random
 
 from django.core.mail import send_mail
 
-from django.db import transaction
-
 from rest_framework_simplejwt.tokens import RefreshToken
 
 def send_verification_email(user: User):

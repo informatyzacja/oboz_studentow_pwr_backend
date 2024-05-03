@@ -96,3 +96,15 @@ class UserFCMToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     token = models.CharField(max_length=200)
     date = models.DateTimeField(auto_now_add=True)
+
+
+class TinderProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    description = models.TextField(blank=True, null=True)
+    photo = ResizedImageField(upload_to='tinder', blank=True, null=True, force_format=None)
+
+class TinderAction(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    target = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tinderaction_target')
+    action = models.SmallIntegerField(choices=[(0, 'dislike'), (1, 'like'), (2, 'superlike')])
+    date = models.DateTimeField(auto_now_add=True)

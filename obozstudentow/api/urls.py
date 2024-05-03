@@ -4,6 +4,16 @@ from .group import *
 from .notifications import *
 from .houses import *
 from .register import *
+from .tinder import *
+
+# /api2/tinder/
+tinderurlpatterns = [
+    path('upload-profile-photo/', uploadProfilePhoto),
+    path('upload-profile-data/', uploadProfileData),
+    
+    path('load-profiles/', loadTinderProfiles),
+    path('action/', tinderAction),
+]
 
 # /api2/
 urlpatterns = [
@@ -18,4 +28,6 @@ urlpatterns = [
 
     path('send_email_verification/', send_email_verification),
     path('login_with_code/', login_with_code),
+
+    path('tinder/', include(tinderurlpatterns)),
 ]
