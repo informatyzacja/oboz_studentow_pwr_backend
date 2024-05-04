@@ -120,7 +120,7 @@ class HouseMemberInline(admin.TabularInline):
     verbose_name = "Lokator"
     verbose_name_plural = "Lokatorzy"
     fields = ('first_name', 'last_name', 'email', 'bandId')
-    readonly_fields = ('first_name', 'last_name', 'email', 'bandId')
+    readonly_fields = ('first_name', 'last_name', 'email', 'bandId', 'chat')
     can_delete = False
 
     def has_add_permission(self, request, obj=None):
@@ -149,6 +149,7 @@ def close_signout(modeladmin, request, queryset):
 class HouseAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('name', 'key_collected', 'locators', 'places', 'full', 'floor')
     search_fields = ('name','floor', 'user__first_name', 'user__last_name', 'user__email')
+    readonly_fields = ('chat',)
 
     list_filter = ('key_collected','floor')
 

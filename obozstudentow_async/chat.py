@@ -15,7 +15,7 @@ from django.contrib.auth.models import AnonymousUser
 
 from django.utils import timezone
 
-from .models import Message
+from .models import Message, Chat
 
 @database_sync_to_async
 def get_user(user_id):
@@ -31,25 +31,28 @@ def get_user_house(user):
 	return user.house.pk
 
 @database_sync_to_async
-def save_message(message, user, group_name):
-	message = Message.objects.create(
-		message=message,
-		user=user,
-		group_name=group_name
-	)
-	message.save()
-	while Message.objects.filter(group_name=group_name).count() > 100:
-		Message.objects.filter(group_name=group_name).order_by('date')[0].delete()
-	return message
+def save_message(message, user, chat_id):
+	if user.chat_set.filter(id=chat_id).exists():
+		message = Message.objects.create(
+			message=message,
+			user=user,
+			chat = Chat.objects.get(id=chat_id)
+		)
+		message.save()
+		if Message.objects.filter(chat__id=chat_id).count() > 100:
+			Message.objects.filter(chat__id=chat_id).order_by('date')[:-100].delete()
+		return message
+	return None
 
 @database_sync_to_async
-def send_message_notification(title, content, house, excludeUser=None):
+def send_message_notification(message):
 	try:
 		# print("send message notification", title, content, house)
-		tokens = list(UserFCMToken.objects.filter(user__in=User.objects.filter(house__pk=house).exclude(id=excludeUser)).values_list('token', flat=True))
+		tokens = list(UserFCMToken.objects.filter(user__in=message.chat.users.values('id')).values_list('token', flat=True))
 		
-		response = send_notification(title, content, tokens)
-	except:
+		response = send_notification(f"{message.user.first_name} napisał/a:", message.message, tokens)
+	except Exception as e:
+		print(e)
 		pass
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -63,19 +66,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
 				await self.close()
 				return
 			
-			user = await get_user(self.user.id)
-			self.house = await get_user_house(user)
-			if not self.house:
-				await self.close()
-				return
-			
-			self.roomGroupName = "house_" + str(self.house)
-			
-			await self.channel_layer.group_add(
-				self.roomGroupName ,
-				self.channel_name
-			)
+			async for chat in self.user.chat_set.all():
+				await self.channel_layer.group_add(
+					str(chat.id),
+					self.channel_name
+				)
 			await self.accept()
+
 		except Exception as e:
 			print(e)
 			await self.close()
@@ -83,10 +80,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 	async def disconnect(self , close_code):
 		# print("disconnected")
-		await self.channel_layer.group_discard(
-			self.roomGroupName ,
-			self.channel_layer
-		)
+		if self.user.is_anonymous:
+			return
+		
+		for chat in self.user.chat_set.all():
+			await self.channel_layer.group_discard(
+				str(chat.id),
+				self.channel_name
+			)
+
 
 	async def receive(self, text_data):
 		try:
@@ -97,27 +99,32 @@ class ChatConsumer(AsyncWebsocketConsumer):
 			
 			text_data_json = json.loads(text_data)
 			message = text_data_json["message"]
-			savedMessage = await save_message(message, self.user, self.roomGroupName)
+			chat_id = text_data_json["chat"]
+			savedMessage = await save_message(message, self.user, chat_id)
+
+			if not savedMessage:
+				return
 			
-			username = self.user.first_name + " " + self.user.last_name
+			username = self.user.first_name + " " + self.user.last_name[0] + '.'
 			await self.channel_layer.group_send(
-				self.roomGroupName,{
+				chat_id, {
 					"type" : "sendMessage" ,
 					"message" : message ,
 					"username" : username ,
 					"user_id" : self.user.id ,
+					"chat" : chat_id ,
 					"date": str(timezone.now())
 				})
 			
 			#send notifications
-			await send_message_notification(f"{username} napisał/a:", message, self.house, self.user.id)
+			await send_message_notification(savedMessage)
+
 		except Exception as e:
 			print(e)
 		
 	async def sendMessage(self , event):
-		# print("send message", event)
-		message = event["message"]
-		username = event["username"]
-		user_id = event["user_id"]
-		date = event["date"]
-		await self.send(text_data = json.dumps({ "message":message ,"username":username, "user_id":user_id, "date":date }))
+		try:
+			# print("send message", event)
+			await self.send(text_data = json.dumps(event))
+		except Exception as e:
+			print(e)

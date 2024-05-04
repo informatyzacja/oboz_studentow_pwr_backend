@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from ..models import *
 from rest_framework import serializers
+from django.db.models import Count
 
 import base64
 
@@ -52,11 +53,22 @@ def loadTinderProfiles(request):
     if not TinderProfile.objects.filter(user=user).exists():
         return Response({'error': 'Brak profilu'}, status=400)
 
-    profiles = TinderProfile.objects.exclude(user=user).exclude(user__tinderaction_target__user=user).order_by('?')[:10]
+    # profiles = TinderProfile.objects.exclude(user=user).exclude(user__tinderaction_target__user=user).order_by('?')[:10]
 
-    serializer = TinderProfileSerializer(profiles, many=True)
+    # serializer = TinderProfileSerializer(profiles, context={'request': request}, many=True)
+    # data = serializer.data
 
-    return Response(serializer.data)
+    profiles = TinderProfile.objects.exclude(user=user)[0]
+    profiles = [profiles] * 10
+
+    serializer = TinderProfileSerializer(profiles, context={'request': request}, many=True)
+    data = serializer.data
+
+    import random
+    for profile in data:
+        profile['id'] = random.randint(1, 100000)
+
+    return Response(data)
 
 @api_view(['POST'])
 def tinderAction(request):
@@ -67,9 +79,12 @@ def tinderAction(request):
     
     target = User.objects.get(id=request.data.get('target'))
 
+    if target == user:
+        return Response({'error': 'Nie możesz oceniać siebie'}, status=400)
+
     action = request.data.get('action')
 
-    tinderaction = TinderAction.objects.get_or_create(user=user, target=target)[0]
+    tinderaction = TinderAction.objects.get_or_create(user=user, target=target, defaults={'action':0})[0]
 
     if action == 'like':
         tinderaction.action = 1
@@ -82,6 +97,11 @@ def tinderAction(request):
     
     tinderaction.save()
 
-    match = TinderAction.objects.filter(user=target, target=user, action__in=[1,2]).exists()
+    match = tinderaction.action in [1,2] and TinderAction.objects.filter(user=target, target=user, action__in=[1,2]).exists()
 
-    return Response({'success': True, 'match': match})
+    if match:
+        chat = Chat.objects.filter(name='tinder').filter(users=user).filter(users=target).first()
+        if not chat:
+            chat = Chat.objects.create(name='tinder')
+            chat.users.add(user, target)
+    return Response({'success': True, 'match': match, 'chat_id': chat.id if match else None})

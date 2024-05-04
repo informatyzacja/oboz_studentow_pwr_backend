@@ -1,4 +1,6 @@
+from typing import Iterable
 from django.db import models
+from obozstudentow_async.models import Chat
 
 class House(models.Model):
     name = models.CharField(max_length=10, verbose_name="Numer domku/pokoju", unique=True)
@@ -9,6 +11,8 @@ class House(models.Model):
     description = models.TextField(default=None, verbose_name="Opis", blank=True, null=True)
     signup_open = models.BooleanField(default=True, verbose_name="Czy można się zapisać?")
     signout_open = models.BooleanField(default=True, verbose_name="Czy można się wypisać?")
+
+    chat = models.ForeignKey(Chat, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Czat")
 
 
     def __str__(self):
@@ -26,6 +30,14 @@ class House(models.Model):
     class Meta:
         verbose_name = "Pokój/domek"
         verbose_name_plural = "Pokoje/domki"
+
+    def save(self, *args, **kwargs):
+        if self.places < 0:
+            self.places = 0
+        if not self.chat:
+            self.chat = Chat.objects.create(name='Czat domku nr ' + self.name)
+            self.chat.users.set(self.user_set.all())
+        super().save(*args, **kwargs)
 
 class HouseCollocationForImport(models.Model):
     house = models.CharField(max_length=10)

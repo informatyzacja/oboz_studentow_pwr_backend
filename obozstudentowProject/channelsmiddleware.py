@@ -21,7 +21,7 @@ def get_user(validated_token):
     try:
         user = get_user_model().objects.get(id=validated_token["user_id"])
         # return get_user_model().objects.get(id=toke_id)
-        print(f"{user}")
+        # print(f"{user}")
         return user
    
     except User.DoesNotExist:
@@ -51,7 +51,8 @@ class JwtAuthMiddleware(BaseMiddleware):
         else:
             #  Then token is valid, decode it
             decoded_data = jwt_decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-            print(decoded_data)
+            
+            # print(decoded_data)
             # Will return a dictionary like -
             # {
             #     "token_type": "access",

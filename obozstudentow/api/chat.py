@@ -4,6 +4,7 @@ from django.db.models import Q
 
 from obozstudentow_async.models import Message
 from ..models import User
+from obozstudentow_async.models import Chat
 
 class MessageSerializer(serializers.ModelSerializer):
     user_id = serializers.IntegerField(source='user.id')
@@ -11,14 +12,14 @@ class MessageSerializer(serializers.ModelSerializer):
     fromMe = serializers.SerializerMethodField()
 
     def get_username(self, obj):
-        return obj.user.first_name + " " + obj.user.last_name
+        return obj.user.first_name + " " + obj.user.last_name[0] + '.'
     
     def get_fromMe(self, obj):
         return obj.user == self.context['request'].user
 
     class Meta:
         model = Message
-        fields = ('id', 'message', 'username', 'user_id', 'date', 'fromMe')
+        fields = ('id', 'message', 'username', 'user_id', 'date', 'fromMe', 'chat')
 
 class MessageViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     serializer_class = MessageSerializer
@@ -26,11 +27,48 @@ class MessageViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     
     def get_queryset(self):
         queryset = super().get_queryset()
-        group_name = ('house_' + str(self.request.user.house.pk)) if self.request.user.house else None
-        if group_name is not None:
-            queryset = queryset.filter(group_name=group_name).order_by('date')
-            if queryset.count() > 100:
-                queryset = queryset[:100]
-        else:
-            queryset = queryset.none()
+        queryset = queryset.filter(chat__users = self.request.user).order_by('date')
         return queryset
+    
+class ChatSerializer(serializers.ModelSerializer):
+    house_chat = serializers.SerializerMethodField()
+    last_message = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+
+    def get_house_chat(self, obj):
+        return obj.house_set.exists()
+    
+    def get_last_message(self, obj):
+        last_message = obj.message_set.last()
+        if last_message:
+            return MessageSerializer(last_message, context={'request': self.context['request']}).data
+        else:
+            return None
+        
+    def get_avatar(self, obj):
+        if obj.house_set.exists():
+            return None
+        
+        if obj.users.count() == 2:
+            user = obj.users.filter(~Q(id=self.context['request'].user.id)).first()
+            return self.context['request'].build_absolute_uri(user.tinderprofile.photo.url or user.photo.url)
+        
+    def get_name(self, obj):
+        if obj.house_set.exists():
+            return obj.name
+        
+        if obj.users.count() == 2:
+            user = obj.users.filter(~Q(id=self.context['request'].user.id)).first()
+            return user.first_name + " " + user.last_name[0] + '.'
+        
+        return obj.name
+    class Meta:
+        model = Chat
+        fields = '__all__'
+
+class ChatViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = ChatSerializer
+
+    def get_queryset(self):
+        return self.request.user.chat_set.all()

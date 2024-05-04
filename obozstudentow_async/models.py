@@ -7,7 +7,14 @@ class Message(models.Model):
     message = models.TextField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
-    group_name = models.CharField(max_length=100)
-    
+    chat = models.ForeignKey('Chat', on_delete=models.CASCADE)
+
     def __str__(self):
         return self.user.first_name + ' ' + self.user.last_name + ': ' + self.message
+    
+class Chat(models.Model):
+    name = models.CharField(max_length=100)
+    users = models.ManyToManyField(User)
+    
+    def __str__(self):
+        return self.name

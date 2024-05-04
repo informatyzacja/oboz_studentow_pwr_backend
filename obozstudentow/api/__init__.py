@@ -26,9 +26,11 @@ api_router.register(r'permissions', PermissionsViewSet)
 
 from .chat import *
 api_router.register(r'chat', MessageViewSet, 'chat')
+api_router.register(r'chats', ChatViewSet, 'chats')
 
 from .houses import *
 api_router.register(r'houses', HouseViewSet, 'houses')
+
 
 
 #home
