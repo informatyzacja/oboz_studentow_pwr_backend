@@ -55,15 +55,14 @@ def loadTinderProfiles(request):
 
     # profiles = TinderProfile.objects.exclude(user=user).exclude(user__tinderaction_target__user=user).order_by('?')[:10]
 
-    # serializer = TinderProfileSerializer(profiles, context={'request': request}, many=True)
-    # data = serializer.data
-
+    # demo profiles
     profiles = TinderProfile.objects.exclude(user=user)[0]
     profiles = [profiles] * 10
 
     serializer = TinderProfileSerializer(profiles, context={'request': request}, many=True)
     data = serializer.data
 
+    # demo id
     import random
     for profile in data:
         profile['id'] = random.randint(1, 100000)

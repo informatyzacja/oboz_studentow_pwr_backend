@@ -96,7 +96,8 @@ class User(AbstractUser):
 
         # remove user from house chat
         if not self.house and self.chat_set.filter(house__isnull=False).exists():
-            self.chat_set.filter(house__isnull=False).users.remove(self)
+            for chat in self.chat_set.filter(house__isnull=False):
+                chat.users.remove(self)
 
         super(User, self).save(*args, **kwargs)
         
