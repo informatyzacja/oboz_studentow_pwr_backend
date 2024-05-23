@@ -40,7 +40,7 @@ def create_groups(apps, schema_editor):
             ('can_validate_points', 'Can validate points'),
         ]:
         permission, created = Permission.objects.get_or_create( codename=permission[0], name=permission[1], content_type=content_type )
-        for superuser in User.objects.filter(is_superuser=True):
+        for superuser in User.objects.filter(is_superuser=True).values('id'):
             superuser.user_permissions.add(permission)
 
 class Migration(migrations.Migration):
