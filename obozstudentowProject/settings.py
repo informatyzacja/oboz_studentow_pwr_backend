@@ -138,7 +138,9 @@ DATABASES = {
         "NAME": os.getenv("DB_NAME", BASE_DIR / "db.sqlite3"),
         'PASSWORD': get_secret("DB_PASSWORD",""),
         'USER': os.getenv("DB_USER",""),
-        'HOST': os.getenv("DB_HOST","")
+        'HOST': os.getenv("DB_HOST",""),
+        'CONN_MAX_AGE': None,
+        'CONN_HEALTH_CHECKS': True,
     }
 }
 
@@ -172,7 +174,7 @@ LANGUAGE_CODE = "pl"
 
 TIME_ZONE = "Europe/Warsaw"
 
-USE_I18N = True
+USE_I18N = False
 
 USE_TZ = False
 

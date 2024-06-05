@@ -4,11 +4,12 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from ..models import *
 from rest_framework import serializers
-from django.db.models import Count
 
 import base64
 
 from django.core.files.base import ContentFile
+
+from django.utils import timezone
 
 @api_view(['POST'])
 def uploadProfilePhoto(request):
@@ -46,8 +47,20 @@ class TinderProfileSerializer(serializers.ModelSerializer):
         model = TinderProfile
         fields = '__all__'
 
+
+def tinder_active():
+    active = Setting.objects.get(name='tinder_swiping_active').value.lower() == 'true'
+    if active and Setting.objects.get(name="tinder_swiping_activate_datetime").value:
+        active = timezone.datetime.strptime(Setting.objects.get(name="tinder_swiping_activate_datetime").value, '%Y-%m-%d %H:%M') <= timezone.now()
+
+    return active
+
 @api_view(['GET'])
 def loadTinderProfiles(request):
+
+    if not tinder_active():
+        return Response({'info': 'Przeglądanie profili jest obecnie wyłączone'}, status=200)
+    
     user = request.user
 
     if not TinderProfile.objects.filter(user=user).exists():
@@ -69,8 +82,13 @@ def loadTinderProfiles(request):
 
     return Response(data)
 
+
 @api_view(['POST'])
 def tinderAction(request):
+
+    if not tinder_active():
+        return Response({'error': 'Funkcja swipingu jest wyłączona'}, status=400)
+    
     user = request.user
 
     if not TinderProfile.objects.filter(user=user).exists():
@@ -90,13 +108,18 @@ def tinderAction(request):
     elif action == 'dislike':
         tinderaction.action = 0
     elif action == 'superlike':
+        if not user.tinderprofile.super_like_used:
+            user.tinderprofile.super_like_used = True
+            user.tinderprofile.save()
+        else:
+            return Response({'error': 'Już użyłeś superlajka'}, status=400)
         tinderaction.action = 2
     else:
         return Response({'error': 'Niepoprawna akcja'}, status=400)
     
     tinderaction.save()
 
-    match = tinderaction.action in [1,2] and TinderAction.objects.filter(user=target, target=user, action__in=[1,2]).exists()
+    match = (tinderaction.action == 1 and TinderAction.objects.filter(user=target, target=user, action__in=[1,2]).exists()) or tinderaction.action == 2
 
     if match:
         chat = Chat.objects.filter(name='tinder').filter(users=user).filter(users=target).first()

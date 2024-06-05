@@ -112,6 +112,7 @@ class TinderProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     description = models.TextField(blank=True, null=True)
     photo = ResizedImageField(upload_to='tinder', blank=True, null=True, force_format=None)
+    super_like_used = models.BooleanField(default=False)
 
 class TinderAction(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
