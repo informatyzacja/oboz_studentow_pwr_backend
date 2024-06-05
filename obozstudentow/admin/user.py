@@ -107,10 +107,14 @@ class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
         return user.userfcmtoken_set.exists()
     push_notifications_registered.short_description = 'Powiadomienia'
     push_notifications_registered.boolean = True
-    
+
+    def has_tinder_profile(self, user):
+        return bool(user.tinderprofile)
+    has_tinder_profile.short_description = 'Tinder'
+    has_tinder_profile.boolean = True
     
 
-    list_display = ('id', "email", 'first_name', 'last_name', 'bandId', 'frakcja', 'is_active', 'has_house', 'registered', 'push_notifications_registered')
+    list_display = ('id', "email", 'first_name', 'last_name', 'bandId', 'frakcja', 'is_active', 'has_house', 'registered', 'push_notifications_registered', 'has_tinder_profile')
     search_fields = ('id', 'first_name', "email", 'last_name', 'title', 'phoneNumber', 'bandId', 'title', 'house__name')
 
     list_filter = ('bus', "is_active", 'groups')
