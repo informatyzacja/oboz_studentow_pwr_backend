@@ -15,17 +15,17 @@ import random
 from django.core.mail import send_mail
 
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.template.loader import render_to_string
 
 def send_verification_email(user: User):
 
+
+    subject = 'Kod weryfikacyjny'
+    html_message = render_to_string('confirmation_email.html', {'code': user.verification_code})
+
     # send email to user with verification code
-    return send_mail(
-        'Kod weryfikacyjny',
-        f'Cześć, twój kod weryfikacyjny to: {user.verification_code}',
-        from_email = None,
-        recipient_list = [user.email],
-    )
-    
+    return send_mail(subject, f'Cześć, twój kod weryfikacyjny to: {user.verification_code}', None, [user.email], html_message=html_message)
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
