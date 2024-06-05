@@ -66,11 +66,11 @@ def loadTinderProfiles(request):
     if not TinderProfile.objects.filter(user=user).exists():
         return Response({'error': 'Brak profilu'}, status=400)
 
-    # profiles = TinderProfile.objects.exclude(user=user).exclude(user__tinderaction_target__user=user).order_by('?')[:10]
+    profiles = TinderProfile.objects.exclude(user=user).exclude(user__tinderaction_target__user=user).order_by('?')[:10]
 
     # demo profiles
-    profiles = TinderProfile.objects.exclude(user=user)[0]
-    profiles = [profiles] * 10
+    # profiles = TinderProfile.objects.exclude(user=user)[0]
+    # profiles = [profiles] * 10
 
     serializer = TinderProfileSerializer(profiles, context={'request': request}, many=True)
     data = serializer.data
