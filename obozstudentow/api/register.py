@@ -17,6 +17,9 @@ from django.core.mail import send_mail
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.template.loader import render_to_string
 
+def is_constant_code_user(user):
+    return user.email == 'test@oboz.samorzad.pwr.edu.pl'
+
 def send_verification_email(user: User):
 
 
@@ -43,6 +46,12 @@ def send_email_verification(request):
 
     if not user:
         return Response({'exists': False})
+    
+    if is_constant_code_user(user):
+        user.verification_code_valid_until_datetime = timezone.now() + timezone.timedelta(minutes=30)
+        user.save()
+
+        return Response({'exists': True, 'email_sent': True})
     
     if not user.verification_code or user.verification_code_valid_until_datetime < timezone.now():
         user.verification_code = random.randint(10000000, 99999999)
@@ -81,7 +90,8 @@ def login_with_code(request):
     user = User.objects.filter(email=email, verification_code=code, verification_code_valid_until_datetime__gte=timezone.now()).first()
 
     if user:
-        user.verification_code = None
+        if not is_constant_code_user(user): 
+            user.verification_code = None
         user.verification_code_valid_until_datetime = None
 
         user.save()
@@ -92,4 +102,3 @@ def login_with_code(request):
         return Response({'refresh': refresh_token, 'access': str(refresh.access_token)}) 
     
     return Response({'error': 'Invalid code'}, status=status.HTTP_400_BAD_REQUEST)
-
