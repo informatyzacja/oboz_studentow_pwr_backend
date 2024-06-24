@@ -34,7 +34,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 from django.core.management.utils import get_random_secret_key
 SECRET_KEY = get_secret("SECRET_KEY", get_random_secret_key())
 
-ADMINS = [('Marvin', 'marvin@prasa-polska.com')]
+ADMINS = [('Marvin', 'marvin.rucinski@samorzad.pwr.edu.pl')]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", 'true').lower() == 'true'
@@ -114,6 +114,7 @@ CHANNEL_LAYERS = json.loads(os.getenv("CHANNEL_LAYERS", '''{
 }'''))
 
 
+
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "webmaster@localhost")
 EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
 EMAIL_HOST = os.getenv("EMAIL_HOST", "localhost")
@@ -139,7 +140,7 @@ DATABASES = {
         'PASSWORD': get_secret("DB_PASSWORD",""),
         'USER': os.getenv("DB_USER",""),
         'HOST': os.getenv("DB_HOST",""),
-        'CONN_MAX_AGE': None,
+        'CONN_MAX_AGE': 600,
         'CONN_HEALTH_CHECKS': True,
     }
 }
@@ -228,9 +229,6 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
 }
 
-# if DEBUG:
-#     REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'].append('rest_framework.authentication.TokenAuthentication')
-
 DATA_UPLOAD_MAX_MEMORY_SIZE = 25*1024*1024
 
 DJANGORESIZED_DEFAULT_SIZE = [1920, 1080]
@@ -255,8 +253,8 @@ if not DEBUG:
     SECURE_HSTS_PRELOAD = True
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_logger': False,
+    "version": 1,
+    "disable_existing_logger": False,
     "formatters": {
         "verbose": {
             "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
@@ -267,19 +265,36 @@ LOGGING = {
             "style": "{",
         },
     },
-    'handlers': {
-        'console': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
             "formatter": "simple",
         },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': False,
+        "mail_admins": {
+            "level": "ERROR",
+            "class": "django.utils.log.AdminEmailHandler",
         },
     },
-    'root': {'level': 'INFO'},
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "django.request": {
+            "handlers": ["mail_admins" if not DEBUG else "console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+        "django.security": {
+            "handlers": ["mail_admins" if not DEBUG else "console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+        "py.warnings": {
+            "handlers": ["console"],
+        },
+    },
+    "root": {"level": "INFO"},
 }
