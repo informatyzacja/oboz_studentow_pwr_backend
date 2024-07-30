@@ -295,6 +295,10 @@ LOGGING = {
         "py.warnings": {
             "handlers": ["console"],
         },
+        "django.security.DisallowedHost": {
+            "handlers": ["console"],
+            "propagate": False,
+        },
     },
     "root": {"level": "INFO"},
 }
