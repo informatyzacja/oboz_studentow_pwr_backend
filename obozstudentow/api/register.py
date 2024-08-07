@@ -93,7 +93,7 @@ def login_with_code(request):
         if not is_constant_code_user(user): 
             user.verification_code = None
         user.verification_code_valid_until_datetime = None
-
+        user.last_login = timezone.now()
         user.save()
 
         refresh = RefreshToken.for_user(user)
