@@ -90,7 +90,6 @@ class Bus(models.Model):
         return "Bus " + self.description
 
 
-
 class Image(models.Model):
     name = models.CharField(max_length=100)
     image = models.FileField(upload_to='images')
