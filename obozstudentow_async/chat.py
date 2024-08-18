@@ -32,15 +32,15 @@ def get_user_house(user):
 
 @database_sync_to_async
 def save_message(message, user, chat_id):
-	if user.chat_set.filter(id=chat_id).exists():
+	if user.chat_set.filter(id=chat_id, enabled=True).exists():
 		message = Message.objects.create(
 			message=message,
 			user=user,
 			chat = Chat.objects.get(id=chat_id)
 		)
 		message.save()
-		if Message.objects.filter(chat__id=chat_id).count() > 100:
-			Message.objects.filter(chat__id=chat_id).order_by('date')[:-100].delete()
+		if Message.objects.filter(chat__id=chat_id).count() > 1000:
+			Message.objects.filter(chat__id=chat_id).order_by('date')[:-1000].delete()
 		return message
 	return None
 
@@ -66,7 +66,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 				await self.close()
 				return
 			
-			async for chat in self.user.chat_set.all():
+			async for chat in self.user.chat_set.filter(enabled=True):
 				await self.channel_layer.group_add(
 					str(chat.id),
 					self.channel_name

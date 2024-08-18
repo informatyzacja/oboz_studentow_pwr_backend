@@ -10,5 +10,5 @@ class MessageAdmin(admin.ModelAdmin):
 
 @admin.register(Chat)
 class ChatAdmin(admin.ModelAdmin):
-    list_display = ('name',)
-    filter_horizontal = ('users',)
+    list_display = ('name','enabled')
+    list_filter = ('enabled','users')

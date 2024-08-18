@@ -3,8 +3,9 @@ from django.db.models import Q
 
 
 from obozstudentow_async.models import Message
-from ..models import User
+from ..models import User, TinderAction
 from obozstudentow_async.models import Chat
+from django.db.models import Max
 
 class MessageSerializer(serializers.ModelSerializer):
     user_id = serializers.IntegerField(source='user.id')
@@ -27,7 +28,7 @@ class MessageViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(chat__users = self.request.user).order_by('date')
+        queryset = queryset.filter(chat__enabled = True, chat__users = self.request.user).order_by('date')
         return queryset
     
 class ChatSerializer(serializers.ModelSerializer):
@@ -45,8 +46,12 @@ class ChatSerializer(serializers.ModelSerializer):
             return MessageSerializer(last_message, context={'request': self.context['request']}).data
         elif not obj.house_set.exists() and obj.users.count() == 2:
             user = obj.users.filter(~Q(id=self.context['request'].user.id)).first()
+            last_action = TinderAction.objects.filter(
+                Q(user=user, target=self.context['request'].user) | Q(user=self.context['request'].user, target=user)
+            ).filter(action__in=[1,2]).order_by('-date').first()
             return {
                 'message': user.tinderprofile.description if hasattr(user,'tinderprofile') else None,
+                'date': last_action.date if last_action else None
             }
         
         else:
@@ -77,4 +82,4 @@ class ChatViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ChatSerializer
 
     def get_queryset(self):
-        return self.request.user.chat_set.all()
+        return self.request.user.chat_set.filter(enabled=True).annotate(last_message_date=Max('message__date')).order_by('-last_message_date')

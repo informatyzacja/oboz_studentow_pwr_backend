@@ -15,6 +15,7 @@ class Message(models.Model):
 class Chat(models.Model):
     name = models.CharField(max_length=100)
     users = models.ManyToManyField(User)
+    enabled = models.BooleanField(default=True)
     
     def __str__(self):
         return self.name
