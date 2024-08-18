@@ -114,7 +114,7 @@ class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
     registered.boolean = True
 
     def push_notifications_registered(self, user):
-        return user.userfcmtoken_set.exists()
+        return user.notifications
     push_notifications_registered.short_description = 'Powiadomienia'
     push_notifications_registered.boolean = True
 

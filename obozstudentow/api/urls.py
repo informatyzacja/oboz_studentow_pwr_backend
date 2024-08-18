@@ -21,6 +21,7 @@ urlpatterns = [
     path('signup-group/', signup_group),
 
     path('register-fcm-token/', register_fcm_token),
+    path('enable_disable_notifications/', enable_disable_notifications),
 
     path('signup-user-for-house/<int:id>/', signup_user_for_house),
     path('leave-house/', leave_house),

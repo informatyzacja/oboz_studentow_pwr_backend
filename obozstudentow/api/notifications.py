@@ -13,8 +13,21 @@ def register_fcm_token(request):
     UserFCMToken.objects.filter(token=token).delete()
     UserFCMToken.objects.create(user=request.user, token=token)
 
+    request.user.notifications = True
+    request.user.save()
+
     return Response({'success': True})
 
+@api_view(['PUT'])
+def enable_disable_notifications(request):
+    enabled = request.data.get('enabled')
+    if enabled is None:
+        return Response({'success': False, 'error': 'Nie podano enabled'})
+    
+    request.user.notifications = enabled
+    request.user.save()
+
+    return Response({'success': True})
 
 import firebase_admin
 from firebase_admin import credentials, messaging

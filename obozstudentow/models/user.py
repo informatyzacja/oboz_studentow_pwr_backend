@@ -45,6 +45,8 @@ class User(AbstractUser):
 
     verification_code = models.IntegerField(null=True, blank=True)
     verification_code_valid_until_datetime = models.DateTimeField(null=True, blank=True)
+
+    notifications = models.BooleanField(default=False)
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

@@ -145,7 +145,6 @@ class ProfileSerializer(serializers.ModelSerializer):
     fraction = serializers.SerializerMethodField()
     groups = serializers.SerializerMethodField()
     sober_duty = serializers.SerializerMethodField()
-    push_notifications_registered = serializers.SerializerMethodField()
 
     tinder_profile = serializers.SerializerMethodField()
 
@@ -161,12 +160,9 @@ class ProfileSerializer(serializers.ModelSerializer):
     def get_sober_duty(self, obj):
         return SoberDutySerializer(SoberDuty.objects.filter(user=obj), many=True).data
     
-    def get_push_notifications_registered(self, user):
-        return user.userfcmtoken_set.exists()
-
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'email', 'groups', 'fraction', 'bandId', 'photo', 'title', 'bus', 'diet', 'house', 'sober_duty', 'push_notifications_registered', 'tinder_profile')
+        fields = ('id', 'first_name', 'last_name', 'email', 'groups', 'fraction', 'bandId', 'photo', 'title', 'bus', 'diet', 'house', 'sober_duty', 'notifications', 'tinder_profile')
         depth = 1
 
 class ProfileViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):

@@ -7,7 +7,7 @@ from django.contrib.auth.models import Permission
 def create_roles(apps, schema_editor):
 
     group, created = DjangoGroup.objects.get_or_create(name="Sztab: Uczestnicy")
-    permissions = Permission.objects.filter(content_type__model__in=('house','houseview'))
+    permissions = Permission.objects.filter(content_type__model__in=('house','houseview','opaski'))
     group.permissions.add(*permissions)
 
 
