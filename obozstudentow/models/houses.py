@@ -1,4 +1,3 @@
-from typing import Iterable
 from django.db import models
 from obozstudentow_async.models import Chat
 
@@ -13,7 +12,6 @@ class House(models.Model):
     signout_open = models.BooleanField(default=True, verbose_name="Czy można się wypisać?")
 
     chat = models.ForeignKey(Chat, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Czat")
-
 
     def __str__(self):
         return 'Pokój/domek nr ' + self.name

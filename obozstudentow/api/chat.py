@@ -13,7 +13,7 @@ class MessageSerializer(serializers.ModelSerializer):
     fromMe = serializers.SerializerMethodField()
 
     def get_username(self, obj):
-        return obj.user.first_name + " " + obj.user.last_name[0] + '.'
+        return obj.user.first_name + " " + obj.user.last_name[0] + '.' + (' ('+obj.user.title+')' if obj.user.title else '')
     
     def get_fromMe(self, obj):
         return obj.user == self.context['request'].user
@@ -60,6 +60,9 @@ class ChatSerializer(serializers.ModelSerializer):
     def get_avatar(self, obj):
         if obj.house_set.exists():
             return None
+        
+        if obj.group_set.exists():
+            return self.context['request'].build_absolute_uri(obj.group_set.first().logo.url) if obj.group_set.first().logo else None
         
         if obj.users.count() == 2:
             user = obj.users.filter(~Q(id=self.context['request'].user.id)).first()

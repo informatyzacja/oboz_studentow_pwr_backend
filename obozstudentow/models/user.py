@@ -93,16 +93,17 @@ class User(AbstractUser):
         # if not self.bandId:
         #     self.bandId = self.generate_bandId()
 
+        super(User, self).save(*args, **kwargs)
+
         # add user to house chat
-        if self.pk and self.house and self.house.chat and not self.house.chat.users.filter(pk=self.pk).exists():
+        if self.house and self.house.chat and not self.house.chat.users.filter(pk=self.pk).exists():
             self.house.chat.users.add(self)
 
         # remove user from house chat
-        if self.pk and not self.house and self.chat_set.filter(house__isnull=False).exists():
+        if not self.house and self.chat_set.filter(house__isnull=False).exists():
             for chat in self.chat_set.filter(house__isnull=False):
                 chat.users.remove(self)
 
-        super(User, self).save(*args, **kwargs)
         
     
 class UserFCMToken(models.Model):

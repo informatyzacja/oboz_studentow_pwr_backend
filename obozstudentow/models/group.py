@@ -1,5 +1,6 @@
 from django.db import models
 from django_resized import ResizedImageField
+from obozstudentow_async.models import Chat
 
 class GroupType(models.Model):
     name = models.CharField(max_length=100)
@@ -22,12 +23,22 @@ class Group(Orderable):
     messenger = models.URLField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
 
+    chat = models.ForeignKey(Chat, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Czat")
+
     class Meta(Orderable.Meta):
         verbose_name = "Grupa"
         verbose_name_plural = "Grupy"
     
     def __str__(self):
         return self.name + " (" + self.type.name + ")"
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if not self.chat:
+            self.chat = Chat.objects.create(name=self.name)
+            self.chat.users.add(*self.groupmember_set.values_list('user', flat=True))
+            self.chat.users.add(*self.groupwarden_set.values_list('user', flat=True))
+            self.save()
     
 class GroupMember(models.Model):
     user = models.ForeignKey('obozstudentow.User', on_delete=models.CASCADE)
@@ -40,6 +51,21 @@ class GroupMember(models.Model):
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name + " (" + self.group.name + ")"
     
+    def __save__(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        # add user to group chat
+        if self.group.chat and not self.group.chat.users.filter(pk=self.user.pk).exists():
+            self.group.chat.users.add(self.user)
+
+    def __delete__(self, *args, **kwargs):
+        # remove user from group chat
+        if self.group.chat and self.group.chat.users.filter(pk=self.user.pk).exists():
+            self.group.chat.users.remove(self.user)
+            
+        super().delete(*args, **kwargs)
+
+    
 class GroupWarden(models.Model):
     user = models.ForeignKey('obozstudentow.User', on_delete=models.PROTECT)
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
@@ -51,6 +77,21 @@ class GroupWarden(models.Model):
     def __str__(self):
         return self.user.first_name + " " + self.user.last_name + " (" + self.group.name + ")"
         
+
+    def __save__(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+        # add user to group chat
+        if self.group.chat and not self.group.chat.users.filter(pk=self.user.pk).exists():
+            self.group.chat.users.add(self.user)
+
+    def __delete__(self, *args, **kwargs):
+        # remove user from group chat
+        if self.group.chat and self.group.chat.users.filter(pk=self.user.pk).exists():
+            self.group.chat.users.remove(self.user)
+            
+        super().delete(*args, **kwargs)
+
 
 
 # points
