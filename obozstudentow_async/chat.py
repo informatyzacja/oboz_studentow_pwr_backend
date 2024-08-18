@@ -48,7 +48,7 @@ def save_message(message, user, chat_id):
 def send_message_notification(message):
 	try:
 		# print("send message notification", title, content, house)
-		tokens = list(UserFCMToken.objects.filter(user__in=message.chat.users.values('id')).values_list('token', flat=True))
+		tokens = list(UserFCMToken.objects.filter(user__notifications=True, user__in=message.chat.users.values('id')).values_list('token', flat=True))
 		
 		response = send_notification(f"{message.user.first_name} napisał/a:", message.message, tokens)
 	except Exception as e:

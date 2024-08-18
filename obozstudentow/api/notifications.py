@@ -42,8 +42,16 @@ def send_notification(title, body, tokens, link=None):
             title=title,
             body=body
         ),
-        webpush=messaging.WebpushConfig(fcm_options=messaging.WebpushFCMOptions(link=link)),
         tokens=tokens,
+        android=messaging.AndroidConfig(
+            priority="high",
+            notification=messaging.AndroidNotification(sound="default"),
+        ),
+        apns=messaging.APNSConfig(
+            payload=messaging.APNSPayload(
+                aps=messaging.Aps(sound="default"),
+            ),
+        ),
     )
     response = messaging.send_multicast(message)
     return response

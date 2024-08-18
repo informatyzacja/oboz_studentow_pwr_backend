@@ -173,7 +173,7 @@ def signup_group(request):
 
         #send notifications
         try:
-            tokens = list(UserFCMToken.objects.filter(user__in=GroupMember.objects.filter(group=group).values_list('user', flat=True)).values_list('token', flat=True))
+            tokens = list(UserFCMToken.objects.filter(user__notifications=True, user__in=GroupMember.objects.filter(group=group).values_list('user', flat=True)).values_list('token', flat=True))
 
             title = f"Zostałeś/aś zapisany/a na grę nocną."
             content = f"Grupę \"{group.name}\" i jej członków możesz zobaczyć w zakładce \"Profil\""

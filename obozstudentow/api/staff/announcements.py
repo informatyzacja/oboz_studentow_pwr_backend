@@ -22,9 +22,6 @@ def add_announcement(request):
         return Response({'success':False, 'error': 'Nie podano tytułu, treści lub daty zakończenia ogłoszenia'})
     
     hide_date = timezone.datetime.strptime(hide_date, "%Y-%m-%dT%H:%M")
-
-    if hide_date < timezone.now():
-        return Response({'success':False, 'error': 'Data zakończenia ogłoszenia nie może być w przeszłości'})
     
     groupId = request.data.get('groupId')
 
@@ -34,16 +31,17 @@ def add_announcement(request):
 
     if request.data.get('sendNotif'):
         if groupId is None:
-            tokens = list(UserFCMToken.objects.all().values_list('token', flat=True))
+            tokens = list(UserFCMToken.objects.filter(user__notifications=True).values_list('token', flat=True))
         else:
             tokens = list(
-                    UserFCMToken.objects.filter(user__in=GroupMember.objects.filter(group__id=groupId).values_list('user', flat=True)).values_list('token', flat=True) | 
-                    UserFCMToken.objects.filter(user__in=GroupWarden.objects.filter(group__id=groupId).values_list('user', flat=True)).values_list('token', flat=True)
+                    UserFCMToken.objects.filter(user__notifications=True, user__in=GroupMember.objects.filter(group__id=groupId).values_list('user', flat=True)).values_list('token', flat=True) | 
+                    UserFCMToken.objects.filter(user__notifications=True, user__in=GroupWarden.objects.filter(group__id=groupId).values_list('user', flat=True)).values_list('token', flat=True)
                 )
             
         if tokens:
             response = send_notification(title, content, tokens)
-            info = f'Wysłano powiadomienie do {response.success_count} użytkowników, {response.failure_count} niepowodzeń'
+            info = f'Wysłano powiadomienie do {response.success_count} użytkowników'
+            #, {response.failure_count} niepowodzeń'
     
     return Response({'success': True, 'info': info})
 
