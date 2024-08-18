@@ -5,7 +5,7 @@ from import_export.admin import ImportExportModelAdmin
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.admin import UserAdmin
-from ..models import User, UserFCMToken, GroupMember, GroupType
+from ..models import User, UserFCMToken, GroupMember, GroupType, TinderProfile
 
 from .group import GroupWardenInline
 
@@ -29,7 +29,7 @@ class UserCreationFormEmail(BaseUserCreationForm):
         return user
 
     def clean_email(self):
-        """Reject usernames that differ only in case."""
+        """Reject emails that differ only in case."""
         email = self.cleaned_data.get("email")
         if (
             email
@@ -63,14 +63,24 @@ def remove_bands(modeladmin, request, queryset):
 @admin.action(description='Stwórz opaski tymczasowe')
 def create_temporary_bands(modeladmin, request, queryset):
     for user in queryset:
-        if not user.bus and not user.bandId:
-            user.bandId = str(200000+user.id)
-            user.save()
+        user.bandId = str(200000+user.id)
+        user.save()
 
 class UserFCMTokenInline(admin.TabularInline):
     model = UserFCMToken
     extra = 0
     classes = ['collapse']
+
+class TinderProfileInline(admin.TabularInline):
+    model = TinderProfile
+    extra = 0
+    classes = ['collapse']
+
+    # def has_add_permission(self, request: HttpRequest, obj=None) -> bool:
+    #     return False
+    
+    def has_delete_permission(self, request: HttpRequest, obj=None) -> bool:
+        return False
 
 class Participant(User):
     class Meta:
@@ -133,21 +143,32 @@ class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
 
 
     fieldsets = (
-        (None, {"fields": ("email", "password")}),
-        (_("Personal info"), {"fields": ("first_name", "last_name")}),
-        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "diet", "bus", 'birthDate', 'house')}),
+        (_("Podstawowe informacje"), {"fields": ("first_name", "last_name", "email")}),
+        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "bus", 'house')}),
         (
-            _("Permissions"),
+            _("Aktywny"),
             {
                 "fields": (
                     "is_active",
                 ),
+                'classes': ('collapse',),
             },
         ),
-        (_("Important dates"), {"fields": ("last_login", "date_joined")}),
+        ("Poufne informacje", {
+            "fields": (
+                 "diet", 'birthDate', 'ice_number', 'additional_health_info', 'pesel'
+            ),
+            'classes': ('collapse',),
+        }),
+        (_("Ważne daty"), {"fields": ("last_login", "date_joined")}),
+        ("Hasło", {
+            "fields": ("password",),
+            'classes': ('collapse',),
+        }),
     )
-    inlines = [GroupMemberInlineAdmin, UserFCMTokenInline]
+    inlines = [GroupMemberInlineAdmin, TinderProfileInline, UserFCMTokenInline]
     actions = [activate, deactivate, create_temporary_bands]
+    readonly_fields = ('last_login', 'date_joined')
 
 
 

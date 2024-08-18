@@ -87,8 +87,8 @@ class User(AbstractUser):
                 return bandId
 
     def save(self, *args, **kwargs):
-        if not self.bandId:
-            self.bandId = self.generate_bandId()
+        # if not self.bandId:
+        #     self.bandId = self.generate_bandId()
 
         # add user to house chat
         if self.pk and self.house and self.house.chat and not self.house.chat.users.filter(pk=self.pk).exists():
