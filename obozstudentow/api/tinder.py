@@ -115,7 +115,7 @@ def tinderAction(request):
             user.tinderprofile.super_like_used = True
             user.tinderprofile.save()
         else:
-            return Response({'error': 'Już użyłeś superlajka'}, status=400)
+            return Response({'error': 'Już użyłeś/aś superlajka.'}, status=400)
         tinderaction.action = 2
     else:
         return Response({'error': 'Niepoprawna akcja'}, status=400)

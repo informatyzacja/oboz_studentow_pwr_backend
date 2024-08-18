@@ -43,6 +43,12 @@ class ChatSerializer(serializers.ModelSerializer):
         last_message = obj.message_set.last()
         if last_message:
             return MessageSerializer(last_message, context={'request': self.context['request']}).data
+        elif not obj.house_set.exists() and obj.users.count() == 2:
+            user = obj.users.filter(~Q(id=self.context['request'].user.id)).first()
+            return {
+                'message': user.tinderprofile.description if hasattr(user,'tinderprofile') else None,
+            }
+        
         else:
             return None
         
@@ -52,7 +58,7 @@ class ChatSerializer(serializers.ModelSerializer):
         
         if obj.users.count() == 2:
             user = obj.users.filter(~Q(id=self.context['request'].user.id)).first()
-            return self.context['request'].build_absolute_uri(user.tinderprofile.photo.url or user.photo.url)
+            return self.context['request'].build_absolute_uri((user.tinderprofile.photo.url if hasattr(user,'tinderprofile') and user.tinderprofile.photo else None) or (user.photo.url if user.photo else None))
         
     def get_name(self, obj):
         if obj.house_set.exists():
@@ -60,7 +66,7 @@ class ChatSerializer(serializers.ModelSerializer):
         
         if obj.users.count() == 2:
             user = obj.users.filter(~Q(id=self.context['request'].user.id)).first()
-            return user.first_name + " " + user.last_name[0] + '.'
+            return user.first_name + " " + (user.last_name[0] + '.' if user.last_name else '')
         
         return obj.name
     class Meta:

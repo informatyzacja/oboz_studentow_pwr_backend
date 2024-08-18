@@ -4,7 +4,7 @@ from django.db import models
 
 from obozstudentow.models import User
 class Message(models.Model):
-    message = models.TextField()
+    message = models.TextField(max_length=500)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
     chat = models.ForeignKey('Chat', on_delete=models.CASCADE)
