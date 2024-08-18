@@ -12,7 +12,7 @@ def create_roles(apps, schema_editor):
     uczestnicy_group.permissions.set(uczestnicy_permissions)
 
     program_group, created = DjangoGroup.objects.get_or_create(name="Sztab: Program")
-    program_permissions = Permission.objects.filter(Q(content_type__model__in=('dailyquest', 'scheduleitem', 'image', 'meal', 'mealtype', 'pointtype', 'workshop')) | Q(codename='can_validate_points'))
+    program_permissions = Permission.objects.filter(Q(content_type__model__in=('dailyquest', 'scheduleitem', 'image', 'meal', 'pointtype', 'workshop')) | Q(codename='can_validate_points'))
     program_group.permissions.set(program_permissions)
 
     promocja_group, created = DjangoGroup.objects.get_or_create(name="Sztab: Promocja")

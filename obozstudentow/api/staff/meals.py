@@ -12,7 +12,7 @@ from django.urls import path
 @api_view(['GET'])
 @permission_required('obozstudentow.can_validate_meals')
 def get_current_meal(request):
-    return Response(Meal.objects.filter(date=timezone.now().date(), type__start__lte=timezone.now().time(), type__end__gt=timezone.now().time()).values('id', 'type__name', 'date').first() or {})
+    return Response(Meal.objects.filter(start__lte=timezone.now(), end__gt=timezone.now()).values('id', 'name', 'start').first() or {})
 
 @api_view(['GET'])
 @permission_required('obozstudentow.can_validate_meals')
