@@ -277,6 +277,33 @@ class SztabAdmin(CustomUserAdmin):
 admin.site.register(Sztab, SztabAdmin)
 
 
+class ZdjeciaKadra(User):
+    class Meta:
+        proxy = True
+        verbose_name = 'Zdjęcia Kadra'
+        verbose_name_plural = 'Zdjęcia Kadra'
+
+@admin.register(ZdjeciaKadra)
+class ZdjeciaKadraAdmin(CustomUserAdmin):
+    list_display = ('first_name', 'last_name', 'has_image', 'title')
+
+    list_filter = ("groups",)
+
+    fields = ('first_name', 'last_name', 'title', 'photo')
+    fieldsets = None
+    readonly_fields = ('first_name', 'last_name', 'title')
+
+    def get_queryset(self, request):
+        return self.model.objects.filter(groups__name__in=['Sztab','Kadra','Bajer'])
+    
+    def has_add_permission(self, request: HttpRequest) -> bool:
+        return False
+    
+    def has_delete_permission(self, request: HttpRequest, obj=None) -> bool:
+        return False
+    
+
+
 class Opaski(User):
     class Meta:
         proxy = True
