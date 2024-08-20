@@ -4,7 +4,7 @@ from import_export.admin import ImportExportModelAdmin
 
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from ..models import User, UserFCMToken, GroupMember, GroupType, TinderProfile
 
 from .group import GroupWardenInline
@@ -304,3 +304,21 @@ class OpaskiAdmin(CustomUserAdmin):
 
     def has_delete_permission(self, *args, **kwargs) -> bool:
         return False
+    
+
+
+from django.contrib.auth.models import Group
+
+class DjangoGroup(Group):
+    class Meta:
+        proxy = True
+        app_label = 'auth'
+        verbose_name = 'Grupa'
+        verbose_name_plural = 'Grupy'
+
+
+admin.site.unregister(Group)
+
+@admin.register(DjangoGroup)
+class CustomGroupAdmin(GroupAdmin):
+    list_display = ('id','name')
