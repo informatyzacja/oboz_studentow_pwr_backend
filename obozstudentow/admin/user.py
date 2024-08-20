@@ -284,7 +284,7 @@ class ZdjeciaKadra(User):
         verbose_name_plural = 'Zdjęcia Kadra'
 
 @admin.register(ZdjeciaKadra)
-class ZdjeciaKadraAdmin(CustomUserAdmin):
+class ZdjeciaKadraAdmin(admin.ModelAdmin):
     list_display = ('first_name', 'last_name', 'has_image', 'title')
 
     list_filter = ("groups",)
