@@ -145,6 +145,15 @@ DATABASES = {
     }
 }
 
+if os.getenv("DB_ENGINE", "django.db.backends.sqlite3") == 'django.db.backends.postgresql':
+    DATABASES["default"]["OPTIONS"] = {
+        "pool": {
+            "min_size": 2,
+            "max_size": 4,
+            "timeout": 10,
+        }
+    },
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

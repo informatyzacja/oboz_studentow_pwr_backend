@@ -1,4 +1,4 @@
-asgiref==3.7.2
+asgiref==3.8.1
 attrs==23.1.0
 autobahn==23.6.2
 Automat==22.10.0
@@ -14,7 +14,7 @@ cryptography==42.0.1
 daphne==4.1.2
 defusedxml==0.7.1
 diff-match-patch==20230430
-Django==5.0.6
+Django==5.1
 django-cors-headers==4.3.1
 django-import-export==3.3.8
 django-orderable==6.1.2
