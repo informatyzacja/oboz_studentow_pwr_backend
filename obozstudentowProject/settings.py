@@ -140,19 +140,19 @@ DATABASES = {
         'PASSWORD': get_secret("DB_PASSWORD",""),
         'USER': os.getenv("DB_USER",""),
         'HOST': os.getenv("DB_HOST",""),
-        'CONN_MAX_AGE': 600,
         'CONN_HEALTH_CHECKS': True,
+        "OPTIONS": {
+            "pool": {
+                "min_size": 4,
+                "max_size": 20,
+            }
+        }
     }
 }
 
-if os.getenv("DB_ENGINE", "django.db.backends.sqlite3") == 'django.db.backends.postgresql':
-    DATABASES["default"]["OPTIONS"] = {
-        "pool": {
-            "min_size": 2,
-            "max_size": 4,
-            "timeout": 10,
-        }
-    },
+# if os.getenv("DB_ENGINE", "django.db.backends.sqlite3") == 'django.db.backends.postgresql':
+#     DATABASES["default"][
+#     },
 
 
 # Password validation
@@ -234,8 +234,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "REFRESH_TOKEN_LIFETIME": timedelta(weeks=250),
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(weeks=16),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
 }
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 25*1024*1024
