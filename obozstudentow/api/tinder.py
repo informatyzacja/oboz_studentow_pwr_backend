@@ -125,8 +125,8 @@ def tinderAction(request):
     match = (tinderaction.action == 1 and TinderAction.objects.filter(user=target, target=user, action__in=[1,2]).exists()) or tinderaction.action == 2
 
     if match:
-        chat = Chat.objects.filter(name='tinder').filter(users=user).filter(users=target).first()
+        chat = Chat.objects.filter(name__startswith='tinder').filter(users=user).filter(users=target).first()
         if not chat:
-            chat = Chat.objects.create(name='tinder')
+            chat = Chat.objects.create(name=f'tinder ({user}, {target})')
             chat.users.add(user, target)
     return Response({'success': True, 'match': match, 'chat_id': chat.id if match else None})

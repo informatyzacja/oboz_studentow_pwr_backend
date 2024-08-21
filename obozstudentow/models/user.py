@@ -55,7 +55,7 @@ class User(AbstractUser):
     objects = UserManager()
 
     def __str__(self):
-        return self.first_name + " " + self.last_name + (" " + self.title if self.title else "")
+        return self.first_name + " " + self.last_name + (" (" + self.title + ")" if self.title else "")
     
     @admin.display(
         boolean=True,
