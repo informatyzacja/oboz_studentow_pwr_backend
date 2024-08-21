@@ -141,18 +141,16 @@ DATABASES = {
         'USER': os.getenv("DB_USER",""),
         'HOST': os.getenv("DB_HOST",""),
         'CONN_HEALTH_CHECKS': True,
-        "OPTIONS": {
+    }
+}
+
+if os.getenv("DB_ENGINE", "") == 'django.db.backends.postgresql':
+    DATABASES["default"]["OPTIONS"] = {
             "pool": {
                 "min_size": 4,
                 "max_size": 20,
             }
         }
-    }
-}
-
-# if os.getenv("DB_ENGINE", "django.db.backends.sqlite3") == 'django.db.backends.postgresql':
-#     DATABASES["default"][
-#     },
 
 
 # Password validation
