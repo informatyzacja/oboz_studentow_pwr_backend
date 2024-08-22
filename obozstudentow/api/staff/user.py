@@ -99,3 +99,30 @@ def get_user_group(request):
     except User.DoesNotExist:
         return Response({'success':False, 'error': 'Nie znaleziono użytkownika'})
     
+
+class StaffContactSerializer(serializers.ModelSerializer):
+    note = serializers.SerializerMethodField()
+
+    def get_note(self, obj):
+        note = ''
+
+        if obj.groupwarden_set.exists():
+            note += 'Frakcja: ' + ', '.join([group_warden.group.name for group_warden in obj.groupwarden_set.all()]) + '\n'
+
+        if obj.workshopleader_set.exists():
+            note += 'Warsztaty: ' + ', '.join([workshop_leader.workshop.name for workshop_leader in obj.workshopleader_set.all()]) + '\n'
+
+        return note or None
+    
+    class Meta:
+        model = User
+        fields = ('id', 'first_name', 'last_name', 'phoneNumber', 'photo', 'title', 'note')
+
+
+@api_view(['GET'])
+@permission_required('obozstudentow.can_get_contacts')
+def get_contacts(request):
+    return Response(
+        StaffContactSerializer(User.objects.filter(groups__isnull=False).exclude(id=request.user.id).exclude(first_name__icontains='test').exclude(last_name__icontains='test'), many=True, context={'request': request}).data
+    )
+    

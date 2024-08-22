@@ -27,5 +27,7 @@ urlpatterns = [
     path('add-points/', add_points),
     path('add-announcement/', add_announcement),
     path('get-visible-announcements/', get_visible_announcements),
-    path('hide-announcement/<int:id>/', hide_announcement)
+    path('hide-announcement/<int:id>/', hide_announcement),
+
+    path('get-contacts/', get_contacts),
 ]
