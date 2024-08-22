@@ -7,6 +7,9 @@ from ..models import User, TinderAction
 from obozstudentow_async.models import Chat
 from django.db.models import Max
 
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
 class MessageSerializer(serializers.ModelSerializer):
     user_id = serializers.IntegerField(source='user.id')
     username = serializers.SerializerMethodField()
@@ -28,7 +31,7 @@ class MessageViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     
     def get_queryset(self):
         queryset = super().get_queryset()
-        queryset = queryset.filter(chat__enabled = True, chat__users = self.request.user).order_by('date')
+        queryset = queryset.filter(chat__enabled = True, chat__users = self.request.user).exclude(chat__blocked_by = self.request.user).order_by('date')
         return queryset
     
 class ChatSerializer(serializers.ModelSerializer):
@@ -85,4 +88,34 @@ class ChatViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ChatSerializer
 
     def get_queryset(self):
-        return self.request.user.chat_set.filter(enabled=True).annotate(last_message_date=Max('message__date')).order_by('-last_message_date')
+        return self.request.user.chat_set.filter(enabled=True).exclude(blocked_by = self.request.user).annotate(last_message_date=Max('message__date')).order_by('-last_message_date')
+    
+
+@api_view(['PUT'])
+def block_chat(request, chat_id):
+    chat = Chat.objects.get(id=chat_id)
+    if request.user not in chat.users.all():
+        return Response({'status': 'error', 'message': 'You are not a member of this chat'}, status=400)
+    
+    block = request.data.get('block', True)
+    if block:
+        chat.blocked_by.add(request.user)
+    else:
+        chat.blocked_by.remove(request.user)
+
+    return Response({'status': 'success'})
+
+
+@api_view(['PUT'])
+def block_chat_notifications(request, chat_id):
+    chat = Chat.objects.get(id=chat_id)
+    if request.user not in chat.users.all():
+        return Response({'status': 'error', 'message': 'You are not a member of this chat'}, status=400)
+    
+    block = request.data.get('block', True)
+    if block:
+        chat.notifications_blocked_by.add(request.user)
+    else:
+        chat.notifications_blocked_by.remove(request.user)
+
+    return Response({'status': 'success'})

@@ -96,8 +96,11 @@ def tinderAction(request):
 
     if not TinderProfile.objects.filter(user=user).exists():
         return Response({'error': 'Brak profilu'}, status=400)
-    
-    target = User.objects.get(id=request.data.get('target'))
+
+    try:
+        target = User.objects.get(id=request.data.get('target'))
+    except User.DoesNotExist:
+        return Response({'error': 'Niepoprawny użytkownik'}, status=400)
 
     if target == user:
         return Response({'error': 'Nie możesz oceniać siebie'}, status=400)

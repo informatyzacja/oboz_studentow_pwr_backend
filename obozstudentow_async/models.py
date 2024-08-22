@@ -16,6 +16,9 @@ class Chat(models.Model):
     name = models.CharField(max_length=100)
     users = models.ManyToManyField(User)
     enabled = models.BooleanField(default=True)
+    blocked_by = models.ManyToManyField(User, related_name='blocked_chat', blank=True)
+    notifications_blocked_by = models.ManyToManyField(User, related_name='notifications_blocked_chat', blank=True)
     
     def __str__(self):
         return self.name
+    

@@ -6,6 +6,8 @@ from .houses import *
 from .register import *
 from .tinder import *
 
+from .chat import *
+
 # /api2/tinder/
 tinderurlpatterns = [
     path('upload-profile-photo/', uploadProfilePhoto),
@@ -31,4 +33,7 @@ urlpatterns = [
     path('login_with_code/', login_with_code),
 
     path('tinder/', include(tinderurlpatterns)),
+
+    path('block_chat/<int:chat_id>/', block_chat),
+    path('block_chat_notifications/<int:chat_id>/', block_chat_notifications),
 ]
