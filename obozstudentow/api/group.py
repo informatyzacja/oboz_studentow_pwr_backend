@@ -131,40 +131,40 @@ def signup_group(request):
         for person in request.data['people']:
             nightGameSignup = NightGameSignup.objects.create(
                 user_band = person['band'],
-                user_first_name = person['first_name'],
+                # user_first_name = person['first_name'],
 
                 group = group,
                 addedBy = request.user
             )
             userError = ""
 
-            if User.objects.filter(bandId=person['band'].zfill(6),first_name__iexact=person['first_name'].strip()).exists():
-                user = User.objects.get(bandId=person['band'].zfill(6),first_name__iexact=person['first_name'].strip())
+            if User.objects.filter(bandId=person['band'].zfill(6)).exists():
+                user = User.objects.get(bandId=person['band'].zfill(6))
 
                 if user.birthDate and (night_game_start.year - user.birthDate.year - ((night_game_start.month, night_game_start.day) < (user.birthDate.month, user.birthDate.day)) < 18):
                     nightGameSignup.failed = True
                     nightGameSignup.error = "Użytkownik nie jest pełnoletni"
-                    userError = f"Użytkownik {person['first_name'].strip()} nie jest pełnoletni"
+                    userError = f"Użytkownik {user.first_name} nie jest pełnoletni"
                 
                 elif GroupMember.objects.filter(user=user, group__type=group_type).exists():
                     nightGameSignup.failed = True
                     nightGameSignup.error = "Użytkownik jest już w jakiejś grupie"
-                    userError = f"Użytkownik {person['first_name'].strip()} jest już w jakiejś grupie"
+                    userError = f"Użytkownik {user.first_name} jest już w jakiejś grupie"
 
                 else:
                     GroupMember.objects.create(user=user, group=group).save()
                     
 
-            elif User.objects.filter(bandId=person['band'].zfill(6)).exists():
-                user = User.objects.get(bandId=person['band'].zfill(6))
-                nightGameSignup.failed = True
-                nightGameSignup.error = f"Nie znaleziono użytkownika o podanym imieniu. Znaleziony użytkownik to: {user.first_name} {user.last_name}, ID: {user.pk}, opaska: {user.bandId if user.bandId else 'brak numeru opaski'}"
-                userError = f"Nie znaleziono użytkownika o podanych danych: {person['first_name'].strip()}, opaska: {person['band']}"
+            # elif User.objects.filter(bandId=person['band'].zfill(6)).exists():
+            #     user = User.objects.get(bandId=person['band'].zfill(6))
+            #     nightGameSignup.failed = True
+            #     nightGameSignup.error = f"Nie znaleziono użytkownika o podanym imieniu. Znaleziony użytkownik to: {user.first_name} {user.last_name}, ID: {user.pk}, opaska: {user.bandId if user.bandId else 'brak numeru opaski'}"
+            #     userError = f"Nie znaleziono użytkownika o podanych danych: {person['first_name'].strip()}, opaska: {person['band']}"
 
             else:
                 nightGameSignup.failed = True
-                nightGameSignup.error = f"Nie znaleziono użytkownika o podanym imieniu, ani opasce."
-                userError = f"Nie znaleziono użytkownika o podanych danych: {person['first_name'].strip()}, opaska: {person['band']}"
+                nightGameSignup.error = f"Nie znaleziono użytkownika o podanej opasce."
+                userError = f"Nie znaleziono użytkownika o podanej opasce: {person['band']}"
                 
             nightGameSignup.save()
             if nightGameSignup.failed:
@@ -177,9 +177,9 @@ def signup_group(request):
 
             title = f"Zostałeś/aś zapisany/a na grę nocną."
             content = f"Grupę \"{group.name}\" i jej członków możesz zobaczyć w zakładce \"Profil\""
-            absolute_url = request.build_absolute_uri("/app/profil")
+            # absolute_url = request.build_absolute_uri("/app/profil")
             
-            response = send_notification(title, content, tokens, link=absolute_url if request.is_secure() else None)
+            response = send_notification(title, content, tokens)
         except:
             pass
         
