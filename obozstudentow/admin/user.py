@@ -144,7 +144,7 @@ class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
 
     fieldsets = (
         (_("Podstawowe informacje"), {"fields": ("first_name", "last_name", "email")}),
-        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "bus", 'house')}),
+        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "bus", "bus_info", 'house')}),
         (
             _("Aktywny"),
             {
@@ -190,7 +190,7 @@ class KadraAdmin(ParticipantAdmin):
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         (_("Personal info"), {"fields": ("first_name", "last_name")}),
-        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "diet", "bus", 'birthDate', 'house')}),
+        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "diet", "bus", "bus_info", 'birthDate', 'house')}),
         (
             _("Permissions"),
             {
@@ -240,7 +240,7 @@ class CustomUserAdmin(ImportExportModelAdmin, UserAdmin):
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         (_("Personal info"), {"fields": ("first_name", "last_name")}),
-        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "diet", "bus", 'house')}),
+        ("Dodatkowe informacje", {"fields": ("phoneNumber", "bandId", "photo", "title", "diet", "bus", "bus_info", 'house')}),
         ("Poufne informacje", {"fields": ('birthDate', 'ice_number', 'additional_health_info', 'gender', 'pesel'), 'classes': ('collapse',)}),
         (
             _("Permissions"),

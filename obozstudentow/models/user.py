@@ -34,6 +34,18 @@ class User(AbstractUser):
     diet = models.CharField(max_length=100, blank=True, null=True) # e.g. "wegetariańska"
     bus = models.ForeignKey(Bus, on_delete=models.SET_NULL, null=True, blank=True)
     bus_presence = models.BooleanField(default=False)
+    bus_presence_return = models.BooleanField(default=False)
+    
+    class BusInfoChoices(models.TextChoices):
+        BOTH = 'both', 'Obie strony lub żadna'
+        TO = 'to', 'Tylko tam'
+        RETURN = 'return', 'Tylko z powrotem'
+
+    bus_info = models.CharField(
+        max_length=6,
+        choices=BusInfoChoices.choices,
+        default=BusInfoChoices.BOTH,
+    )
 
     house = models.ForeignKey('House', on_delete=models.SET_NULL, null=True, blank=True)
 
