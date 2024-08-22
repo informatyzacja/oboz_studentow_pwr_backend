@@ -6,6 +6,7 @@ from obozstudentow_async.models import Message
 from ..models import User, TinderAction
 from obozstudentow_async.models import Chat
 from django.db.models import Max
+from .tinder import TinderProfileSerializer
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -39,6 +40,7 @@ class ChatSerializer(serializers.ModelSerializer):
     last_message = serializers.SerializerMethodField()
     avatar = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
+    tinder_profile = serializers.SerializerMethodField()
 
     def get_house_chat(self, obj):
         return obj.house_set.exists()
@@ -80,6 +82,12 @@ class ChatSerializer(serializers.ModelSerializer):
             return user.first_name + " " + (user.last_name[0] + '.' if user.last_name else '')
         
         return obj.name
+    
+    def get_tinder_profile(self, obj):
+        if not obj.group_set.exists() and obj.name[:6] == 'tinder':
+            user = obj.users.filter(~Q(id=self.context['request'].user.id)).first()
+            return TinderProfileSerializer(user.tinderprofile, context={'request': self.context['request']}).data if hasattr(user,'tinderprofile') else None
+        return None
     class Meta:
         model = Chat
         fields = '__all__'
