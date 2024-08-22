@@ -41,6 +41,7 @@ class ChatSerializer(serializers.ModelSerializer):
     avatar = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     tinder_profile = serializers.SerializerMethodField()
+    notifications_blocked = serializers.SerializerMethodField()
 
     def get_house_chat(self, obj):
         return obj.house_set.exists()
@@ -88,6 +89,9 @@ class ChatSerializer(serializers.ModelSerializer):
             user = obj.users.filter(~Q(id=self.context['request'].user.id)).first()
             return TinderProfileSerializer(user.tinderprofile, context={'request': self.context['request']}).data if hasattr(user,'tinderprofile') else None
         return None
+    
+    def get_notifications_blocked(self, obj):
+        return obj.notifications_blocked_by.filter(id=self.context['request'].user.id).exists()
     class Meta:
         model = Chat
         fields = '__all__'
