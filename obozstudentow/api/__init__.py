@@ -139,7 +139,7 @@ class SoberDutySerializer(serializers.ModelSerializer):
         model = SoberDuty
         fields = ('start','end')
 
-from .tinder import TinderProfileSerializer
+from .tinder import TinderProfileSerializer, tinder_register_active
 from ..models import TinderProfile
 class ProfileSerializer(serializers.ModelSerializer):
     fraction = serializers.SerializerMethodField()
@@ -147,6 +147,8 @@ class ProfileSerializer(serializers.ModelSerializer):
     sober_duty = serializers.SerializerMethodField()
 
     tinder_profile = serializers.SerializerMethodField()
+
+    tinder_register_active = serializers.SerializerMethodField()
 
     def get_tinder_profile(self, obj):
         return TinderProfileSerializer( TinderProfile.objects.filter(user=obj).first(), context=self.context ).data
@@ -160,9 +162,11 @@ class ProfileSerializer(serializers.ModelSerializer):
     def get_sober_duty(self, obj):
         return SoberDutySerializer(SoberDuty.objects.filter(user=obj), many=True).data
     
+    def get_tinder_register_active(self, obj):
+        return tinder_register_active()
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'email', 'groups', 'fraction', 'bandId', 'photo', 'title', 'bus', 'diet', 'house', 'sober_duty', 'notifications', 'tinder_profile')
+        fields = ('id', 'first_name', 'last_name', 'email', 'groups', 'fraction', 'bandId', 'photo', 'title', 'bus', 'diet', 'house', 'sober_duty', 'notifications', 'tinder_profile', 'tinder_register_active')
         depth = 1
 
 class ProfileViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):

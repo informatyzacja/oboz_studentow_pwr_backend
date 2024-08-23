@@ -11,8 +11,18 @@ from django.core.files.base import ContentFile
 
 from django.utils import timezone
 
+def tinder_register_active():
+    active = Setting.objects.get(name='tinder_register_active').value.lower() == 'true'
+    if active and Setting.objects.get(name="tinder_register_activate_datetime").value:
+        active = timezone.datetime.strptime(Setting.objects.get(name="tinder_register_activate_datetime").value, '%Y-%m-%d %H:%M') <= timezone.now()
+
+    return active
+
 @api_view(['POST'])
 def uploadProfilePhoto(request):
+    if not tinder_register_active():
+        return Response({'error': 'Rejestracja na Tinder jest obecnie wyłączona'}, status=400)
+    
     profile = TinderProfile.objects.get_or_create(user=request.user)[0]
 
     photoBase64String = request.data.get('photo')
@@ -30,6 +40,9 @@ def uploadProfilePhoto(request):
 
 @api_view(['POST'])
 def uploadProfileData(request):
+    if not tinder_register_active():
+        return Response({'error': 'Rejestracja na Tinder jest obecnie wyłączona'}, status=400)
+    
     profile = TinderProfile.objects.get_or_create(user=request.user)[0]
     
     if description := request.data.get('description'):
@@ -54,6 +67,7 @@ def tinder_active():
         active = timezone.datetime.strptime(Setting.objects.get(name="tinder_swiping_activate_datetime").value, '%Y-%m-%d %H:%M') <= timezone.now()
 
     return active
+
 
 @api_view(['GET'])
 def loadTinderProfiles(request):
