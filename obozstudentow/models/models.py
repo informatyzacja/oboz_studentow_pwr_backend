@@ -20,7 +20,7 @@ class Icons(models.Model):
 
 
 class Link(Orderable):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, help_text="Nazwa linku (nie widoczna dla użytkownika)")
     url = models.URLField()
     icon = models.ForeignKey(Icons, on_delete=models.SET_NULL, null=True, blank=True)
 
@@ -81,13 +81,13 @@ class ScheduleItem(models.Model):
 
 class Bus(models.Model):
     description = models.CharField(max_length=100)
-    location = models.URLField()
+    location = models.URLField(null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Busy"
 
     def __str__(self):
-        return "Bus " + self.description
+        return "Bus nr " + self.description
 
 
 class Image(models.Model):

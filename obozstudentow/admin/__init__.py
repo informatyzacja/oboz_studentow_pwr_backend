@@ -84,8 +84,16 @@ from ..models import Bus
 
 @admin.register(Bus)
 class BusAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-    list_display = ('description', 'location')
-    search_fields = ('description', 'location')
+    list_display = ('__str__', 'user_count_to', 'user_count_return', 'location')
+    search_fields = ('__str__', 'description', 'location')
+
+    def user_count_to(self, obj):
+        return obj.user_set.filter(bus_info__in=(User.BusInfoChoices.BOTH, User.BusInfoChoices.TO)).count()
+    user_count_to.short_description = 'Liczba użytkowników w tamtą stronę'
+
+    def user_count_return(self, obj):
+        return obj.user_set.filter(bus_info__in=(User.BusInfoChoices.BOTH, User.BusInfoChoices.RETURN)).count()
+    user_count_return.short_description = 'Liczba użytkowników w powrotną stronę'
 
 
 from ..models import Image
@@ -149,7 +157,6 @@ def close_signout(modeladmin, request, queryset):
 class HouseAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('name', 'key_collected', 'locators', 'places', 'full', 'floor')
     search_fields = ('name','floor', 'user__first_name', 'user__last_name', 'user__email')
-    readonly_fields = ('chat',)
 
     list_filter = ('key_collected','floor')
 
@@ -169,7 +176,7 @@ class HouseViewAdmin(admin.ModelAdmin):
     list_display = ('name', 'key_collected', 'locators', 'places', 'full', 'floor', 'signup_open', 'signout_open')
     search_fields = ('name','floor', 'user__first_name', 'user__last_name', 'user__email')
 
-    readonly_fields = ('name', 'locators', 'places', 'full', 'floor', 'description')
+    readonly_fields = ('name', 'locators', 'places', 'full', 'floor', 'description', 'chat')
 
     list_filter = ('key_collected','floor', 'places', 'signup_open', 'signout_open')
 

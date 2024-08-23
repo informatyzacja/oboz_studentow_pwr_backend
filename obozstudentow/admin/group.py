@@ -38,10 +38,14 @@ class GroupMemberAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
 @admin.register(Group)
 class GroupAdmin(ImportExportModelAdmin, OrderableAdmin):
-    list_display = ('id', 'name', 'type', 'logo', 'map', 'messenger', 'sort_order_display')
+    list_display = ('id', 'name', 'type', 'logo', 'map', 'members_count', 'sort_order_display')
     search_fields = ('name', 'type')
     list_filter = ('type',)
     inlines = [GroupWardenInline]
+
+    def members_count(self, obj):
+        return obj.groupmember_set.count()
+    members_count.short_description = 'Liczba członków'
 
 
 from ..models import PointType, Point
