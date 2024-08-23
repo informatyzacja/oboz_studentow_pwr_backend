@@ -48,9 +48,13 @@ def save_message(message, user, chat_id):
 def send_message_notification(message):
 	try:
 		# print("send message notification", title, content, house)
-		tokens = list(UserFCMToken.objects.filter(user__notifications=True, user__in=message.chat.users.values('id')).values_list('token', flat=True))
+		tokens = list(UserFCMToken.objects.filter(user__notifications=True, user__in=message.chat.users.exclude(id=message.user.id).exclude(id__in=message.chat.notifications_blocked_by.values('id')).exclude(id__in=message.chat.blocked_by.values('id')).values('id')).values_list('token', flat=True))
+
+		group_name = ""
+		if message.chat.users.count() > 2:
+			group_name = "\nDo grupy " + message.chat.name
 		
-		response = send_notification(f"{message.user.first_name} napisał/a:", message.message, tokens)
+		response = send_notification(f"{message.user.first_name} {message.user.last_name[0]}." + group_name, message.message, tokens)
 	except Exception as e:
 		print(e)
 		pass
@@ -107,7 +111,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 			
 			username = self.user.first_name + " " + self.user.last_name[0] + '.'
 			await self.channel_layer.group_send(
-				chat_id, {
+				str(chat_id), {
 					"type" : "sendMessage" ,
 					"message" : message ,
 					"username" : username ,
