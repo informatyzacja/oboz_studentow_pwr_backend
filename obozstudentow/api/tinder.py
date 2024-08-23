@@ -80,10 +80,13 @@ def loadTinderProfiles(request):
     if not TinderProfile.objects.filter(user=user).exists():
         return Response({'error': 'Brak profilu'}, status=400)
     
+    if user.tinderprofile.blocked:
+        return Response({'error': 'Zostałeś/aś zablokowany/a'}, status=400)
+    
     exclude_user_ids = request.GET.get('skip_ids', '').split(',')
     exclude_user_ids = [int(id) for id in exclude_user_ids if id]
 
-    profiles = TinderProfile.objects.exclude(user=user).exclude(user__tinderaction_target__user=user).exclude(user__id__in=exclude_user_ids).order_by('?')[:10]
+    profiles = TinderProfile.objects.exclude(user=user, user__tinderprofile__blocked=True).exclude(user__tinderaction_target__user=user).exclude(user__id__in=exclude_user_ids).order_by('?')[:10]
 
     # demo profiles
     # profiles = TinderProfile.objects.exclude(user=user)[0]
@@ -110,6 +113,9 @@ def tinderAction(request):
 
     if not TinderProfile.objects.filter(user=user).exists():
         return Response({'error': 'Brak profilu'}, status=400)
+    
+    if user.tinderprofile.blocked:
+        return Response({'error': 'Zostałeś/aś zablokowany/a'}, status=400)
 
     try:
         target = User.objects.get(id=request.data.get('target'))
