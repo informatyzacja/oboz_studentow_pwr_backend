@@ -7,7 +7,7 @@ def create_settings(apps, schema_editor):
 
     Setting.objects.get_or_create(name="tinder_swiping_active", defaults={
         "value": "true",
-        "description": "Czy użytownik może zapisać się na więcej niż jedne warsztaty w tym samym dniu?"
+        "description": "Czy swajpowanie na tinderze jest uruchomione?"
         }
     )
     Setting.objects.get_or_create(name="tinder_swiping_activate_datetime", defaults={

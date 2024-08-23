@@ -28,6 +28,9 @@ class UserCreationFormEmail(BaseUserCreationForm):
                 self.save_m2m()
         return user
 
+    def validate_passwords(self):
+        pass
+
     def clean_email(self):
         """Reject emails that differ only in case."""
         email = self.cleaned_data.get("email")
