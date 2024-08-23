@@ -73,15 +73,13 @@ def signup_user_for_house(request, id):
     if house.full():
         return Response({'success': False, 'error': f'{"Pokój" if room_instead_of_house else "Domek"} jest już pełny'})
     
-    if not request.data.get('bandId'):
-        return Response({'success': False, 'error': 'Nie podano ID użytkownika'})
+    if request.data.get('bandId'):
+        if not User.objects.filter(bandId=request.data.get('bandId')).exists():
+            return Response({'success': False, 'error': 'Nie znaleziono użytkownika o podanym ID'})
     
-    if not User.objects.filter(bandId=request.data.get('bandId')).exists():
-        return Response({'success': False, 'error': 'Nie znaleziono użytkownika o podanym ID'})
-    
-
-    
-    user = User.objects.get(bandId=request.data.get('bandId'))
+        user = User.objects.get(bandId=request.data.get('bandId'))
+    else:
+        user = request.user
 
     
     if user != request.user and user.house is not None:
