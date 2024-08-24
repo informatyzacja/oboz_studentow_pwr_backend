@@ -86,7 +86,7 @@ def loadTinderProfiles(request):
     exclude_user_ids = request.GET.get('skip_ids', '').split(',')
     exclude_user_ids = [int(id) for id in exclude_user_ids if id]
 
-    profiles = TinderProfile.objects.exclude(user=user, user__tinderprofile__blocked=True).exclude(user__tinderaction_target__user=user).exclude(user__id__in=exclude_user_ids).order_by('?')[:10]
+    profiles = TinderProfile.objects.exclude(user=user).exclude(user__tinderprofile__blocked=True).exclude(user__tinderaction_target__user=user).exclude(user__id__in=exclude_user_ids).order_by('?')[:10]
 
     # demo profiles
     # profiles = TinderProfile.objects.exclude(user=user)[0]
