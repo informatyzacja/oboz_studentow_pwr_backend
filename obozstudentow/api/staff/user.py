@@ -114,15 +114,17 @@ class StaffContactSerializer(serializers.ModelSerializer):
 
         return note or None
     
+    phone = serializers.CharField(source='phoneNumber')
+    
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'phoneNumber', 'photo', 'title', 'note')
+        fields = ('id', 'first_name', 'last_name', 'phone', 'photo', 'title', 'note')
 
 
 @api_view(['GET'])
 @permission_required('obozstudentow.can_get_contacts')
 def get_contacts(request):
     return Response(
-        StaffContactSerializer(User.objects.filter(groups__isnull=False).exclude(id=request.user.id).exclude(first_name__icontains='test').exclude(last_name__icontains='test'), many=True, context={'request': request}).data
+        StaffContactSerializer(User.objects.filter(groups__isnull=False, phoneNumber__isnull=False).exclude(id=request.user.id).exclude(first_name__icontains='test').exclude(last_name__icontains='test').distinct(), many=True, context={'request': request}).data
     )
     
