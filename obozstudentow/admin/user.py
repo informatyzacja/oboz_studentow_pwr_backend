@@ -1,12 +1,16 @@
 
 from django.http import HttpRequest
+
 from import_export.admin import ImportExportModelAdmin
+from import_export import resources, fields
+from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
 
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.db.models import F
 from ..models import User, UserFCMToken, GroupMember, GroupType, TinderProfile
+from ..models import Group as ObozGroup
 
 from .group import GroupWardenInline
 
@@ -104,7 +108,43 @@ class CustomUserChangeForm(UserChangeForm):
             bandId = bandId.zfill(6)
         return bandId
 
+from ..models import Bus
+class ParticipantResource(resources.ModelResource):
+    bus = fields.Field(
+        column_name='bus', 
+        attribute='bus', 
+        widget=ForeignKeyWidget(Bus, 'description')
+    )
+
+
+
+    def after_import_row(self, row, row_result, **kwargs):
+        frakcja_name = row.get('frakcja', None)
+        if frakcja_name and row_result.instance:
+            group_type, created = GroupType.objects.get_or_create(name='Frakcja')
+            frakcja, created = ObozGroup.objects.get_or_create(name=frakcja_name, type=group_type)
+            GroupMember.objects.create(user=row_result.instance, group=frakcja)
+
+
+
+
+    # frakcja = fields.Field(
+    #     column_name='frakcja',
+    #     attribute='groupmember_set',
+    #     widget=ManyToManyWidget(ObozGroup, field='name'),
+    #     m2m_add=True
+    # )
+    
+    # def before_save_instance(self, instance, row, **kwargs):
+    #     print(kwargs)
+
+    
+    class Meta:
+        model = Participant
+        fields = ('id', 'first_name', 'last_name', 'email', 'pesel', 'ice_number', 'diet', 'phoneNumber', 'bus', 'additional_health_info', 'frakcja')
+
 class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
+    resource_class = ParticipantResource
     form = CustomUserChangeForm
 
     def frakcja(self, user):
