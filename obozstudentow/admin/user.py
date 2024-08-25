@@ -5,6 +5,7 @@ from import_export.admin import ImportExportModelAdmin
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
+from django.db.models import F
 from ..models import User, UserFCMToken, GroupMember, GroupType, TinderProfile
 
 from .group import GroupWardenInline
@@ -65,9 +66,11 @@ def remove_bands(modeladmin, request, queryset):
 
 @admin.action(description='Stwórz opaski tymczasowe')
 def create_temporary_bands(modeladmin, request, queryset):
-    for user in queryset:
-        user.bandId = str(200000+user.id)
-        user.save()
+    queryset.update(bandId=200000 + F('id'))
+
+@admin.action(description='Usuń opaski tymczasowe')
+def remove_temporary_bands(modeladmin, request, queryset):
+    queryset.filter(bandId = 200000 + F('id')).update(bandId=None)
 
 class UserFCMTokenInline(admin.TabularInline):
     model = UserFCMToken
@@ -170,7 +173,7 @@ class ParticipantAdmin(ImportExportModelAdmin, UserAdmin):
         }),
     )
     inlines = [GroupMemberInlineAdmin, TinderProfileInline, UserFCMTokenInline]
-    actions = [activate, deactivate, create_temporary_bands]
+    actions = [activate, deactivate, create_temporary_bands, remove_temporary_bands]
     readonly_fields = ('last_login', 'date_joined')
 
 
@@ -315,7 +318,7 @@ class Opaski(User):
 
 @admin.register(Opaski)
 class OpaskiAdmin(CustomUserAdmin):
-    actions = [remove_bands, create_temporary_bands]
+    actions = [create_temporary_bands, remove_temporary_bands]
 
     list_display = ('first_name', 'last_name', 'bandId', 'bus')
 
