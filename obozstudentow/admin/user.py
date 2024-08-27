@@ -117,7 +117,6 @@ class ParticipantResource(resources.ModelResource):
     )
 
 
-
     def after_import_row(self, row, row_result, **kwargs):
         frakcja_name = row.get('frakcja', None)
         if frakcja_name and row_result.instance:
@@ -125,20 +124,6 @@ class ParticipantResource(resources.ModelResource):
             frakcja, created = ObozGroup.objects.get_or_create(name=frakcja_name, type=group_type)
             GroupMember.objects.create(user=row_result.instance, group=frakcja)
 
-
-
-
-    # frakcja = fields.Field(
-    #     column_name='frakcja',
-    #     attribute='groupmember_set',
-    #     widget=ManyToManyWidget(ObozGroup, field='name'),
-    #     m2m_add=True
-    # )
-    
-    # def before_save_instance(self, instance, row, **kwargs):
-    #     print(kwargs)
-
-    
     class Meta:
         model = Participant
         fields = ('id', 'first_name', 'last_name', 'email', 'pesel', 'ice_number', 'diet', 'phoneNumber', 'bus', 'additional_health_info', 'frakcja')
