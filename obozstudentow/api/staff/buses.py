@@ -74,6 +74,13 @@ def set_user_band_id(request):
         return Response({'success': False, 'error': 'Nie podano ID użytkownika'})
     if 'band_id' not in request.data:
         return Response({'success': False, 'error': 'Nie podano ID opaski'})
+    
+    try:
+        # Walidacja numerów opasek
+        if int(request.data['band_id']) < 300000:
+            return Response({'success': False, 'error': 'Nieprawidłowy numer opaski'})
+    except ValueError:
+        return Response({'success': False, 'error': 'Nieprawidłowy numer opaski'})
 
     if not User.objects.filter(id=request.data['user_id']).exists():
         return Response({'success': False, 'error': 'Użytkownik nie istnieje'})
