@@ -38,14 +38,16 @@ def send_email_verification(request):
 
     if not email:
         return Response( 
-            {'error': 'No email or first name'}, 
-            status=status.HTTP_400_BAD_REQUEST
-        )
+            {'error': 'No email or first name'}
+    )
 
     user = User.objects.filter(email=email).first()
 
     if not user:
-        return Response({'exists': False})
+        return Response({'exists': False, 'error': 'Podany adres e-mail nie jest przypisany do żadnego uczestnika obozu.'})
+    
+    if not user.is_active:
+        return Response({'error': 'Użytkownik nie jest aktywny'})
     
     if is_constant_code_user(user):
         user.verification_code_valid_until_datetime = timezone.now() + timezone.timedelta(minutes=30)
@@ -90,6 +92,9 @@ def login_with_code(request):
     user = User.objects.filter(email=email, verification_code=code, verification_code_valid_until_datetime__gte=timezone.now()).first()
 
     if user:
+        if not user.is_active:
+            return Response({'error': 'Użytkownik nie jest aktywny'}, status=status.HTTP_400_BAD_REQUEST)
+
         if not is_constant_code_user(user): 
             user.verification_code = None
         user.verification_code_valid_until_datetime = None
