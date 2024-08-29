@@ -123,7 +123,7 @@ class Partners(Orderable):
     def __str__(self):
         return self.name
     
-    class Meta:
+    class Meta(Orderable.Meta):
         verbose_name = "Partner"
         verbose_name_plural = "Partnerzy"
 
