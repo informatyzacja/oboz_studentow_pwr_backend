@@ -115,7 +115,7 @@ class Setting(models.Model):
         verbose_name = "Ustawienie"
         verbose_name_plural = "Ustawienia"
 
-class Partners(models.Model):
+class Partners(Orderable):
     name = models.CharField(max_length=100)
     link = models.URLField(blank=True, null=True)
     logo = ResizedImageField(upload_to='partners', force_format=None, size=[400, 400])

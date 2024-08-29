@@ -113,8 +113,8 @@ class SettingAdmin(admin.ModelAdmin):
 
 from ..models import Partners
 @admin.register(Partners)
-class PartnersAdmin(admin.ModelAdmin):
-    list_display = ('name', 'logo', 'link')
+class PartnersAdmin(OrderableAdmin):
+    list_display = ('name', 'logo', 'link', 'sort_order_display')
     search_fields = ('name', 'logo', 'link')
 
 

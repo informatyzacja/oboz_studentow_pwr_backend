@@ -239,7 +239,7 @@ class PartnersSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class PartnersViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = Partners.objects.all()
+    queryset = Partners.objects.order_by('sort_order')
     serializer_class = PartnersSerializer
 
 api_router.register(r'partners', PartnersViewSet)
