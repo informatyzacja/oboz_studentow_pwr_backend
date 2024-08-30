@@ -85,7 +85,7 @@ from ..models import Bus
 @admin.register(Bus)
 class BusAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('__str__', 'user_count_to', 'user_count_return', 'location')
-    search_fields = ('__str__', 'description', 'location')
+    search_fields = ('description', 'location')
 
     def user_count_to(self, obj):
         return obj.user_set.filter(bus_info__in=(User.BusInfoChoices.BOTH, User.BusInfoChoices.TO)).count()
