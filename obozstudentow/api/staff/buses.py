@@ -17,7 +17,7 @@ def get_buses(request):
 
     users_count = User.objects.filter(bus__isnull=True).count()
     present_users_count = User.objects.filter(Q(bus_presence=True) if bus_presence_to else Q(bus_presence_return=True), bus__isnull=True).count()
-    opaski_count = User.objects.filter(bus__isnull=True, bandId__isnull=False).count()
+    opaski_count = User.objects.filter(bus__isnull=True, bandId__isnull=False, bandId__gte=300000).count()
 
     return Response(
         list(
@@ -32,7 +32,7 @@ def get_buses(request):
             ).order_by('description').values('id', 'description', 'users_count', 'present_users_count', 'opaski_count')
          ) + [{
         'id': 0,
-        'description': 'Dojazd własny',
+        'description': 'dojazd własny',
         'users_count': users_count,
         'present_users_count': present_users_count,
         'opaski_count': opaski_count
@@ -55,12 +55,12 @@ def get_bus_users(request):
         bus = Bus.objects.get(id=request.GET['bus_id'])
 
         return Response(User.objects.filter(bus=bus, bus_info__in=[User.BusInfoChoices.BOTH, User.BusInfoChoices.TO if bus_presence_to else User.BusInfoChoices.RETURN]).annotate(
-            bandId_isnull=Count('bandId')
+            bandId_isnull=Count('bandId'),
         ).order_by(presence_type, 'bandId_isnull', 'last_name', 'first_name').values('id', 'first_name', 'last_name', 'phoneNumber', 'bandId', 'bus_info',  presence = F(presence_type)))
     
     else:
         return Response(User.objects.filter(bus__isnull=True).annotate(
-            bandId_isnull=Count('bandId')
+            bandId_isnull=Count('bandId', filter=Q(bandId__gte=300000)),
         ).order_by(presence_type, 'bandId_isnull', 'last_name', 'first_name').values('id', 'first_name', 'last_name', 'phoneNumber', 'bandId', 'bus_info',  presence = F(presence_type)))
 
 
