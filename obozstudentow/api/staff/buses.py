@@ -111,7 +111,7 @@ def set_user_band_id(request):
 
     user = User.objects.get(id=request.data['user_id'])
 
-    if user.bandId is not None:
+    if user.bandId is not None and int(user.bandId) >= 300000:
         return Response({'success': False, 'error': 'Użytkownik ma już przypisaną opaskę'})
     
     if User.objects.filter(bandId=request.data['band_id']).exists():
