@@ -24,7 +24,7 @@ def create_roles(apps, schema_editor):
     głowny_group.permissions.set(głowny_permissions)
 
     kadra_group, created = DjangoGroup.objects.get_or_create(name="Sztab: Kadra")
-    kadra_permissions = Permission.objects.filter(content_type__model__in=('soberduty', 'group'), content_type__app_label='obozstudentow')
+    kadra_permissions = Permission.objects.filter(content_type__model__in=('soberduty', 'mealduty', 'group'), content_type__app_label='obozstudentow')
     kadra_group.permissions.set(kadra_permissions)
 
     grafika_group, created = DjangoGroup.objects.get_or_create(name="Sztab: Grafika")

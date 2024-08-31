@@ -24,6 +24,19 @@ class SoberDuty(models.Model):
         return self.user.first_name + " " + self.user.last_name + " (" + self.start.strftime("%H:%M %d.%m") + " - " + self.end.strftime("%H:%M %d.%m") + ")"
     
 
+class MealDuty(models.Model):
+    user = models.ForeignKey('obozstudentow.User', on_delete=models.CASCADE)
+    start = models.DateTimeField()
+    end = models.DateTimeField()
+
+    class Meta:
+        verbose_name = "Dyżur stołówkowy"
+        verbose_name_plural = "Dyżury stołówkowe"
+    
+    def __str__(self):
+        return self.user.first_name + " " + self.user.last_name + " (" + self.start.strftime("%H:%M %d.%m") + " - " + self.end.strftime("%H:%M %d.%m") + ")"
+    
+
 class Staff(Orderable):
     user = models.OneToOneField('obozstudentow.User', on_delete=models.CASCADE)
 

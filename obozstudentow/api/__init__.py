@@ -132,7 +132,7 @@ class GroupWithMembersSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'type', 'logo', 'map', 'wardens', 'members', 'description', 'messenger')
         depth = 1
 
-from ..models import Group, SoberDuty
+from ..models import Group, SoberDuty, MealDuty
 
 class SoberDutySerializer(serializers.ModelSerializer):
     class Meta:
@@ -145,6 +145,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     fraction = serializers.SerializerMethodField()
     groups = serializers.SerializerMethodField()
     sober_duty = serializers.SerializerMethodField()
+    meal_duty = serializers.SerializerMethodField()
 
     tinder_profile = serializers.SerializerMethodField()
 
@@ -162,11 +163,14 @@ class ProfileSerializer(serializers.ModelSerializer):
     def get_sober_duty(self, obj):
         return SoberDutySerializer(SoberDuty.objects.filter(user=obj), many=True).data
     
+    def get_meal_duty(self, obj):
+        return SoberDutySerializer(MealDuty.objects.filter(user=obj), many=True).data
+    
     def get_tinder_register_active(self, obj):
         return tinder_register_active()
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'email', 'groups', 'fraction', 'bandId', 'photo', 'title', 'bus', 'diet', 'house', 'sober_duty', 'notifications', 'tinder_profile', 'tinder_register_active')
+        fields = ('id', 'first_name', 'last_name', 'email', 'groups', 'fraction', 'bandId', 'photo', 'title', 'bus', 'diet', 'house', 'sober_duty', 'meal_duty', 'notifications', 'tinder_profile', 'tinder_register_active')
         depth = 1
 
 class ProfileViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
