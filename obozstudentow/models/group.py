@@ -36,9 +36,14 @@ class Group(Orderable):
         super().save(*args, **kwargs)
         if not self.chat:
             self.chat = Chat.objects.create(name=self.name)
-            self.chat.users.add(*self.groupmember_set.values_list('user', flat=True))
+            self.chat.users.set(*self.groupmember_set.values_list('user', flat=True))
             self.chat.users.add(*self.groupwarden_set.values_list('user', flat=True))
             self.save()
+        else:
+            self.chat.name = self.name
+            self.chat.users.set(self.groupmember_set.values_list('user', flat=True))
+            self.chat.users.add(*self.groupwarden_set.values_list('user', flat=True))
+            self.chat.save()
     
 class GroupMember(models.Model):
     user = models.ForeignKey('obozstudentow.User', on_delete=models.CASCADE)

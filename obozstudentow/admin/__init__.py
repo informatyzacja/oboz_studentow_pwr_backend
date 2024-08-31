@@ -122,7 +122,7 @@ class PartnersAdmin(OrderableAdmin):
 
 from ..models import House
 class HouseMemberInline(admin.TabularInline):
-    model = User
+    model = Participant
     extra = 0
     # autocomplete_fields = ('person',)
     verbose_name = "Lokator"
