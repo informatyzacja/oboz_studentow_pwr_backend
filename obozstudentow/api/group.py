@@ -12,15 +12,23 @@ from django.utils import timezone
 
 from django.db import transaction
 
+from .people import ParticipantForAnotherParticipantSerializer
+
 class GroupSerializer(serializers.ModelSerializer):
     wardens = serializers.SerializerMethodField()
+    members = serializers.SerializerMethodField()
 
     def get_wardens(self, obj):
         return StaffSerializer( User.objects.filter(id__in=GroupWarden.objects.filter(group=obj).values('user')), many=True, context=self.context ).data
+    
+    def get_members(self, obj):
+        if self.context['request'].user.groupwarden_set.filter(group=obj).exists():
+            return ParticipantForAnotherParticipantSerializer( User.objects.filter(id__in=GroupMember.objects.filter(group=obj).values('user')), many=True, context=self.context ).data
+        return None
 
     class Meta:
         model = Group
-        fields = ('id', 'name', 'type', 'logo', 'map', 'wardens', 'description', 'messenger', 'background')
+        fields = ('id', 'name', 'type', 'logo', 'map', 'wardens', 'description', 'messenger', 'background', 'members')
         depth = 1
 
 class GroupViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
