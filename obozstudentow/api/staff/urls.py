@@ -30,4 +30,6 @@ urlpatterns = [
     path('hide-announcement/<int:id>/', hide_announcement),
 
     path('get-contacts/', get_contacts),
+
+    path('get-user-list/', get_user_list),
 ]

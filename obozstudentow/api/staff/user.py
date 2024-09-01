@@ -128,3 +128,13 @@ def get_contacts(request):
         StaffContactSerializer(User.objects.filter(groups__isnull=False, phoneNumber__isnull=False).exclude(id=request.user.id).exclude(first_name__icontains='test').exclude(last_name__icontains='test').distinct(), many=True, context={'request': request}).data
     )
     
+
+from django.db.models import Count, F
+
+@api_view(['GET'])
+@permission_required('obozstudentow.can_change_bands')
+def get_user_list(request):
+
+    return Response(User.objects.annotate(
+        bandId_isnull=Count('bandId'),
+    ).order_by('bandId_isnull', 'last_name', 'first_name').values('id', 'first_name', 'last_name', 'phoneNumber', 'bandId', 'bus_info', 'bus'))
