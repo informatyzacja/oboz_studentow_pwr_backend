@@ -112,17 +112,13 @@ def signup_user_for_house(request, id):
                 )
                 progress.delete()
 
-        if HouseSignupProgress.objects.filter(house=house).exists():
-            progress = HouseSignupProgress.objects.get(house=house)
+        progress, created = HouseSignupProgress.objects.get_or_create(house=house, defaults={'user':request.user})
 
-            if progress.user != request.user and not progress.free():
-                return Response({'success': False, 'error': f'Ktoś inny aktualnie zapisuje się do tego {"pokoju" if room_instead_of_house else "domku"}'})
-            
-            progress.user = request.user
-            progress.save()
-        else:
-            progress = HouseSignupProgress(house=house, user=request.user)
-            progress.save()
+        if progress.user != request.user and not progress.free():
+            return Response({'success': False, 'error': f'Ktoś inny aktualnie zapisuje się do tego {"pokoju" if room_instead_of_house else "domku"}'})
+        
+        progress.user = request.user
+        progress.save()
 
         user.house = house
         user.save()
