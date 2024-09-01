@@ -32,11 +32,14 @@ class House(models.Model):
     def save(self, *args, **kwargs):
         if self.places < 0:
             self.places = 0
+        if self.user_key_collected:
+            self.key_collected = True
         super().save(*args, **kwargs)
         if not self.chat:
             self.chat = Chat.objects.create(name='Czat domku nr ' + self.name)
             self.chat.users.set(self.user_set.all())
             self.save()
+
 
 class HouseCollocationForImport(models.Model):
     house = models.CharField(max_length=10)
