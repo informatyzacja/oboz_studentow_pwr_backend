@@ -12,7 +12,13 @@ from django.urls import path
 @api_view(['GET'])
 @permission_required('obozstudentow.can_validate_meals')
 def get_current_meal(request):
-    return Response(Meal.objects.filter(start__lte=timezone.now(), end__gt=timezone.now()).values('id', 'name', 'start').first() or {})
+    return Response(Meal.objects.filter(start__lte=timezone.now(), end__gt=timezone.now()).order_by('-start').values('id', 'name', 'start').first() or {})
+
+
+@api_view(['GET'])
+@permission_required('obozstudentow.can_validate_meals')
+def get_current_meals(request):
+    return Response(Meal.objects.filter(start__lte=timezone.now(), end__gt=timezone.now()).order_by('start').values('id', 'name', 'start'))
 
 @api_view(['GET'])
 @permission_required('obozstudentow.can_validate_meals')
@@ -70,4 +76,5 @@ urlpatterns = [
     path('validate/', validate_meal),
     path('check/', check_meal_validation),
     path('current-meal/', get_current_meal),
+    path('current-meals/', get_current_meals),
 ]

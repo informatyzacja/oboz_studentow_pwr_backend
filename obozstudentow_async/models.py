@@ -13,7 +13,7 @@ class Message(models.Model):
         return self.user.first_name + ' ' + self.user.last_name + ': ' + self.message
     
 class Chat(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=300)
     users = models.ManyToManyField(User)
     enabled = models.BooleanField(default=True)
     blocked_by = models.ManyToManyField(User, related_name='blocked_chat', blank=True)
