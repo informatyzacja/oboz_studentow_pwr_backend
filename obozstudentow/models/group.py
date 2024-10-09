@@ -36,7 +36,7 @@ class Group(Orderable):
         super().save(*args, **kwargs)
         if not self.chat:
             self.chat = Chat.objects.create(name=self.name)
-            self.chat.users.set(*self.groupmember_set.values_list('user', flat=True))
+            self.chat.users.set(self.groupmember_set.values_list('user', flat=True))
             self.chat.users.add(*self.groupwarden_set.values_list('user', flat=True))
             self.save()
         else:
