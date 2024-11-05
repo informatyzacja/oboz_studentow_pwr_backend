@@ -26,7 +26,7 @@ def get_secret(key, default):
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load environment variables from .env file
-# load_dotenv(os.path.join(BASE_DIR,'.env'))
+load_dotenv(os.path.join(BASE_DIR,'.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -223,8 +223,8 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle'
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '10/minute',
-        'user': '1800/hour'
+        'anon': os.getenv("ANON_THROTTLE_RATE", '10/minute') if os.getenv("ANON_THROTTLE_RATE") != "None" else None,
+        'user': os.getenv("USER_THROTTLE_RATE", '1800/hour') if os.getenv("USER_THROTTLE_RATE") != "None" else None,
     },
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
