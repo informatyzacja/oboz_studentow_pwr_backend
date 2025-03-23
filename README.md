@@ -1,5 +1,4 @@
-# PWr Students' Camp - Django Project
-### Obóz Studentów PWr
+# WrocTech Students' Camp App Backend - Django Project (Obóz Studentów PWr)
 
 This project is a Django backend for an application that manages camps for students of Wrocław University of Science and Technology. The project includes a Django backend and a Vue.js frontend.
 
