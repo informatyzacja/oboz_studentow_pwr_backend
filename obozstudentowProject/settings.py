@@ -34,7 +34,8 @@ load_dotenv(os.path.join(BASE_DIR,'.env'))
 from django.core.management.utils import get_random_secret_key
 SECRET_KEY = get_secret("SECRET_KEY", get_random_secret_key())
 
-ADMINS = [('Marvin', 'marvin.rucinski@samorzad.pwr.edu.pl')]
+ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "admin@localhost")
+ADMINS = [(ADMIN_EMAIL, ADMIN_EMAIL)]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", 'true').lower() == 'true'
@@ -43,6 +44,8 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost").split(",")
 
 CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost").split(",")
 CORS_ALLOW_ALL_ORIGINS = os.getenv("CORS_ALLOW_ALL_ORIGINS", "false").lower() == "true"
+
+FIREBASE_CERTIFICATE = os.getenv("FIREBASE_CERTIFICATE", "")
 
 # Application definition
 
