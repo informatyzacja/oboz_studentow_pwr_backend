@@ -65,33 +65,34 @@ def signup_user_for_house(request, id):
     if not House.objects.filter(id=id).exists():
         return Response({'success': False, 'error': f'Nie znaleziono {"pokoju" if room_instead_of_house else "domku"} o podanym id'})
     
-    house = House.objects.get(id=id)
-
-    if not house.signup_open:
-        return Response({'success': False, 'error': f'Zapisy do tego {"pokoju" if room_instead_of_house else "domku"} są obecnie zamknięte'})
-
-    if house.full():
-        return Response({'success': False, 'error': f'{"Pokój" if room_instead_of_house else "Domek"} jest już pełny'})
-    
-    if request.data.get('bandId'):
-        if not User.objects.filter(bandId=request.data.get('bandId')).exists():
-            return Response({'success': False, 'error': 'Nie znaleziono użytkownika o podanym ID'})
-    
-        user = User.objects.get(bandId=request.data.get('bandId'))
-    else:
-        user = request.user
-
-    
-    if user != request.user and user.house is not None:
-        if user.house == house:
-            return Response({'success': False, 'error': f'Ten użytkownik jest już zapisany do tego {"pokoju" if room_instead_of_house else "domku"}'})
-        
-        return Response({'success': False, 'error': f'Ten użytkownik jest już zapisany do jakiegoś {"pokoju" if room_instead_of_house else "domku"}. Jeżeli chcesz go/ją zapisać do tego {"pokoju" if room_instead_of_house else "domku"}, najpierw poproś go/ją, aby opuścił/a obecny {"pokój" if room_instead_of_house else "domek"}. Może to zrobić w zapisach na {"pokoje" if room_instead_of_house else "domki"} w swojej aplikacji.'})
-    
-    if user.house == house:
-        return Response({'success': False, 'error': f'Jesteś już zapisany/a do tego {"pokoju" if room_instead_of_house else "domku"}'})
-    
     with transaction.atomic():
+
+        house = House.objects.select_for_update().get(id=id)
+
+        if not house.signup_open:
+            return Response({'success': False, 'error': f'Zapisy do tego {"pokoju" if room_instead_of_house else "domku"} są obecnie zamknięte'})
+
+        if house.full():
+            return Response({'success': False, 'error': f'{"Pokój" if room_instead_of_house else "Domek"} jest już pełny'})
+        
+        if request.data.get('bandId'):
+            if not User.objects.filter(bandId=request.data.get('bandId')).exists():
+                return Response({'success': False, 'error': 'Nie znaleziono użytkownika o podanym ID'})
+        
+            user = User.objects.get(bandId=request.data.get('bandId'))
+        else:
+            user = request.user
+
+        
+        if user != request.user and user.house is not None:
+            if user.house == house:
+                return Response({'success': False, 'error': f'Ten użytkownik jest już zapisany do tego {"pokoju" if room_instead_of_house else "domku"}'})
+            
+            return Response({'success': False, 'error': f'Ten użytkownik jest już zapisany do jakiegoś {"pokoju" if room_instead_of_house else "domku"}. Jeżeli chcesz go/ją zapisać do tego {"pokoju" if room_instead_of_house else "domku"}, najpierw poproś go/ją, aby opuścił/a obecny {"pokój" if room_instead_of_house else "domek"}. Może to zrobić w zapisach na {"pokoje" if room_instead_of_house else "domki"} w swojej aplikacji.'})
+        
+        if user.house == house:
+            return Response({'success': False, 'error': f'Jesteś już zapisany/a do tego {"pokoju" if room_instead_of_house else "domku"}'})
+    
 
         channel_layer = get_channel_layer()
 
