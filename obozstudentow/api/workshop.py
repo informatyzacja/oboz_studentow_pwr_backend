@@ -4,6 +4,7 @@ from django.utils import timezone
 
 from rest_framework.response import Response
 from rest_framework import status
+from django.db import transaction
 
 from .people import StaffSerializer, ParticipantForStaffSerializer
 
@@ -68,19 +69,20 @@ class WorkshopSignupViewSet(viewsets.GenericViewSet):
     
     def create(self, request):
         if request.data.get('workshop'):
-            workshop = Workshop.objects.get(id=request.data.get('workshop'))
+            with transaction.atomic():
+                workshop = Workshop.objects.select_for_update().get(id=request.data.get('workshop'))
 
-            if WorkshopSignup.objects.filter(user = request.user, workshop__start__lt = workshop.end, workshop__end__gt = workshop.start).exists():
-                return Response({'error': 'Jesteś już zapisany/a na inną rzecz w tym samym czasie', 'success':False})
-            
-            if Setting.objects.get(name="allow_multiple_workshops_same_day").value.lower() == 'false' and WorkshopSignup.objects.filter(user = request.user, workshop__start__date = workshop.start).exists():
-                return Response({'error': 'Jesteś już zapisany/a na inną rzecz w tym samym dniu', 'success':False})
+                if WorkshopSignup.objects.filter(user = request.user, workshop__start__lt = workshop.end, workshop__end__gt = workshop.start).exists():
+                    return Response({'error': 'Jesteś już zapisany/a na inną rzecz w tym samym czasie', 'success':False})
+                
+                if Setting.objects.get(name="allow_multiple_workshops_same_day").value.lower() == 'false' and WorkshopSignup.objects.filter(user = request.user, workshop__start__date = workshop.start).exists():
+                    return Response({'error': 'Jesteś już zapisany/a na inną rzecz w tym samym dniu', 'success':False})
 
-            if WorkshopSignup.objects.filter(workshop=workshop).count() < workshop.userLimit and not WorkshopSignup.objects.filter(workshop=workshop, user=request.user).exists() and workshop.visible and workshop.signupsOpen and (workshop.signupsOpenTime == None or workshop.signupsOpenTime <= timezone.now()) and workshop.end > timezone.now():
-                WorkshopSignup.objects.create(workshop=workshop, user=request.user)
-                return Response({}, status=status.HTTP_201_CREATED) 
-            
-            return Response({'error': 'Błąd zapisu'}, status=status.HTTP_409_CONFLICT)
+                if WorkshopSignup.objects.select_for_update().filter(workshop=workshop).count() < workshop.userLimit and not WorkshopSignup.objects.filter(workshop=workshop, user=request.user).exists() and workshop.visible and workshop.signupsOpen and (workshop.signupsOpenTime == None or workshop.signupsOpenTime <= timezone.now()) and workshop.end > timezone.now():
+                    WorkshopSignup.objects.create(workshop=workshop, user=request.user)
+                    return Response({}, status=status.HTTP_201_CREATED) 
+                
+                return Response({'error': 'Błąd zapisu'}, status=status.HTTP_409_CONFLICT)
         return Response({}, status=status.HTTP_400_BAD_REQUEST)
     
     def destroy(self, request, pk=None):
