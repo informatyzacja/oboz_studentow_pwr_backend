@@ -34,9 +34,12 @@ from firebase_admin import credentials, messaging
 from obozstudentowProject.settings import BASE_DIR
 import os
 
-if os.path.exists(BASE_DIR / "oboz-studentow-pwr-firebase-adminsdk.json"):
+if (BASE_DIR / "oboz-studentow-pwr-firebase-adminsdk.json").exists():
     cred = credentials.Certificate(BASE_DIR / "oboz-studentow-pwr-firebase-adminsdk.json")
     firebase_admin.initialize_app(cred)
+else:
+    import logging
+    logging.error("Firebase certificate file is missing. Firebase cannot be initialized.")
 
 def send_notification(title, body, tokens, link=None):
     message = messaging.MulticastMessage(
