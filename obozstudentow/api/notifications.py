@@ -31,10 +31,11 @@ def enable_disable_notifications(request):
 
 import firebase_admin
 from firebase_admin import credentials, messaging
-from obozstudentowProject.settings import BASE_DIR, FIREBASE_CERTIFICATE
+from obozstudentowProject.settings import BASE_DIR
+import os
 
-if FIREBASE_CERTIFICATE:
-    cred = credentials.Certificate(BASE_DIR / "oboz-studentow-pwr-firebase-adminsdk-h0u6e-de2592f07a.json")
+if os.path.exists(BASE_DIR / "oboz-studentow-pwr-firebase-adminsdk.json"):
+    cred = credentials.Certificate(BASE_DIR / "oboz-studentow-pwr-firebase-adminsdk.json")
     firebase_admin.initialize_app(cred)
 
 def send_notification(title, body, tokens, link=None):
@@ -54,6 +55,6 @@ def send_notification(title, body, tokens, link=None):
             ),
         ),
     )
-    response = messaging.send_multicast(message)
+    response = messaging.send_each_for_multicast(message)
     return response
 
