@@ -15,9 +15,10 @@ def get_buses(request):
         return Response({'success': False, 'error': 'Sprawdzanie obecności w busach nie jest aktywowane'})
     bus_presence_to = bus_presence_type == 'to'
 
-    users_count = User.objects.filter(bus__isnull=True).count()
-    present_users_count = User.objects.filter(Q(bus_presence=True) if bus_presence_to else Q(bus_presence_return=True), bus__isnull=True).count()
-    opaski_count = User.objects.filter(bus__isnull=True, bandId__isnull=False, bandId__gte=300000).count()
+    users_own_transport = User.objects.filter(Q(bus__isnull=True) | (Q(bus_info=User.BusInfoChoices.RETURN) if bus_presence_to else Q(bus_info=User.BusInfoChoices.RETURN)))
+    users_count = users_own_transport.count()
+    present_users_count = users_own_transport.filter(Q(bus_presence=True) if bus_presence_to else Q(bus_presence_return=True)).count()
+    opaski_count = users_own_transport.filter(bandId__isnull=False, bandId__gte=300000).count()
 
     return Response(
         list(
@@ -59,7 +60,7 @@ def get_bus_users(request):
         ).order_by(presence_type, 'bandId_isnull', 'last_name', 'first_name').values('id', 'first_name', 'last_name', 'phoneNumber', 'bandId', 'bus_info',  presence = F(presence_type)))
     
     else:
-        return Response(User.objects.filter(bus__isnull=True).annotate(
+        return Response(User.objects.filter(Q(bus__isnull=True) | (Q(bus_info=User.BusInfoChoices.RETURN) if bus_presence_to else Q(bus_info=User.BusInfoChoices.RETURN))).annotate(
             bandId_isnull=Count('bandId', filter=Q(bandId__gte=300000)),
         ).order_by(presence_type, 'bandId_isnull', 'last_name', 'first_name').values('id', 'first_name', 'last_name', 'phoneNumber', 'bandId', 'bus_info',  presence = F(presence_type)))
 
