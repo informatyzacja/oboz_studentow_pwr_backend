@@ -110,6 +110,7 @@ class SettingAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'value')
     search_fields = ('name', 'description', 'value')
     readonly_fields = ('name', 'description')
+    ordering = ('name',)
 
 from ..models import Partners
 @admin.register(Partners)
