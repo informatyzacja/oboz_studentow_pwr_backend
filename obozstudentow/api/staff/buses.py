@@ -15,9 +15,10 @@ def get_buses(request):
         return Response({'success': False, 'error': 'Sprawdzanie obecności w busach nie jest aktywowane'})
     bus_presence_to = bus_presence_type == 'to'
 
-    users_count = User.objects.filter(Q(bus__isnull=True) | (Q(bus_info=User.BusInfoChoices.RETURN) if bus_presence_to else Q(bus_info=User.BusInfoChoices.RETURN))).count()
-    present_users_count = User.objects.filter(Q(bus__isnull=True) | (Q(bus_info=User.BusInfoChoices.RETURN) if bus_presence_to else Q(bus_info=User.BusInfoChoices.RETURN))).filter(Q(bus_presence=True) if bus_presence_to else Q(bus_presence_return=True)).count()
-    opaski_count = User.objects.filter(Q(bus__isnull=True) | (Q(bus_info=User.BusInfoChoices.RETURN) if bus_presence_to else Q(bus_info=User.BusInfoChoices.RETURN))).filter(bandId__isnull=False, bandId__gte=300000).count()
+    users_own_transport = User.objects.filter(Q(bus__isnull=True) | (Q(bus_info=User.BusInfoChoices.RETURN) if bus_presence_to else Q(bus_info=User.BusInfoChoices.RETURN)))
+    users_count = users_own_transport.count()
+    present_users_count = users_own_transport.filter(Q(bus_presence=True) if bus_presence_to else Q(bus_presence_return=True)).count()
+    opaski_count = users_own_transport.filter(bandId__isnull=False, bandId__gte=300000).count()
 
     return Response(
         list(
