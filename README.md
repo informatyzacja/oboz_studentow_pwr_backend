@@ -29,6 +29,11 @@ cd oboz_studentow_pwr_backend
 pip install -r requirements.txt
 ```
 
+2. Install pre-commit hooks to ensure code quality:
+```bash
+pre-commit install
+```
+
 3. Create a `.env` file in the project's root directory and add the following environment variables:
 ```bash
 ALLOWED_HOSTS='*'
