@@ -2,18 +2,17 @@
 
 from django.db import migrations, models
 
+
 def create_settings(apps, schema_editor):
     FAQ = apps.get_model("obozstudentow", "FAQ")
     for obj in FAQ.objects.all():
         obj.sort_order = obj.pk
         obj.save()
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
         ("obozstudentow", "0064_alter_faq_options_faq_sort_order_alter_user_photo"),
     ]
 
-    operations = [
-        migrations.RunPython(create_settings)
-    ]
+    operations = [migrations.RunPython(create_settings)]

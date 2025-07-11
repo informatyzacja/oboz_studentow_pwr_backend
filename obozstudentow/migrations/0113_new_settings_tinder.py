@@ -2,18 +2,25 @@
 
 from django.db import migrations, models
 
+
 def create_settings(apps, schema_editor):
     Setting = apps.get_model("obozstudentow", "Setting")
 
-    Setting.objects.create(name="tinder_register_active", value="true", description="Czy rejestracja na Tinder jest aktywna?")
-    Setting.objects.create(name="tinder_register_activate_datetime", value="2024-09-01 12:00", description="Data aktywacji rejestracji na Tinder")
+    Setting.objects.create(
+        name="tinder_register_active",
+        value="true",
+        description="Czy rejestracja na Tinder jest aktywna?",
+    )
+    Setting.objects.create(
+        name="tinder_register_activate_datetime",
+        value="2024-09-01 12:00",
+        description="Data aktywacji rejestracji na Tinder",
+    )
+
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("obozstudentow", "0112_add_permissions"),
     ]
 
-    operations = [
-        migrations.RunPython(create_settings)
-    ]
+    operations = [migrations.RunPython(create_settings)]

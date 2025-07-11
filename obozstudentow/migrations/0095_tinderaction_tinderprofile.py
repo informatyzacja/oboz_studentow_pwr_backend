@@ -7,29 +7,81 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow', '0094_opaski'),
+        ("obozstudentow", "0094_opaski"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='TinderAction',
+            name="TinderAction",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('action', models.SmallIntegerField(choices=[(0, 'dislike'), (1, 'like'), (2, 'superlike')])),
-                ('date', models.DateTimeField(auto_now_add=True)),
-                ('target', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='target', to=settings.AUTH_USER_MODEL)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "action",
+                    models.SmallIntegerField(
+                        choices=[(0, "dislike"), (1, "like"), (2, "superlike")]
+                    ),
+                ),
+                ("date", models.DateTimeField(auto_now_add=True)),
+                (
+                    "target",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="target",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='TinderProfile',
+            name="TinderProfile",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('description', models.TextField(blank=True, null=True)),
-                ('photo', django_resized.forms.ResizedImageField(blank=True, crop=None, force_format=None, keep_meta=False, null=True, quality=85, scale=None, size=[1920, 1080], upload_to='tinder')),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("description", models.TextField(blank=True, null=True)),
+                (
+                    "photo",
+                    django_resized.forms.ResizedImageField(
+                        blank=True,
+                        crop=None,
+                        force_format=None,
+                        keep_meta=False,
+                        null=True,
+                        quality=85,
+                        scale=None,
+                        size=[1920, 1080],
+                        upload_to="tinder",
+                    ),
+                ),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

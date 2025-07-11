@@ -4,29 +4,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow', '0083_housesignupprogress'),
+        ("obozstudentow", "0083_housesignupprogress"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='HouseView',
-            fields=[
-            ],
+            name="HouseView",
+            fields=[],
             options={
-                'verbose_name': 'Pokój (widok)',
-                'verbose_name_plural': 'Pokoje (widok)',
-                'ordering': ('floor', 'name'),
-                'proxy': True,
-                'indexes': [],
-                'constraints': [],
+                "verbose_name": "Pokój (widok)",
+                "verbose_name_plural": "Pokoje (widok)",
+                "ordering": ("floor", "name"),
+                "proxy": True,
+                "indexes": [],
+                "constraints": [],
             },
-            bases=('obozstudentow.house',),
+            bases=("obozstudentow.house",),
         ),
         migrations.AddField(
-            model_name='house',
-            name='description',
-            field=models.TextField(blank=True, default=None, null=True, verbose_name='Opis'),
+            model_name="house",
+            name="description",
+            field=models.TextField(
+                blank=True, default=None, null=True, verbose_name="Opis"
+            ),
         ),
     ]

@@ -4,35 +4,48 @@ import django.db.models.deletion
 from django.conf import settings
 from django.db import migrations, models
 
+
 def delete_messages(apps, schema_editor):
-    Message = apps.get_model('obozstudentow_async', 'Message')
+    Message = apps.get_model("obozstudentow_async", "Message")
     Message.objects.all().delete()
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
-        ('obozstudentow_async', '0001_initial'),
+        ("obozstudentow_async", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.RunPython(delete_messages, migrations.RunPython.noop),
         migrations.RemoveField(
-            model_name='message',
-            name='group_name',
+            model_name="message",
+            name="group_name",
         ),
         migrations.CreateModel(
-            name='Chat',
+            name="Chat",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('users', models.ManyToManyField(to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("users", models.ManyToManyField(to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.AddField(
-            model_name='message',
-            name='chat',
-            field=models.ForeignKey(default=None, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow_async.chat'),
+            model_name="message",
+            name="chat",
+            field=models.ForeignKey(
+                default=None,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow_async.chat",
+            ),
             preserve_default=False,
         ),
     ]

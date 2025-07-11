@@ -4,29 +4,34 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow', '0080_new_settings_workshop'),
+        ("obozstudentow", "0080_new_settings_workshop"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='house',
-            options={'verbose_name': 'Pokój', 'verbose_name_plural': 'Pokoje'},
+            name="house",
+            options={"verbose_name": "Pokój", "verbose_name_plural": "Pokoje"},
         ),
         migrations.AddField(
-            model_name='homelink',
-            name='font_size',
+            model_name="homelink",
+            name="font_size",
             field=models.CharField(blank=True, max_length=10, null=True),
         ),
         migrations.AddField(
-            model_name='house',
-            name='floor',
-            field=models.CharField(blank=True, default=None, max_length=50, null=True, verbose_name='Piętro'),
+            model_name="house",
+            name="floor",
+            field=models.CharField(
+                blank=True,
+                default=None,
+                max_length=50,
+                null=True,
+                verbose_name="Piętro",
+            ),
         ),
         migrations.AlterField(
-            model_name='house',
-            name='places',
-            field=models.SmallIntegerField(default=0, verbose_name='Liczba miejsc'),
+            model_name="house",
+            name="places",
+            field=models.SmallIntegerField(default=0, verbose_name="Liczba miejsc"),
         ),
     ]

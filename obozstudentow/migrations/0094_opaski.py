@@ -4,23 +4,21 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow', '0093_new_settings_signup_start_date'),
+        ("obozstudentow", "0093_new_settings_signup_start_date"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Opaski',
-            fields=[
-            ],
+            name="Opaski",
+            fields=[],
             options={
-                'verbose_name': 'Opaski',
-                'verbose_name_plural': 'Opaski',
-                'proxy': True,
-                'indexes': [],
-                'constraints': [],
+                "verbose_name": "Opaski",
+                "verbose_name_plural": "Opaski",
+                "proxy": True,
+                "indexes": [],
+                "constraints": [],
             },
-            bases=('obozstudentow.user',),
+            bases=("obozstudentow.user",),
         ),
     ]

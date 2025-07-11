@@ -2,18 +2,17 @@
 
 from django.db import migrations, models
 
+
 def create_settings(apps, schema_editor):
     Link = apps.get_model("obozstudentow", "Link")
     for obj in Link.objects.all():
         obj.sort_order = obj.pk
         obj.save()
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
         ("obozstudentow", "0066_alter_link_options_link_sort_order_homelink"),
     ]
 
-    operations = [
-        migrations.RunPython(create_settings)
-    ]
+    operations = [migrations.RunPython(create_settings)]

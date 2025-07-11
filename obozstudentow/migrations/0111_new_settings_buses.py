@@ -2,17 +2,20 @@
 
 from django.db import migrations, models
 
+
 def create_settings(apps, schema_editor):
     Setting = apps.get_model("obozstudentow", "Setting")
 
-    Setting.objects.create(name="bus_presence", value="to", description="Typ sprawdzania obecności w busach (\"to\", \"return\", \"\" - nieaktywne)")
+    Setting.objects.create(
+        name="bus_presence",
+        value="to",
+        description='Typ sprawdzania obecności w busach ("to", "return", "" - nieaktywne)',
+    )
+
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("obozstudentow", "0110_user_bus_info"),
     ]
 
-    operations = [
-        migrations.RunPython(create_settings)
-    ]
+    operations = [migrations.RunPython(create_settings)]

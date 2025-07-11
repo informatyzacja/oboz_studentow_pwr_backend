@@ -5,7 +5,6 @@ import django_resized.forms
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("obozstudentow", "0040_alter_scheduleitem_location"),
     ]

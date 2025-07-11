@@ -4,25 +4,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow', '0090_add_permissions '),
+        ("obozstudentow", "0090_add_permissions "),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='additional_health_info',
+            model_name="user",
+            name="additional_health_info",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='user',
-            name='ice_number',
+            model_name="user",
+            name="ice_number",
             field=models.CharField(blank=True, max_length=12, null=True),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='phoneNumber',
+            model_name="user",
+            name="phoneNumber",
             field=models.CharField(blank=True, max_length=12, null=True),
         ),
     ]

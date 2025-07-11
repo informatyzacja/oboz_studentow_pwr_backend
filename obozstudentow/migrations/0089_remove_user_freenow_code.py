@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow', '0088_user_verification_code_and_more'),
+        ("obozstudentow", "0088_user_verification_code_and_more"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='user',
-            name='freenow_code',
+            model_name="user",
+            name="freenow_code",
         ),
     ]

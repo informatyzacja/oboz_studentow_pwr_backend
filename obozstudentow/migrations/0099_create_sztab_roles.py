@@ -5,36 +5,62 @@ from django.contrib.auth.models import Group as DjangoGroup
 from django.contrib.auth.models import Permission
 from django.db.models import Q
 
-def create_roles(apps, schema_editor):
 
-    uczestnicy_group, created = DjangoGroup.objects.get_or_create(name="Sztab: Uczestnicy")
-    uczestnicy_permissions = Permission.objects.filter(Q(content_type__model__in=('bus','faq','participant', 'group'), content_type__app_label='obozstudentow') | Q(codename='can_validate_points'))
+def create_roles(apps, schema_editor):
+    uczestnicy_group, created = DjangoGroup.objects.get_or_create(
+        name="Sztab: Uczestnicy"
+    )
+    uczestnicy_permissions = Permission.objects.filter(
+        Q(
+            content_type__model__in=("bus", "faq", "participant", "group"),
+            content_type__app_label="obozstudentow",
+        )
+        | Q(codename="can_validate_points")
+    )
     uczestnicy_group.permissions.set(uczestnicy_permissions)
 
     program_group, created = DjangoGroup.objects.get_or_create(name="Sztab: Program")
-    program_permissions = Permission.objects.filter(Q(content_type__model__in=('dailyquest', 'scheduleitem', 'image', 'meal', 'pointtype', 'workshop')) | Q(codename='can_validate_points'))
+    program_permissions = Permission.objects.filter(
+        Q(
+            content_type__model__in=(
+                "dailyquest",
+                "scheduleitem",
+                "image",
+                "meal",
+                "pointtype",
+                "workshop",
+            )
+        )
+        | Q(codename="can_validate_points")
+    )
     program_group.permissions.set(program_permissions)
 
     promocja_group, created = DjangoGroup.objects.get_or_create(name="Sztab: Promocja")
-    promocja_permissions = Permission.objects.filter(content_type__model__in=('dailyquest', 'faq', 'homelink', 'link'))
+    promocja_permissions = Permission.objects.filter(
+        content_type__model__in=("dailyquest", "faq", "homelink", "link")
+    )
     promocja_group.permissions.set(promocja_permissions)
 
     głowny_group, created = DjangoGroup.objects.get_or_create(name="Sztab: Główny")
-    głowny_permissions = Permission.objects.filter(Q(content_type__model__in=('soberduty', 'scheduleitem', 'pointtype')) | Q(codename='can_validate_points'))
+    głowny_permissions = Permission.objects.filter(
+        Q(content_type__model__in=("soberduty", "scheduleitem", "pointtype"))
+        | Q(codename="can_validate_points")
+    )
     głowny_group.permissions.set(głowny_permissions)
 
     kadra_group, created = DjangoGroup.objects.get_or_create(name="Sztab: Kadra")
-    kadra_permissions = Permission.objects.filter(content_type__model__in=('soberduty', 'mealduty', 'group'), content_type__app_label='obozstudentow')
+    kadra_permissions = Permission.objects.filter(
+        content_type__model__in=("soberduty", "mealduty", "group"),
+        content_type__app_label="obozstudentow",
+    )
     kadra_group.permissions.set(kadra_permissions)
 
     grafika_group, created = DjangoGroup.objects.get_or_create(name="Sztab: Grafika")
-    grafika_permissions = Permission.objects.filter(content_type__model__in=('image',)) 
+    grafika_permissions = Permission.objects.filter(content_type__model__in=("image",))
     grafika_group.permissions.set(grafika_permissions)
 
 
-
 class Migration(migrations.Migration):
-
     dependencies = [
         ("obozstudentow", "0098_new_settings_tinder"),
     ]

@@ -5,7 +5,6 @@ import django_resized.forms
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("obozstudentow", "0063_add_order_to_groups"),
     ]

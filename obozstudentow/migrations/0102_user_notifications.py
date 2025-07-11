@@ -2,21 +2,24 @@
 
 from django.db import migrations, models
 
+
 def enable_notifications(apps, schema_editor):
-    User = apps.get_model('obozstudentow', 'User')
+    User = apps.get_model("obozstudentow", "User")
     User.objects.filter(userfcmtoken__isnull=False).update(notifications=True)
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
-        ('obozstudentow', '0101_create_more_sztab_roles'),
+        ("obozstudentow", "0101_create_more_sztab_roles"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='notifications',
+            model_name="user",
+            name="notifications",
             field=models.BooleanField(default=False),
         ),
-        migrations.RunPython(enable_notifications, reverse_code=migrations.RunPython.noop),
+        migrations.RunPython(
+            enable_notifications, reverse_code=migrations.RunPython.noop
+        ),
     ]

@@ -28,7 +28,7 @@ import obozstudentow.views
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
-    TokenVerifyView
+    TokenVerifyView,
 )
 
 admin.site.site_header = "Panel administracyjny Obozu Studentów PWr"
@@ -38,30 +38,47 @@ admin.site.index_title = "Witaj w panelu administracyjnym Obozu Studentów PWr"
 auth_views.site_header = "ObozStudentow"
 
 urlpatterns = [
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
-
-    path('staff-api/', include('obozstudentow.api.staff.urls')),
-
+    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("api/token/verify/", TokenVerifyView.as_view(), name="token_verify"),
+    path("staff-api/", include("obozstudentow.api.staff.urls")),
     path("admin/", admin.site.urls, name="admin"),
-    path('api/', include(obozstudentow.api.api_router.urls)),
-    path('api2/', include('obozstudentow.api.urls')),
-
-    path('download-image/<int:image_id>/', obozstudentow.views.download_image, name='download'),
-
-
+    path("api/", include(obozstudentow.api.api_router.urls)),
+    path("api2/", include("obozstudentow.api.urls")),
+    path(
+        "download-image/<int:image_id>/",
+        obozstudentow.views.download_image,
+        name="download",
+    ),
     # # register
-    path('register/', auth_views.PasswordResetView.as_view(email_template_name='registration/register_email.txt', subject_template_name='registration/register_email_subject.txt' , success_url='done/', title='Rejestracja'), name='register'),
-
-    path('register/done/', auth_views.PasswordResetDoneView.as_view(), name='register_done'),
-
-    path('register/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(success_url=reverse_lazy('register_complete'), post_reset_login=True), name='register_confirm'),
-
-    path('register/complete/', auth_views.PasswordResetCompleteView.as_view(title = "Hasło ustawione"), name='register_complete'),
-    
+    path(
+        "register/",
+        auth_views.PasswordResetView.as_view(
+            email_template_name="registration/register_email.txt",
+            subject_template_name="registration/register_email_subject.txt",
+            success_url="done/",
+            title="Rejestracja",
+        ),
+        name="register",
+    ),
+    path(
+        "register/done/",
+        auth_views.PasswordResetDoneView.as_view(),
+        name="register_done",
+    ),
+    path(
+        "register/<uidb64>/<token>/",
+        auth_views.PasswordResetConfirmView.as_view(
+            success_url=reverse_lazy("register_complete"), post_reset_login=True
+        ),
+        name="register_confirm",
+    ),
+    path(
+        "register/complete/",
+        auth_views.PasswordResetCompleteView.as_view(title="Hasło ustawione"),
+        name="register_complete",
+    ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
 
 
 handler404 = "obozstudentowProject.errorViews.error_404"

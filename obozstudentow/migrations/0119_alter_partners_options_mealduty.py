@@ -6,27 +6,44 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow', '0118_partners_sort_order'),
+        ("obozstudentow", "0118_partners_sort_order"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='partners',
-            options={'ordering': ['sort_order'], 'verbose_name': 'Partner', 'verbose_name_plural': 'Partnerzy'},
+            name="partners",
+            options={
+                "ordering": ["sort_order"],
+                "verbose_name": "Partner",
+                "verbose_name_plural": "Partnerzy",
+            },
         ),
         migrations.CreateModel(
-            name='MealDuty',
+            name="MealDuty",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('start', models.DateTimeField()),
-                ('end', models.DateTimeField()),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("start", models.DateTimeField()),
+                ("end", models.DateTimeField()),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Dyżur stołówkowy',
-                'verbose_name_plural': 'Dyżury stołówkowe',
+                "verbose_name": "Dyżur stołówkowy",
+                "verbose_name_plural": "Dyżury stołówkowe",
             },
         ),
     ]

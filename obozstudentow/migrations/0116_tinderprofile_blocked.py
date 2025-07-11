@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow', '0115_alter_link_name'),
+        ("obozstudentow", "0115_alter_link_name"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tinderprofile',
-            name='blocked',
+            model_name="tinderprofile",
+            name="blocked",
             field=models.BooleanField(default=False),
         ),
     ]
