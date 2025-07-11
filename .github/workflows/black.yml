@@ -47,24 +47,11 @@ jobs:
       - name: Run Black
         run: black .
 
-      - name: Commit changes if needed
-        id: commit-changes
-        run: |
-          if [[ -n "$(git status --porcelain)" ]]; then
-            git add .
-            git commit -m "Apply Black code formatting"
-            git push --set-upstream origin ${{ steps.create-branch.outputs.branch }}
-            echo "changes_committed=true" >> $GITHUB_OUTPUT
-          else
-            echo "No changes to commit"
-            echo "changes_committed=false" >> $GITHUB_OUTPUT
-          fi
-
       - name: Create Pull Request if needed
-        if: ${{ steps.commit-changes.outputs.changes_committed == 'true' }}
         uses: peter-evans/create-pull-request@v5
         with:
           branch: ${{ steps.create-branch.outputs.branch }}
           title: "Apply Black code formatting"
           body: "Automated Black formatting changes."
           base: main
+          commit-message: "Apply Black code formatting"
