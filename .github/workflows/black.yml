@@ -16,6 +16,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Fetch and update main
+        run: |
+          git fetch origin
+          git checkout main
+          git pull origin main
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -38,16 +44,21 @@ jobs:
       - name: Run Black
         run: black .
 
-      - name: Commit changes
+      - name: Commit changes if needed
+        id: commit-changes
         run: |
-          git add .
-          git commit -m "Apply Black code formatting" || echo "No changes to commit"
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git add .
+            git commit -m "Apply Black code formatting"
+            git push --set-upstream origin $BRANCH
+            echo "changes_committed=true" >> $GITHUB_ENV
+          else
+            echo "No changes to commit"
+            echo "changes_committed=false" >> $GITHUB_ENV
+          fi
 
-      - name: Push changes
-        run: |
-          git push --set-upstream origin $BRANCH
-
-      - name: Create Pull Request
+      - name: Create Pull Request if needed
+        if: ${{ env.changes_committed == 'true' }}
         uses: peter-evans/create-pull-request@v5
         with:
           branch: ${{ env.BRANCH }}
