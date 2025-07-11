@@ -34,13 +34,6 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email github-actions[bot]@users.noreply.github.com
 
-      - name: Create Black branch
-        id: create-branch
-        run: |
-          BRANCH=black-fix/$(date +"%Y%m%d%H%M%S")
-          git checkout -b $BRANCH
-          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
-
       - name: Install Black
         run: pip install black
 
@@ -50,7 +43,7 @@ jobs:
       - name: Create Pull Request if needed
         uses: peter-evans/create-pull-request@v5
         with:
-          branch: ${{ steps.create-branch.outputs.branch }}
+          branch: black-fix/${{ github.run_id }}-${{ github.run_attempt }}
           title: "Apply Black code formatting"
           body: "Automated Black formatting changes."
           base: main
