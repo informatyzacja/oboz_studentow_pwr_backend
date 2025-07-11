@@ -33,10 +33,11 @@ jobs:
           git config user.email github-actions[bot]@users.noreply.github.com
 
       - name: Create Black branch
+        id: create-branch
         run: |
           BRANCH=black-fix/$(date +"%Y%m%d%H%M%S")
-          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
           git checkout -b $BRANCH
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
 
       - name: Install Black
         run: pip install black
@@ -50,18 +51,18 @@ jobs:
           if [[ -n "$(git status --porcelain)" ]]; then
             git add .
             git commit -m "Apply Black code formatting"
-            git push --set-upstream origin $BRANCH
-            echo "changes_committed=true" >> $GITHUB_ENV
+            git push --set-upstream origin ${{ steps.create-branch.outputs.branch }}
+            echo "changes_committed=true" >> $GITHUB_OUTPUT
           else
             echo "No changes to commit"
-            echo "changes_committed=false" >> $GITHUB_ENV
+            echo "changes_committed=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Create Pull Request if needed
-        if: ${{ env.changes_committed == 'true' }}
+        if: ${{ steps.commit-changes.outputs.changes_committed == 'true' }}
         uses: peter-evans/create-pull-request@v5
         with:
-          branch: ${{ env.BRANCH }}
+          branch: ${{ steps.create-branch.outputs.branch }}
           title: "Apply Black code formatting"
           body: "Automated Black formatting changes."
           base: main
