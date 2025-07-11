@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("obozstudentow", "0022_mealtype_end_mealtype_start"),
     ]

@@ -5,21 +5,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow_async', '0004_chat_enabled'),
+        ("obozstudentow_async", "0004_chat_enabled"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='chat',
-            name='blocked_by',
-            field=models.ManyToManyField(related_name='blocked_chat', to=settings.AUTH_USER_MODEL),
+            model_name="chat",
+            name="blocked_by",
+            field=models.ManyToManyField(
+                related_name="blocked_chat", to=settings.AUTH_USER_MODEL
+            ),
         ),
         migrations.AddField(
-            model_name='chat',
-            name='notifications_blocked_by',
-            field=models.ManyToManyField(related_name='notifications_blocked_chat', to=settings.AUTH_USER_MODEL),
+            model_name="chat",
+            name="notifications_blocked_by",
+            field=models.ManyToManyField(
+                related_name="notifications_blocked_chat", to=settings.AUTH_USER_MODEL
+            ),
         ),
     ]

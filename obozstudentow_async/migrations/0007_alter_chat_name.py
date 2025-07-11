@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow_async', '0006_alter_chat_blocked_by_and_more'),
+        ("obozstudentow_async", "0006_alter_chat_blocked_by_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='chat',
-            name='name',
+            model_name="chat",
+            name="name",
             field=models.CharField(max_length=300),
         ),
     ]

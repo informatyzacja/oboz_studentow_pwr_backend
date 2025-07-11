@@ -2,21 +2,24 @@
 
 from django.db import migrations, models
 
+
 def create_settings(apps, schema_editor):
     Setting = apps.get_model("obozstudentow", "Setting")
 
-    Setting.objects.get_or_create(name="tinder_swiping_active", defaults={
-        "value": "true",
-        "description": "Czy swajpowanie na tinderze jest uruchomione?"
-        }
+    Setting.objects.get_or_create(
+        name="tinder_swiping_active",
+        defaults={
+            "value": "true",
+            "description": "Czy swajpowanie na tinderze jest uruchomione?",
+        },
     )
-    Setting.objects.get_or_create(name="tinder_swiping_activate_datetime", defaults={
-        "description": "Data i godzina aktywacji funkcji swipingu"
-        }
+    Setting.objects.get_or_create(
+        name="tinder_swiping_activate_datetime",
+        defaults={"description": "Data i godzina aktywacji funkcji swipingu"},
     )
+
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("obozstudentow", "0097_tinderprofile_super_like_used"),
     ]

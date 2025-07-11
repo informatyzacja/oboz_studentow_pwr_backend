@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("obozstudentow", "0006_alter_bus_options_scheduleitem_photo"),
     ]

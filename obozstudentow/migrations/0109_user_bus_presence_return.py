@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow', '0108_create_more_sztab_roles'),
+        ("obozstudentow", "0108_create_more_sztab_roles"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='bus_presence_return',
+            model_name="user",
+            name="bus_presence_return",
             field=models.BooleanField(default=False),
         ),
     ]

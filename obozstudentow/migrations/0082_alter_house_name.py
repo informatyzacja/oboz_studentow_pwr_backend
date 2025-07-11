@@ -4,15 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow', '0081_alter_house_options_homelink_font_size_house_floor_and_more'),
+        (
+            "obozstudentow",
+            "0081_alter_house_options_homelink_font_size_house_floor_and_more",
+        ),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='house',
-            name='name',
-            field=models.CharField(max_length=10, unique=True, verbose_name='Numer pokoju'),
+            model_name="house",
+            name="name",
+            field=models.CharField(
+                max_length=10, unique=True, verbose_name="Numer pokoju"
+            ),
         ),
     ]

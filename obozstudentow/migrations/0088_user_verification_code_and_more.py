@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow', '0087_alter_workshop_description_alter_workshop_location'),
+        ("obozstudentow", "0087_alter_workshop_description_alter_workshop_location"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='verification_code',
+            model_name="user",
+            name="verification_code",
             field=models.IntegerField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='user',
-            name='verification_code_valid_until_datetime',
+            model_name="user",
+            name="verification_code_valid_until_datetime",
             field=models.DateTimeField(blank=True, null=True),
         ),
     ]

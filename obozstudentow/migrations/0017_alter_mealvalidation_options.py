@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("obozstudentow", "0016_alter_dailyquest_finish"),
     ]

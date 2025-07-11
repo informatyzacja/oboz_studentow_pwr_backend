@@ -4,23 +4,21 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow', '0106_group_chat'),
+        ("obozstudentow", "0106_group_chat"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ZdjeciaKadra',
-            fields=[
-            ],
+            name="ZdjeciaKadra",
+            fields=[],
             options={
-                'verbose_name': 'Zdjęcia Kadra',
-                'verbose_name_plural': 'Zdjęcia Kadra',
-                'proxy': True,
-                'indexes': [],
-                'constraints': [],
+                "verbose_name": "Zdjęcia Kadra",
+                "verbose_name_plural": "Zdjęcia Kadra",
+                "proxy": True,
+                "indexes": [],
+                "constraints": [],
             },
-            bases=('obozstudentow.user',),
+            bases=("obozstudentow.user",),
         ),
     ]

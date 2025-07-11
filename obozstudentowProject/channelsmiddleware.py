@@ -23,10 +23,9 @@ def get_user(validated_token):
         # return get_user_model().objects.get(id=toke_id)
         # print(f"{user}")
         return user
-   
+
     except User.DoesNotExist:
         return AnonymousUser()
-
 
 
 class JwtAuthMiddleware(BaseMiddleware):
@@ -34,7 +33,7 @@ class JwtAuthMiddleware(BaseMiddleware):
         self.inner = inner
 
     async def __call__(self, scope, receive, send):
-       # Close old database connections to prevent usage of timed out connections
+        # Close old database connections to prevent usage of timed out connections
         close_old_connections()
 
         # Get the token
@@ -51,7 +50,7 @@ class JwtAuthMiddleware(BaseMiddleware):
         else:
             #  Then token is valid, decode it
             decoded_data = jwt_decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-            
+
             # print(decoded_data)
             # Will return a dictionary like -
             # {

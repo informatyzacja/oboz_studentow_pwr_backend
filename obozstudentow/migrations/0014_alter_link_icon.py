@@ -5,7 +5,6 @@ import django_resized.forms
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("obozstudentow", "0013_remove_user_username_alter_group_logo_and_more"),
     ]

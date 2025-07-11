@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow_async', '0002_remove_message_group_name_chat_message_chat'),
+        ("obozstudentow_async", "0002_remove_message_group_name_chat_message_chat"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='message',
-            name='message',
+            model_name="message",
+            name="message",
             field=models.TextField(max_length=500),
         ),
     ]

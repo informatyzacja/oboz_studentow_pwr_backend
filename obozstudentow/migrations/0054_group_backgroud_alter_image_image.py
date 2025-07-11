@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("obozstudentow", "0053_alter_staff_options_alter_staff_user"),
     ]

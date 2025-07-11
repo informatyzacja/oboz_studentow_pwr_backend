@@ -2,14 +2,15 @@
 
 from django.db import migrations, models
 
+
 def create_groups_limit_setting(apps, schema_editor):
     Setting = apps.get_model("obozstudentow", "Setting")
     Setting.objects.create(name="group_limit", value="0")
     Setting.objects.create(name="group_user_min", value="3")
     Setting.objects.create(name="group_user_max", value="6")
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
         ("obozstudentow", "0032_nightgamesignup"),
     ]
@@ -35,5 +36,5 @@ class Migration(migrations.Migration):
                 "verbose_name_plural": "Ustawienia",
             },
         ),
-        migrations.RunPython(create_groups_limit_setting)
+        migrations.RunPython(create_groups_limit_setting),
     ]

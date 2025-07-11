@@ -1,5 +1,3 @@
-
-
 from django.db import migrations, models
 from ..models import CustomPermissions
 
@@ -10,11 +8,12 @@ from django.contrib.auth.models import Group as DjangoGroup
 
 from ..models import User
 
+
 def create_groups(apps, schema_editor):
     pass
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
         ("obozstudentow", "0029_point_validated_point_validatedby_and_more"),
     ]

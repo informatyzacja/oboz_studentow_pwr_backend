@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow', '0113_new_settings_tinder'),
+        ("obozstudentow", "0113_new_settings_tinder"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='bus',
-            name='location',
+            model_name="bus",
+            name="location",
             field=models.URLField(blank=True, null=True),
         ),
     ]

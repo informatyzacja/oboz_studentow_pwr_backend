@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("obozstudentow", "0019_add_groups_and_permissions"),
     ]

@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("obozstudentow", "0050_alter_partners_link_alter_partners_logo"),
     ]

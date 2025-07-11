@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow_async', '0003_alter_message_message'),
+        ("obozstudentow_async", "0003_alter_message_message"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='chat',
-            name='enabled',
+            model_name="chat",
+            name="enabled",
             field=models.BooleanField(default=True),
         ),
     ]

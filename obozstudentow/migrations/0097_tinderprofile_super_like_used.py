@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow', '0096_house_chat_alter_tinderaction_target'),
+        ("obozstudentow", "0096_house_chat_alter_tinderaction_target"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tinderprofile',
-            name='super_like_used',
+            model_name="tinderprofile",
+            name="super_like_used",
             field=models.BooleanField(default=False),
         ),
     ]

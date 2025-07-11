@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow', '0117_create_more_sztab_roles'),
+        ("obozstudentow", "0117_create_more_sztab_roles"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='partners',
-            name='sort_order',
+            model_name="partners",
+            name="sort_order",
             field=models.IntegerField(blank=True, db_index=True, default=0),
             preserve_default=False,
         ),

@@ -6,7 +6,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("obozstudentow", "0035_alter_nightgamesignup_options_and_more"),
     ]

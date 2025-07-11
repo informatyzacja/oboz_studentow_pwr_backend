@@ -6,29 +6,43 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow', '0085_alter_house_options_house_signout_open_and_more'),
+        ("obozstudentow", "0085_alter_house_options_house_signout_open_and_more"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='houseview',
-            options={'ordering': ('floor', 'name'), 'verbose_name': 'Pokój/domek (widok)', 'verbose_name_plural': 'Pokoje/domki (widok)'},
+            name="houseview",
+            options={
+                "ordering": ("floor", "name"),
+                "verbose_name": "Pokój/domek (widok)",
+                "verbose_name_plural": "Pokoje/domki (widok)",
+            },
         ),
         migrations.AddField(
-            model_name='house',
-            name='user_key_collected',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='user_key_collected', to=settings.AUTH_USER_MODEL, verbose_name='Kto odebrał klucz'),
+            model_name="house",
+            name="user_key_collected",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="user_key_collected",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="Kto odebrał klucz",
+            ),
         ),
         migrations.AlterField(
-            model_name='house',
-            name='signout_open',
-            field=models.BooleanField(default=True, verbose_name='Czy można się wypisać?'),
+            model_name="house",
+            name="signout_open",
+            field=models.BooleanField(
+                default=True, verbose_name="Czy można się wypisać?"
+            ),
         ),
         migrations.AlterField(
-            model_name='house',
-            name='signup_open',
-            field=models.BooleanField(default=True, verbose_name='Czy można się zapisać?'),
+            model_name="house",
+            name="signup_open",
+            field=models.BooleanField(
+                default=True, verbose_name="Czy można się zapisać?"
+            ),
         ),
     ]

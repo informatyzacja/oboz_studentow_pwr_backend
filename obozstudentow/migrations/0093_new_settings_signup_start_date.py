@@ -2,19 +2,32 @@
 
 from django.db import migrations, models
 
+
 def create_settings(apps, schema_editor):
     Setting = apps.get_model("obozstudentow", "Setting")
 
-    Setting.objects.create(name="night_game_signup_start_datetime", value="2024-09-03 21:00", description="Data i godzina rozpoczęcia zapisów na nocną grę")
-    Setting.objects.create(name="house_signup_start_datetime", value="2024-09-01 10:00", description="Data i godzina rozpoczęcia zapisów na domki/pokoje")  
-    Setting.objects.get_or_create(name='house_signups_active', defaults={'value': 'false', 'description': 'Czy zapisy na domki/pokoje są aktywne?'})  
+    Setting.objects.create(
+        name="night_game_signup_start_datetime",
+        value="2024-09-03 21:00",
+        description="Data i godzina rozpoczęcia zapisów na nocną grę",
+    )
+    Setting.objects.create(
+        name="house_signup_start_datetime",
+        value="2024-09-01 10:00",
+        description="Data i godzina rozpoczęcia zapisów na domki/pokoje",
+    )
+    Setting.objects.get_or_create(
+        name="house_signups_active",
+        defaults={
+            "value": "false",
+            "description": "Czy zapisy na domki/pokoje są aktywne?",
+        },
+    )
+
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("obozstudentow", "0092_user_pesel"),
     ]
 
-    operations = [
-        migrations.RunPython(create_settings)
-    ]
+    operations = [migrations.RunPython(create_settings)]

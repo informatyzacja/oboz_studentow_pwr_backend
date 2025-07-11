@@ -15,30 +15,33 @@ import os, json
 from dotenv import load_dotenv
 from datetime import timedelta
 
+
 def get_secret(key, default):
     value = os.getenv(key, default)
     if os.path.isfile(value):
         with open(value) as f:
-            return f.read().strip('\n').strip()
+            return f.read().strip("\n").strip()
     return value
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load environment variables from .env file
-load_dotenv(os.path.join(BASE_DIR,'.env'))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 from django.core.management.utils import get_random_secret_key
+
 SECRET_KEY = get_secret("SECRET_KEY", get_random_secret_key())
 
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "admin@localhost")
 ADMINS = [(ADMIN_EMAIL, ADMIN_EMAIL)]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", 'true').lower() == 'true'
+DEBUG = os.getenv("DEBUG", "true").lower() == "true"
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost").split(",")
 
@@ -48,25 +51,21 @@ CORS_ALLOW_ALL_ORIGINS = os.getenv("CORS_ALLOW_ALL_ORIGINS", "false").lower() ==
 # Application definition
 
 INSTALLED_APPS = [
-    'daphne',
-
+    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     "obozstudentow",
     "obozstudentow_async",
-
-    'channels',
-
+    "channels",
     "rest_framework",
     "corsheaders",
-    'import_export',
-    'orderable',
-    'rest_framework_simplejwt',
+    "import_export",
+    "orderable",
+    "rest_framework_simplejwt",
 ]
 
 if DEBUG:
@@ -75,7 +74,6 @@ if DEBUG:
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
-
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -90,7 +88,7 @@ ROOT_URLCONF = "obozstudentowProject.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        'DIRS': [BASE_DIR / "templates"],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -108,16 +106,22 @@ ASGI_APPLICATION = "obozstudentowProject.asgi.application"
 
 # Channels
 # In-memory channel layer only for development
-CHANNEL_LAYERS = json.loads(os.getenv("CHANNEL_LAYERS", '''{
+CHANNEL_LAYERS = json.loads(
+    os.getenv(
+        "CHANNEL_LAYERS",
+        """{
     "default": {
 		"BACKEND": "channels.layers.InMemoryChannelLayer"
 	}
-}'''))
-
+}""",
+    )
+)
 
 
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "webmaster@localhost")
-EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
+EMAIL_BACKEND = os.getenv(
+    "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
+)
 EMAIL_HOST = os.getenv("EMAIL_HOST", "localhost")
 EMAIL_PORT = os.getenv("EMAIL_PORT", 25)
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
@@ -126,8 +130,8 @@ EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "false").lower() == "true"
 EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", "false").lower() == "true"
 
 
-MEDIA_ROOT = os.getenv("MEDIA_ROOT", BASE_DIR / 'media/')
-MEDIA_URL = os.getenv("MEDIA_URL", '/media/')
+MEDIA_ROOT = os.getenv("MEDIA_ROOT", BASE_DIR / "media/")
+MEDIA_URL = os.getenv("MEDIA_URL", "/media/")
 
 
 # Database
@@ -138,20 +142,20 @@ DATABASES = {
     "default": {
         "ENGINE": os.getenv("DB_ENGINE", "django.db.backends.sqlite3"),
         "NAME": os.getenv("DB_NAME", BASE_DIR / "db.sqlite3"),
-        'PASSWORD': get_secret("DB_PASSWORD",""),
-        'USER': os.getenv("DB_USER",""),
-        'HOST': os.getenv("DB_HOST",""),
-        'CONN_HEALTH_CHECKS': True,
+        "PASSWORD": get_secret("DB_PASSWORD", ""),
+        "USER": os.getenv("DB_USER", ""),
+        "HOST": os.getenv("DB_HOST", ""),
+        "CONN_HEALTH_CHECKS": True,
     }
 }
 
-if os.getenv("DB_ENGINE", "") == 'django.db.backends.postgresql':
+if os.getenv("DB_ENGINE", "") == "django.db.backends.postgresql":
     DATABASES["default"]["OPTIONS"] = {
-            "pool": {
-                "min_size": 4,
-                "max_size": 20,
-            }
+        "pool": {
+            "min_size": 4,
+            "max_size": 20,
         }
+    }
 
 
 # Password validation
@@ -165,7 +169,7 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
         "OPTIONS": {
             "min_length": 10,
-        }
+        },
     },
     {
         "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
@@ -192,7 +196,7 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = "static/"
-STATIC_ROOT = os.getenv("STATIC_ROOT", './')
+STATIC_ROOT = os.getenv("STATIC_ROOT", "./")
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
@@ -212,24 +216,24 @@ LOGIN_REDIRECT_URL = "/admin/"
 LOGOUT_REDIRECT_URL = "/admin/login/"
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
         # 'rest_framework.authentication.SessionAuthentication',
     ],
-    'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle'
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
     ],
-    'DEFAULT_THROTTLE_RATES': {
-        'anon': os.getenv("ANON_THROTTLE_RATE", '10/minute') if os.getenv("ANON_THROTTLE_RATE") != "None" else None,
-        'user': os.getenv("USER_THROTTLE_RATE", '1800/hour') if os.getenv("USER_THROTTLE_RATE") != "None" else None,
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": os.getenv("ANON_THROTTLE_RATE", "10/minute")
+        if os.getenv("ANON_THROTTLE_RATE") != "None"
+        else None,
+        "user": os.getenv("USER_THROTTLE_RATE", "1800/hour")
+        if os.getenv("USER_THROTTLE_RATE") != "None"
+        else None,
     },
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
-    )
+    "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
 }
 
 SIMPLE_JWT = {
@@ -237,14 +241,14 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
 }
 
-DATA_UPLOAD_MAX_MEMORY_SIZE = 25*1024*1024
+DATA_UPLOAD_MAX_MEMORY_SIZE = 25 * 1024 * 1024
 
 DJANGORESIZED_DEFAULT_SIZE = [1920, 1080]
 # DJANGORESIZED_DEFAULT_SCALE = 0.5
 DJANGORESIZED_DEFAULT_QUALITY = 85
 DJANGORESIZED_DEFAULT_KEEP_META = False
-DJANGORESIZED_DEFAULT_FORCE_FORMAT = 'JPEG'
-DJANGORESIZED_DEFAULT_FORMAT_EXTENSIONS = {'JPEG': ".jpg"}
+DJANGORESIZED_DEFAULT_FORCE_FORMAT = "JPEG"
+DJANGORESIZED_DEFAULT_FORMAT_EXTENSIONS = {"JPEG": ".jpg"}
 
 CSRF_FAILURE_VIEW = "obozstudentowProject.errorViews.error_crft"
 CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", "").strip().split(",")
@@ -257,7 +261,7 @@ if not DEBUG:
     SECURE_SSL_REDIRECT = True
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
-    SECURE_HSTS_SECONDS = 3600 * 24 * 14 # 14 days
+    SECURE_HSTS_SECONDS = 3600 * 24 * 14  # 14 days
     SECURE_HSTS_PRELOAD = True
 
 LOGGING = {

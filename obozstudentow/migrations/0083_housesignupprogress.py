@@ -6,19 +6,43 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow', '0082_alter_house_name'),
+        ("obozstudentow", "0082_alter_house_name"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='HouseSignupProgress',
+            name="HouseSignupProgress",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('last_updated', models.DateTimeField(auto_now=True, verbose_name='Ostatnia aktualizacja')),
-                ('house', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.house')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "last_updated",
+                    models.DateTimeField(
+                        auto_now=True, verbose_name="Ostatnia aktualizacja"
+                    ),
+                ),
+                (
+                    "house",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="obozstudentow.house",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

@@ -6,7 +6,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("obozstudentow", "0034_nightgamesignup_error"),
     ]

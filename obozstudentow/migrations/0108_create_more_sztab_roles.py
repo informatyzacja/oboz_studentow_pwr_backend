@@ -4,15 +4,14 @@ from django.db import migrations, models
 from django.contrib.auth.models import Group as DjangoGroup
 from django.contrib.auth.models import Permission
 
-def create_roles(apps, schema_editor):
 
+def create_roles(apps, schema_editor):
     group, created = DjangoGroup.objects.get_or_create(name="Sztab: Kadra")
-    permissions = Permission.objects.filter(content_type__model__in=('zdjeciakadra',))
+    permissions = Permission.objects.filter(content_type__model__in=("zdjeciakadra",))
     group.permissions.add(*permissions)
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("obozstudentow", "0107_zdjeciakadra"),
     ]

@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("obozstudentow", "0054_group_backgroud_alter_image_image"),
     ]

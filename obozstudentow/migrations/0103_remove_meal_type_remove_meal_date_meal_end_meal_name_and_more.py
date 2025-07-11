@@ -5,39 +5,42 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow', '0102_user_notifications'),
+        ("obozstudentow", "0102_user_notifications"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='meal',
-            name='type',
+            model_name="meal",
+            name="type",
         ),
         migrations.RemoveField(
-            model_name='meal',
-            name='date',
+            model_name="meal",
+            name="date",
         ),
         migrations.AddField(
-            model_name='meal',
-            name='end',
-            field=models.DateTimeField(default=datetime.datetime(2024, 8, 18, 12, 28, 44, 34365)),
+            model_name="meal",
+            name="end",
+            field=models.DateTimeField(
+                default=datetime.datetime(2024, 8, 18, 12, 28, 44, 34365)
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='meal',
-            name='name',
+            model_name="meal",
+            name="name",
             field=models.CharField(default="?", max_length=100),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='meal',
-            name='start',
-            field=models.DateTimeField(default=datetime.datetime(2024, 8, 18, 12, 29, 2, 895627)),
+            model_name="meal",
+            name="start",
+            field=models.DateTimeField(
+                default=datetime.datetime(2024, 8, 18, 12, 29, 2, 895627)
+            ),
             preserve_default=False,
         ),
         migrations.DeleteModel(
-            name='MealType',
+            name="MealType",
         ),
     ]

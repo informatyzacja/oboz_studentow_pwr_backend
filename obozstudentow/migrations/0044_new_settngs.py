@@ -2,21 +2,30 @@
 
 from django.db import migrations, models
 
+
 def create_settings(apps, schema_editor):
     Setting = apps.get_model("obozstudentow", "Setting")
 
-    Setting.objects.create(name="night_game_date", value="2023-09-06", description="Data nocnej gry (między innymi do weryfikacji wieku +18)")
-    
-    Setting.objects.filter(name="group_limit").update(description = "Liczba grup, które mogą się zapisać na grę nocną")
-    Setting.objects.filter(name="group_user_min").update(description = "Minimalna liczba osób w grupie na grę nocną")
-    Setting.objects.filter(name="group_user_max").update(description = "Maksymalna liczba osób w grupie na grę nocną")
-    
-class Migration(migrations.Migration):
+    Setting.objects.create(
+        name="night_game_date",
+        value="2023-09-06",
+        description="Data nocnej gry (między innymi do weryfikacji wieku +18)",
+    )
 
+    Setting.objects.filter(name="group_limit").update(
+        description="Liczba grup, które mogą się zapisać na grę nocną"
+    )
+    Setting.objects.filter(name="group_user_min").update(
+        description="Minimalna liczba osób w grupie na grę nocną"
+    )
+    Setting.objects.filter(name="group_user_max").update(
+        description="Maksymalna liczba osób w grupie na grę nocną"
+    )
+
+
+class Migration(migrations.Migration):
     dependencies = [
         ("obozstudentow", "0043_setting_description"),
     ]
 
-    operations = [
-        migrations.RunPython(create_settings)
-    ]
+    operations = [migrations.RunPython(create_settings)]

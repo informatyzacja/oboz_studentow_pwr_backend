@@ -4,20 +4,22 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow', '0086_alter_houseview_options_house_user_key_collected_and_more'),
+        (
+            "obozstudentow",
+            "0086_alter_houseview_options_house_user_key_collected_and_more",
+        ),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='workshop',
-            name='description',
+            model_name="workshop",
+            name="description",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='workshop',
-            name='location',
+            model_name="workshop",
+            name="location",
             field=models.CharField(blank=True, max_length=100, null=True),
         ),
     ]
