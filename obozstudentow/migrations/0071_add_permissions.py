@@ -1,5 +1,3 @@
-
-
 from django.db import migrations, models
 from ..models import CustomPermissions
 
@@ -9,6 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Group as DjangoGroup
 
 from ..models import User
+
 
 def create_groups(apps, schema_editor):
 
@@ -20,28 +19,37 @@ def create_groups(apps, schema_editor):
 
     # bajer
     for permission in []:
-        permission, created = Permission.objects.get_or_create( codename=permission[0], name=permission[1], content_type=content_type )
+        permission, created = Permission.objects.get_or_create(
+            codename=permission[0], name=permission[1], content_type=content_type
+        )
         for group in [bajer_group, kadra_group, sztab_group]:
             group.permissions.add(permission)
 
-    #kadra
+    # kadra
     for permission in []:
-        permission, created = Permission.objects.get_or_create( codename=permission[0], name=permission[1], content_type=content_type )
+        permission, created = Permission.objects.get_or_create(
+            codename=permission[0], name=permission[1], content_type=content_type
+        )
         for group in [kadra_group, sztab_group]:
             group.permissions.add(permission)
 
-    #sztab
+    # sztab
     for permission in []:
-        permission, created = Permission.objects.get_or_create( codename=permission[0], name=permission[1], content_type=content_type )
+        permission, created = Permission.objects.get_or_create(
+            codename=permission[0], name=permission[1], content_type=content_type
+        )
         sztab_group.permissions.add(permission)
 
-    #superuser
+    # superuser
     for permission in [
-            ('can_validate_points', 'Can validate points'),
-        ]:
-        permission, created = Permission.objects.get_or_create( codename=permission[0], name=permission[1], content_type=content_type )
-        for superuser in User.objects.filter(is_superuser=True).values('id'):
+        ("can_validate_points", "Can validate points"),
+    ]:
+        permission, created = Permission.objects.get_or_create(
+            codename=permission[0], name=permission[1], content_type=content_type
+        )
+        for superuser in User.objects.filter(is_superuser=True).values("id"):
             superuser.user_permissions.add(permission)
+
 
 class Migration(migrations.Migration):
 

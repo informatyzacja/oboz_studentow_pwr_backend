@@ -4,10 +4,15 @@ from django.db import migrations, models
 from django.contrib.auth.models import Group as DjangoGroup
 from django.contrib.auth.models import Permission
 
+
 def create_roles(apps, schema_editor):
 
-    wspolpraca_group, created = DjangoGroup.objects.get_or_create(name="Sztab: Współpraca")
-    wspolpraca_permissions = Permission.objects.filter(content_type__model__in=('partners',))
+    wspolpraca_group, created = DjangoGroup.objects.get_or_create(
+        name="Sztab: Współpraca"
+    )
+    wspolpraca_permissions = Permission.objects.filter(
+        content_type__model__in=("partners",)
+    )
     wspolpraca_group.permissions.set(wspolpraca_permissions)
 
 

@@ -2,11 +2,13 @@
 
 from django.db import migrations, models
 
+
 def create_settings(apps, schema_editor):
     Group = apps.get_model("obozstudentow", "Group")
     for group in Group.objects.all():
         group.sort_order = group.id
         group.save()
+
 
 class Migration(migrations.Migration):
 
@@ -14,6 +16,4 @@ class Migration(migrations.Migration):
         ("obozstudentow", "0062_alter_group_options_group_sort_order"),
     ]
 
-    operations = [
-        migrations.RunPython(create_settings)
-    ]
+    operations = [migrations.RunPython(create_settings)]

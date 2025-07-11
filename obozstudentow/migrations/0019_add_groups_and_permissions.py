@@ -8,6 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from django.contrib.auth.models import Group as DjangoGroup
 
+
 def create_groups(apps, schema_editor):
 
     bajer_group, created = DjangoGroup.objects.get_or_create(name="Bajer")
@@ -17,23 +18,36 @@ def create_groups(apps, schema_editor):
     content_type = ContentType.objects.get_for_model(CustomPermissions)
 
     for permission in [
-            ('can_add_announcement', 'Can add announcement'),
-            ('can_add_points', 'Can add points'),
-            ('can_add_happening_now', 'Can add happening now'),
-        ]:
-        permission, created = Permission.objects.get_or_create( codename=permission[0], name=permission[1], content_type=content_type )
+        ("can_add_announcement", "Can add announcement"),
+        ("can_add_points", "Can add points"),
+        ("can_add_happening_now", "Can add happening now"),
+    ]:
+        permission, created = Permission.objects.get_or_create(
+            codename=permission[0], name=permission[1], content_type=content_type
+        )
         for group in [bajer_group, kadra_group, sztab_group]:
             group.permissions.add(permission)
 
-    for permission in [('can_validate_meals', 'Can validate meals'), ('can_add_band_id', 'Can add band id'), ('can_view_user_info', 'Can view user info')]:
-        permission, created = Permission.objects.get_or_create( codename=permission[0], name=permission[1], content_type=content_type )
+    for permission in [
+        ("can_validate_meals", "Can validate meals"),
+        ("can_add_band_id", "Can add band id"),
+        ("can_view_user_info", "Can view user info"),
+    ]:
+        permission, created = Permission.objects.get_or_create(
+            codename=permission[0], name=permission[1], content_type=content_type
+        )
         for group in [kadra_group, sztab_group]:
             group.permissions.add(permission)
 
-
-    for permission in [('can_view_points', 'Can view points'), ('can_add_daily_quests', 'Can add daily quests')]:
-        permission, created = Permission.objects.get_or_create( codename=permission[0], name=permission[1], content_type=content_type )
+    for permission in [
+        ("can_view_points", "Can view points"),
+        ("can_add_daily_quests", "Can add daily quests"),
+    ]:
+        permission, created = Permission.objects.get_or_create(
+            codename=permission[0], name=permission[1], content_type=content_type
+        )
         sztab_group.permissions.add(permission)
+
 
 class Migration(migrations.Migration):
 

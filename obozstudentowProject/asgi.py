@@ -10,20 +10,18 @@
 import os
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'obozstudentowProject.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "obozstudentowProject.settings")
 
-from channels.routing import ProtocolTypeRouter , URLRouter
+from channels.routing import ProtocolTypeRouter, URLRouter
 from obozstudentow_async import routing
 
 
 from channels.routing import ProtocolTypeRouter, URLRouter
 from .channelsmiddleware import JwtAuthMiddleware
 
-application = ProtocolTypeRouter({
-    "http" : get_asgi_application(),
-    'websocket': JwtAuthMiddleware(
-        URLRouter(
-            routing.websocket_urlpatterns
-        )
-    )
-})
+application = ProtocolTypeRouter(
+    {
+        "http": get_asgi_application(),
+        "websocket": JwtAuthMiddleware(URLRouter(routing.websocket_urlpatterns)),
+    }
+)

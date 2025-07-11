@@ -4,6 +4,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from asgiref.sync import sync_to_async
 
 import django
+
 django.setup()
 
 from obozstudentow.models import User, UserFCMToken
@@ -26,23 +27,14 @@ class HouseSignupsConsumer(AsyncJsonWebsocketConsumer):
             await self.close()
             return
 
-        self.group_name = 'house-signups'
+        self.group_name = "house-signups"
 
         await self.accept()
-        await self.channel_layer.group_add(
-            self.group_name,
-            self.channel_name
-        )
+        await self.channel_layer.group_add(self.group_name, self.channel_name)
 
     async def disconnect(self, close_code):
         # print("disconnected")
-        await self.channel_layer.group_discard(
-            self.group_name,
-            self.channel_name
-        )
+        await self.channel_layer.group_discard(self.group_name, self.channel_name)
 
     async def send(self, event):
         await self.send_json(event)
-
-
-

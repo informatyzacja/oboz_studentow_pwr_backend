@@ -4,10 +4,13 @@ from django.db import migrations, models
 from django.contrib.auth.models import Group as DjangoGroup
 from django.contrib.auth.models import Permission
 
+
 def create_roles(apps, schema_editor):
 
     group, created = DjangoGroup.objects.get_or_create(name="Sztab: Uczestnicy")
-    permissions = Permission.objects.filter(content_type__model__in=('groupmember','tinderprofile'))
+    permissions = Permission.objects.filter(
+        content_type__model__in=("groupmember", "tinderprofile")
+    )
     group.permissions.add(*permissions)
 
 

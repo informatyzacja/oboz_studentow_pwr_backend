@@ -6,13 +6,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('obozstudentow', '0109_user_bus_presence_return'),
+        ("obozstudentow", "0109_user_bus_presence_return"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='bus_info',
-            field=models.CharField(choices=[('both', 'Obie strony lub żadna'), ('to', 'Tylko tam'), ('return', 'Tylko z powrotem')], default='both', max_length=6),
+            model_name="user",
+            name="bus_info",
+            field=models.CharField(
+                choices=[
+                    ("both", "Obie strony lub żadna"),
+                    ("to", "Tylko tam"),
+                    ("return", "Tylko z powrotem"),
+                ],
+                default="both",
+                max_length=6,
+            ),
         ),
     ]

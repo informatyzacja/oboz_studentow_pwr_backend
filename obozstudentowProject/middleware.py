@@ -3,6 +3,7 @@ from rest_framework.authtoken.models import Token
 from channels.db import database_sync_to_async
 from channels.middleware import BaseMiddleware
 
+
 @database_sync_to_async
 def get_user(token_key):
     try:
@@ -11,15 +12,18 @@ def get_user(token_key):
     except Token.DoesNotExist:
         return AnonymousUser()
 
+
 class TokenAuthMiddleware(BaseMiddleware):
     def __init__(self, inner):
         super().__init__(inner)
 
     async def __call__(self, scope, receive, send):
         try:
-            token_key = (dict((x.split('=') for x in scope['query_string'].decode().split("&")))).get('token', None)
+            token_key = (
+                dict((x.split("=") for x in scope["query_string"].decode().split("&")))
+            ).get("token", None)
         except ValueError:
             token_key = None
         if not token_key is None:
-            scope['user'] = await get_user(token_key)
+            scope["user"] = await get_user(token_key)
         return await super().__call__(scope, receive, send)

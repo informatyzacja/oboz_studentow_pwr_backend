@@ -7,14 +7,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('obozstudentow', '0105_user_bus_presence'),
-        ('obozstudentow_async', '0004_chat_enabled'),
+        ("obozstudentow", "0105_user_bus_presence"),
+        ("obozstudentow_async", "0004_chat_enabled"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='group',
-            name='chat',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='obozstudentow_async.chat', verbose_name='Czat'),
+            model_name="group",
+            name="chat",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="obozstudentow_async.chat",
+                verbose_name="Czat",
+            ),
         ),
     ]
