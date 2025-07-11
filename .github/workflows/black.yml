@@ -15,24 +15,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Fetch and update main
-        run: |
-          git fetch origin
-          git checkout main
-          git pull origin main
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-
-      - name: Set up Git user
-        run: |
-          git config user.name github-actions[bot]
-          git config user.email github-actions[bot]@users.noreply.github.com
 
       - name: Install Black
         run: pip install black
@@ -40,11 +27,10 @@ jobs:
       - name: Run Black
         run: black .
 
-      - name: Create Pull Request if needed
-        uses: peter-evans/create-pull-request@v5
-        with:
-          branch: black-fix/${{ github.run_id }}-${{ github.run_attempt }}
-          title: "Apply Black code formatting"
-          body: "Automated Black formatting changes."
-          base: main
-          commit-message: "Apply Black code formatting"
+      - name: Commit and Force Push changes
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email github-actions[bot]@users.noreply.github.com
+          git add .
+          git commit -m "Apply Black code formatting" || echo "No changes to commit"
+          git push origin main --force
