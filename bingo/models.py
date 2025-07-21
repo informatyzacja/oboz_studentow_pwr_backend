@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 
 class BingoTaskTemplate(models.Model):
@@ -22,9 +23,6 @@ class BingoUserInstance(models.Model):
 
     def __str__(self):
         return f"Bingo for {self.user.username} - {self.created_at.date()}"
-
-
-# ustawianie automatyczne wygranej dodać
 
 
 class BingoUserTask(models.Model):
@@ -54,8 +52,31 @@ class BingoUserTask(models.Model):
         related_name="reviewed_tasks",
     )
 
+    # sprawdzanie wygranej
     def __str__(self):
         return f"{self.task.task_name} for {self.instance.user.username}"
+
+    def save(self, *args, **kwargs):
+        # Jeśli dodano zdjęcie, a zadanie nie było wcześniej zgłoszone
+        if self.photo_proof_url and self.task_state == self.TaskState.NOT_STARTED:
+            self.task_state = self.TaskState.SUBMITTED
+            self.submitted_at = timezone.now()
+
+        super().save(*args, **kwargs)
+        tasks = self.instance.tasks.all()
+        if all(
+            t.task_state
+            in [
+                self.TaskState.SUBMITTED,
+                self.TaskState.APPROVED,
+                self.TaskState.REJECTED,
+            ]
+            and t.photo_proof_url
+            for t in tasks
+        ):
+            if self.instance.completed_at is None:
+                self.instance.completed_at = timezone.now()
+                self.instance.save(update_fields=["completed_at"])
 
 
 class BingoUserTaskInline(admin.TabularInline):
