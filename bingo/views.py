@@ -7,6 +7,7 @@ from .models import BingoUserInstance, BingoUserTask
 from .serializers import BingoUserInstanceSerializer, BingoUserTaskSerializer
 from rest_framework.permissions import IsAdminUser
 from django.utils import timezone
+from .utils import swap_user_task
 
 
 class BingoUserInstanceViewSet(viewsets.ModelViewSet):
@@ -24,9 +25,6 @@ class BingoUserInstanceViewSet(viewsets.ModelViewSet):
         return Response({"status": "bingo submitted"})
 
 
-# dodać opcje podmiany 1 zadania
-
-
 class BingoUserTaskViewSet(viewsets.ModelViewSet):
     serializer_class = BingoUserTaskSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -39,14 +37,29 @@ class BingoUserTaskViewSet(viewsets.ModelViewSet):
         task = self.get_object()
         task.photo_proof_url = request.data.get("photo_proof_url")
         task.save()
-        return Response({"status": "photo uploaded"})
+        task.submitted_at = timezone.now()
+        task.task_state = BingoUserTask.TaskState.SUBMITTED
+        task.save()
+
+        return Response({"status": "photo uploaded", "submitted_at": task.submitted_at})
 
     @action(detail=True, methods=["put"])
     def add_comment(self, request, pk=None):
         task = self.get_object()
         task.user_comment = request.data.get("user_comment")
         task.save()
-        return Response({"status": "comment added"})
+        return Response({"status": "comment added", "submitted_at": task.submitted_at})
+
+    @action(detail=True, methods=["put"])
+    def swap_task(self, request, pk=None):
+        task = self.get_object()
+        new_task = swap_user_task(task)
+        if not new_task:
+            return Response(
+                {"error": "No available tasks to swap"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        return Response({"status": "task swapped", "new_task": new_task.task_name})
 
 
 class BingoReviewViewSet(viewsets.ModelViewSet):

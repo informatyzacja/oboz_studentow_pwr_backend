@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib import admin
 from django.db import models
-from django.contrib.auth.models import User  # Zastępuje user_table
+from django.contrib.auth.models import User
 
 
 class BingoTaskTemplate(models.Model):
