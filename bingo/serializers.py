@@ -10,10 +10,17 @@ class BingoTaskTemplateSerializer(serializers.ModelSerializer):
 
 class BingoUserTaskSerializer(serializers.ModelSerializer):
     task = BingoTaskTemplateSerializer()
+    photo_url = serializers.SerializerMethodField()
 
     class Meta:
         model = BingoUserTask
         fields = "__all__"
+
+    def get_photo_url(self, obj):
+        if obj.photo_proof:
+            request = self.context.get("request")
+            return request.build_absolute_uri(obj.photo_proof.url)
+        return None
 
 
 class BingoUserInstanceSerializer(serializers.ModelSerializer):

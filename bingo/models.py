@@ -20,6 +20,8 @@ class BingoUserInstance(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     has_won = models.BooleanField(default=False)
+    needs_bingo_admin_review = models.BooleanField(default=False)
+    swap_used = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Bingo for {self.user.username} - {self.created_at.date()}"
@@ -32,16 +34,19 @@ class BingoUserTask(models.Model):
         APPROVED = "approved", "Approved"
         REJECTED = "rejected", "Rejected"
 
+    task = models.ForeignKey(BingoTaskTemplate, on_delete=models.CASCADE)
+    row = models.PositiveSmallIntegerField()
+    col = models.PositiveSmallIntegerField()
     instance = models.ForeignKey(
         BingoUserInstance, on_delete=models.CASCADE, related_name="tasks"
     )
-    task = models.ForeignKey(BingoTaskTemplate, on_delete=models.CASCADE)
+
     task_state = models.CharField(
         max_length=20, choices=TaskState.choices, default=TaskState.NOT_STARTED
     )
     user_comment = models.TextField(blank=True, null=True)
     reviewer_comment = models.TextField(blank=True, null=True)
-    photo_proof_url = models.TextField(blank=True, null=True)
+    photo_proof = models.ImageField(upload_to="bingo_photos/", null=True, blank=True)
     submitted_at = models.DateTimeField(null=True, blank=True)
     reviewed_at = models.DateTimeField(null=True, blank=True)
     reviewed_by = models.ForeignKey(
@@ -57,26 +62,23 @@ class BingoUserTask(models.Model):
         return f"{self.task.task_name} for {self.instance.user.username}"
 
     def save(self, *args, **kwargs):
-        # Jeśli dodano zdjęcie, a zadanie nie było wcześniej zgłoszone
-        if self.photo_proof_url and self.task_state == self.TaskState.NOT_STARTED:
+        # Jeśli użytkownik doda zdjęcie i zadanie było w stanie NOT_STARTED lub REJECTED
+        if self.photo_proof and self.task_state in [
+            self.TaskState.NOT_STARTED,
+            self.TaskState.REJECTED,
+        ]:
             self.task_state = self.TaskState.SUBMITTED
             self.submitted_at = timezone.now()
+            # Resetuj informacje z recenzji, bo zadanie jest zgłaszane ponownie
+            self.reviewer_comment = None
+            self.reviewed_by = None
+            self.reviewed_at = None
 
         super().save(*args, **kwargs)
-        tasks = self.instance.tasks.all()
-        if all(
-            t.task_state
-            in [
-                self.TaskState.SUBMITTED,
-                self.TaskState.APPROVED,
-                self.TaskState.REJECTED,
-            ]
-            and t.photo_proof_url
-            for t in tasks
-        ):
-            if self.instance.completed_at is None:
-                self.instance.completed_at = timezone.now()
-                self.instance.save(update_fields=["completed_at"])
+        if check_bingo_win(self.instance) and not self.instance.has_won:
+            if not self.instance.needs_bingo_admin_review:
+                self.instance.needs_bingo_admin_review = True
+                self.instance.save(update_fields=["needs_bingo_admin_review"])
 
 
 class BingoUserTaskInline(admin.TabularInline):
