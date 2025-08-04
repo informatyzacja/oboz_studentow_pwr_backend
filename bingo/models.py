@@ -5,6 +5,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+from bingo.utils import check_bingo_win
+
 
 class BingoTaskTemplate(models.Model):
     task_name = models.TextField()
