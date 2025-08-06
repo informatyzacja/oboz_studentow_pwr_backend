@@ -61,3 +61,6 @@ python manage.py runserver
 ```
 
 The development server will be available at `http://localhost:8000`. By navigating to `http://localhost:8000/admin/`, you can log in to the admin panel.
+
+# readme for bingo
+[Bingo - readme](bingo/readme.md)
