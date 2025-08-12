@@ -7,8 +7,10 @@ from .models import BingoUserInstance, BingoUserTask
 from .serializers import BingoUserInstanceSerializer, BingoUserTaskSerializer
 from rest_framework.permissions import IsAdminUser
 from django.utils import timezone
-from .utils import swap_user_task
 from .utils import swap_user_task, check_bingo_win
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework import status
 
 
 class BingoUserInstanceViewSet(viewsets.ModelViewSet):
@@ -21,9 +23,27 @@ class BingoUserInstanceViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["put"])
     def submit_bingo(self, request, pk=None):
         instance = self.get_object()
+        from .utils import check_bingo_win
+        if not check_bingo_win(instance):
+            return Response(
+                {"error": "Bingo jest niekompletne, nie można zatwierdzić."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         instance.completed_at = timezone.now()
-        instance.save()
-        return Response({"status": "bingo submitted"})
+        instance.has_won = True  
+        instance.save(update_fields=["completed_at", "has_won"])
+        return Response({"status": "Bingo zatwierdzone"})
+
+    def perform_update(self, serializer):
+        instance = serializer.instance
+        # najpierw zapisujemy zmiany (np. przesłane zdjęcie)
+        serializer.save()
+        # odświeżamy instancję z bazy
+        instance.refresh_from_db()
+
+        # sprawdzamy czy bingo wygrało
+        if not check_bingo_win(instance):
+            raise serializers.ValidationError("Bingo nie jest w stanie wygranej.")
 
 
 class BingoUserTaskViewSet(viewsets.ModelViewSet):
