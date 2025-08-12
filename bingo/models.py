@@ -5,7 +5,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-from bingo.utils import check_bingo_win
+#from bingo.utils import check_bingo_win
 
 
 class BingoTaskTemplate(models.Model):
@@ -64,36 +64,27 @@ class BingoUserTask(models.Model):
         return f"{self.task.task_name} for {self.instance.user.username}"
 
     def save(self, *args, **kwargs):
-        # Jeśli użytkownik doda zdjęcie i zadanie było w stanie NOT_STARTED lub REJECTED
+        from bingo.utils import check_bingo_win  # Import lokalny wewnątrz metody
+
         if self.photo_proof and self.task_state in [
             self.TaskState.NOT_STARTED,
             self.TaskState.REJECTED,
         ]:
             self.task_state = self.TaskState.SUBMITTED
             self.submitted_at = timezone.now()
-            # Resetuj informacje z recenzji, bo zadanie jest zgłaszane ponownie
             self.reviewer_comment = None
             self.reviewed_by = None
             self.reviewed_at = None
 
         super().save(*args, **kwargs)
+
         if check_bingo_win(self.instance) and not self.instance.has_won:
             if not self.instance.needs_bingo_admin_review:
                 self.instance.needs_bingo_admin_review = True
                 self.instance.save(update_fields=["needs_bingo_admin_review"])
 
 
+
 class BingoUserTaskInline(admin.TabularInline):
     model = BingoUserTask
     extra = 0
-
-
-@admin.register(BingoUserInstance)
-class BingoUserInstanceAdmin(admin.ModelAdmin):
-    inlines = [BingoUserTaskInline]
-    list_display = ("user", "created_at", "completed_at", "has_won")
-
-
-@admin.register(BingoTaskTemplate)
-class BingoTaskTemplateAdmin(admin.ModelAdmin):
-    list_display = ("task_name", "is_active")
