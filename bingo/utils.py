@@ -36,7 +36,16 @@ def swap_user_task(task):
     if not available_tasks.exists():
         # Teoretycznie można zwrócić inny błąd, ale None też zadziała
         return None
+    if task.photo_proof:
+        task.photo_proof.delete(save=False)
 
+    # views.py - w upload_photo można dodać obsługę wyjątku:
+    try:
+        if task.photo_proof:
+            task.photo_proof.delete(save=False)
+    except Exception as e:
+        # Loguj lub obsłuż błąd usuwania
+        pass
     new_task = random.choice(list(available_tasks))
     task.task = new_task
     task.task_state = BingoUserTask.TaskState.NOT_STARTED
