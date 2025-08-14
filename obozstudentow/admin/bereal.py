@@ -88,7 +88,10 @@ class BeerealReportAdmin(admin.ModelAdmin):
         "post__user__last_name",
         "reason",
     )
-    readonly_fields = ("created_at", "post_link", "photo_preview")
+    readonly_fields = (
+        "created_at",
+        "post_link",
+    )
     ordering = ("-created_at",)
     actions = ["mark_resolved"]
 
@@ -103,20 +106,10 @@ class BeerealReportAdmin(admin.ModelAdmin):
     post_date.short_description = "Data BeReal"
 
     def post_link(self, obj):
-        url = reverse("admin:obozstudentow_beerealpost_change", args=[obj.post.id])
+        url = reverse("admin:obozstudentow_berealpost_change", args=[obj.post.id])
         return format_html('<a href="{}">Zobacz post</a>', url)
 
     post_link.short_description = "Link do posta"
-
-    def photo_preview(self, obj):
-        if obj.post.photo:
-            return format_html(
-                '<img src="{}" style="max-height: 200px; max-width: 200px;" />',
-                obj.post.photo.url,
-            )
-        return "Brak zdjęcia"
-
-    photo_preview.short_description = "Podgląd zdjęcia"
 
     def mark_resolved(self, request, queryset):
         queryset.update(
