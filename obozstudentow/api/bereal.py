@@ -90,7 +90,6 @@ def get_today_bereal():
 
 
 def get_bereal_status(user=None):
-
     # Get current BeReal status
     today_bereal = get_today_bereal()
 
@@ -223,7 +222,6 @@ def upload_bereal_post(request):
 
     try:
         with transaction.atomic():
-
             photo1 = ContentFile(
                 base64.b64decode(photo1_base64),
                 f"bereal_photo1_{request.user.id}_{today_bereal.date}.jpeg",

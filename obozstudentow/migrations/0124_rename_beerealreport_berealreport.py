@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("obozstudentow", "0123_remove_beerealpost_photo_beerealpost_photo1_and_more"),
     ]
