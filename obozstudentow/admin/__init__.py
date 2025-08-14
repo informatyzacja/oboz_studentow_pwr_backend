@@ -4,6 +4,7 @@ from .meals import *
 from .people import *
 from .workshop import *
 from .user import *
+from .bereal import *
 
 from import_export.admin import ImportExportModelAdmin
 

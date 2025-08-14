@@ -5,6 +5,7 @@ from .notifications import *
 from .houses import *
 from .register import *
 from .tinder import *
+from .bereal import *
 
 from .chat import *
 
@@ -14,6 +15,20 @@ tinderurlpatterns = [
     path("upload-profile-data/", uploadProfileData),
     path("load-profiles/", loadTinderProfiles),
     path("action/", tinderAction),
+]
+
+# /api2/bereal/
+berealurlpatterns = [
+    path("home/", bereal_home),
+    path("profile/", bereal_profile),
+    path("profile/<int:user_id>/", bereal_profile),
+    path("upload/", upload_bereal_post),
+    path("delete/<int:post_id>/", delete_bereal_post),
+    path("like/<int:post_id>/", like_bereal_post),
+    path("unlike/<int:post_id>/", unlike_bereal_post),
+    path("report/<int:post_id>/", report_bereal_post),
+    path("status/", bereal_status),
+    path("update-profile-photo/", update_profile_photo),
 ]
 
 # /api2/
@@ -28,6 +43,7 @@ urlpatterns = [
     path("send_email_verification/", send_email_verification),
     path("login_with_code/", login_with_code),
     path("tinder/", include(tinderurlpatterns)),
+    path("bereal/", include(berealurlpatterns)),
     path("block_chat/<int:chat_id>/", block_chat),
     path("block_chat_notifications/<int:chat_id>/", block_chat_notifications),
 ]
