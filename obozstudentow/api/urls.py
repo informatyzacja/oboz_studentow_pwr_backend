@@ -29,6 +29,7 @@ berealurlpatterns = [
     path("report/<int:post_id>/", report_bereal_post),
     path("status/", bereal_status),
     path("update-profile-photo/", update_profile_photo),
+    path("post/<int:post_id>/", bereal_post_detail),
 ]
 
 # /api2/

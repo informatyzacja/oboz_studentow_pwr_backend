@@ -3,10 +3,10 @@ from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils import timezone
-from ..models import BeerealPost, BeerealLike, BeerealReport, BeerealNotification
+from ..models import BerealPost, BerealLike, BerealReport, BerealNotification
 
 
-@admin.register(BeerealPost)
+@admin.register(BerealPost)
 class BeerealPostAdmin(admin.ModelAdmin):
     list_display = (
         "user",
@@ -14,11 +14,12 @@ class BeerealPostAdmin(admin.ModelAdmin):
         "created_at",
         "is_late",
         "likes_count",
-        "photo_preview",
+        "photo1_preview",
+        "photo2_preview",
     )
     list_filter = ("bereal_date", "is_late", "created_at")
     search_fields = ("user__first_name", "user__last_name", "user__email")
-    readonly_fields = ("created_at", "photo_preview")
+    readonly_fields = ("created_at", "photo1_preview", "photo2_preview")
     ordering = ("-created_at",)
 
     def likes_count(self, obj):
@@ -26,18 +27,27 @@ class BeerealPostAdmin(admin.ModelAdmin):
 
     likes_count.short_description = "Liczba lajków"
 
-    def photo_preview(self, obj):
-        if obj.photo:
+    def photo1_preview(self, obj):
+        if obj.photo1:
             return format_html(
                 '<img src="{}" style="max-height: 200px; max-width: 200px;" />',
-                obj.photo.url,
+                obj.photo1.url,
             )
         return "Brak zdjęcia"
 
-    photo_preview.short_description = "Podgląd zdjęcia"
+    def photo2_preview(self, obj):
+        if obj.photo2:
+            return format_html(
+                '<img src="{}" style="max-height: 200px; max-width: 200px;" />',
+                obj.photo2.url,
+            )
+        return "Brak zdjęcia"
+
+    photo1_preview.short_description = "Podgląd zdjęcia 1"
+    photo2_preview.short_description = "Podgląd zdjęcia 2"
 
 
-@admin.register(BeerealLike)
+@admin.register(BerealLike)
 class BeerealLikeAdmin(admin.ModelAdmin):
     list_display = ("user", "post_user", "post_date", "created_at")
     list_filter = ("created_at", "post__bereal_date")
@@ -60,7 +70,7 @@ class BeerealLikeAdmin(admin.ModelAdmin):
     post_date.short_description = "Data BeReal"
 
 
-@admin.register(BeerealReport)
+@admin.register(BerealReport)
 class BeerealReportAdmin(admin.ModelAdmin):
     list_display = (
         "reporter",
@@ -119,7 +129,7 @@ class BeerealReportAdmin(admin.ModelAdmin):
     mark_resolved.short_description = "Oznacz jako rozwiązane"
 
 
-@admin.register(BeerealNotification)
+@admin.register(BerealNotification)
 class BeerealNotificationAdmin(admin.ModelAdmin):
     list_display = ("date", "sent_at", "deadline", "is_active_display", "posts_count")
     list_filter = ("date", "sent_at")
@@ -133,6 +143,6 @@ class BeerealNotificationAdmin(admin.ModelAdmin):
     is_active_display.short_description = "Aktywny"
 
     def posts_count(self, obj):
-        return obj.beerealpost_set.count()
+        return BerealPost.objects.filter(bereal_date=obj.date).count()
 
     posts_count.short_description = "Liczba postów"

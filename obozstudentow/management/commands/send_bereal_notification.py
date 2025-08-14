@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from obozstudentow.models import BeerealNotification, UserFCMToken, Setting
+from obozstudentow.models import BerealNotification, UserFCMToken, Setting
 from obozstudentow.api.notifications import send_notification
 import random
 from datetime import timedelta
@@ -33,7 +33,7 @@ class Command(BaseCommand):
 
         # Check if notification was already sent today
         if (
-            BeerealNotification.objects.filter(date=today).exists()
+            BerealNotification.objects.filter(date=today).exists()
             and not options["force"]
         ):
             self.stdout.write(
@@ -45,7 +45,7 @@ class Command(BaseCommand):
         deadline_hours = random.uniform(2, 3)
         deadline = timezone.now() + timedelta(hours=deadline_hours)
 
-        notification = BeerealNotification.objects.create(date=today, deadline=deadline)
+        notification = BerealNotification.objects.create(date=today, deadline=deadline)
 
         # Get all user FCM tokens
         tokens = list(

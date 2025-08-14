@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
-from obozstudentow.models import Setting, BeerealNotification, BeerealPost
+from obozstudentow.models import Setting, BerealNotification, BerealPost
 import json
 
 User = get_user_model()
@@ -63,7 +63,7 @@ class BeerealAPITestCase(TestCase):
     def test_bereal_status_with_notification(self):
         """Test BeReal status with active notification"""
         # Create active notification
-        BeerealNotification.objects.create(
+        BerealNotification.objects.create(
             date=timezone.now().date(),
             deadline=timezone.now() + timezone.timedelta(hours=2),
         )

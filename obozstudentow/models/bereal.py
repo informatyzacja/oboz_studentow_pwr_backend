@@ -6,11 +6,16 @@ from django.utils import timezone
 User = get_user_model()
 
 
-class BeerealPost(models.Model):
+class BerealPost(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="bereal_posts"
     )
-    photo = ResizedImageField(upload_to="bereal", force_format=None, size=[1080, 1080])
+    photo1 = ResizedImageField(
+        upload_to="bereal", force_format="JPEG", size=[1920, 1920]
+    )
+    photo2 = ResizedImageField(
+        upload_to="bereal", force_format="JPEG", size=[1920, 1920]
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     is_late = models.BooleanField(default=False)
     # Store the date when BeReal notification was sent (to check daily limit)
@@ -29,11 +34,9 @@ class BeerealPost(models.Model):
         )
 
 
-class BeerealLike(models.Model):
+class BerealLike(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    post = models.ForeignKey(
-        BeerealPost, on_delete=models.CASCADE, related_name="likes"
-    )
+    post = models.ForeignKey(BerealPost, on_delete=models.CASCADE, related_name="likes")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -46,12 +49,12 @@ class BeerealLike(models.Model):
         return f"{self.user.first_name} ❤️ {self.post.user.first_name}"
 
 
-class BeerealReport(models.Model):
+class BerealReport(models.Model):
     reporter = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="bereal_reports_made"
     )
     post = models.ForeignKey(
-        BeerealPost, on_delete=models.CASCADE, related_name="reports"
+        BerealPost, on_delete=models.CASCADE, related_name="reports"
     )
     reason = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -75,7 +78,7 @@ class BeerealReport(models.Model):
         return f"Zgłoszenie: {self.post} przez {self.reporter.first_name}"
 
 
-class BeerealNotification(models.Model):
+class BerealNotification(models.Model):
     """Tracks when BeReal notifications were sent"""
 
     sent_at = models.DateTimeField(auto_now_add=True)
@@ -93,9 +96,4 @@ class BeerealNotification(models.Model):
 
     def is_active(self):
         """Check if BeReal is currently active (before deadline)"""
-        return timezone.now() < self.deadline
-
-    def is_late_period(self):
-        """Check if we're in the 'late' period (after initial deadline but still accepting posts)"""
-        # Allow posting for 24 hours after deadline but mark as late
-        return timezone.now() < self.deadline + timezone.timedelta(hours=24)
+        return timezone.now() < self.deadline and self.date == timezone.now().date()
