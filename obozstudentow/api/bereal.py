@@ -30,6 +30,7 @@ class BeerealPostSerializer(serializers.ModelSerializer):
     )
     likes_count = serializers.SerializerMethodField()
     is_liked_by_user = serializers.SerializerMethodField()
+    is_post_owner = serializers.SerializerMethodField()
 
     def get_likes_count(self, obj):
         return obj.likes.count()
@@ -38,6 +39,12 @@ class BeerealPostSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         if request and request.user.is_authenticated:
             return obj.likes.filter(user=request.user).exists()
+        return False
+
+    def get_is_post_owner(self, obj):
+        request = self.context.get("request")
+        if request and request.user.is_authenticated:
+            return obj.user == request.user
         return False
 
     class Meta:
@@ -55,6 +62,7 @@ class BeerealPostSerializer(serializers.ModelSerializer):
             # "bereal_date",
             "likes_count",
             "is_liked_by_user",
+            "is_post_owner",
         ]
 
 
