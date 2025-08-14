@@ -4,36 +4,35 @@ from django.db import migrations
 
 
 def add_bereal_settings(apps, schema_editor):
-    Setting = apps.get_model('obozstudentow', 'Setting')
-    
+    Setting = apps.get_model("obozstudentow", "Setting")
+
     # Create BeReal settings
     settings_to_create = [
         {
-            'name': 'bereal_active',
-            'value': 'false',
-            'description': 'Czy BeReal jest aktywny (true/false)'
+            "name": "bereal_active",
+            "value": "false",
+            "description": "Czy BeReal jest aktywny (true/false)",
         },
     ]
-    
+
     for setting_data in settings_to_create:
         Setting.objects.get_or_create(
-            name=setting_data['name'],
+            name=setting_data["name"],
             defaults={
-                'value': setting_data['value'],
-                'description': setting_data['description']
-            }
+                "value": setting_data["value"],
+                "description": setting_data["description"],
+            },
         )
 
 
 def remove_bereal_settings(apps, schema_editor):
-    Setting = apps.get_model('obozstudentow', 'Setting')
-    Setting.objects.filter(name='bereal_active').delete()
+    Setting = apps.get_model("obozstudentow", "Setting")
+    Setting.objects.filter(name="bereal_active").delete()
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow', '0121_bereal_models'),
+        ("obozstudentow", "0121_bereal_models"),
     ]
 
     operations = [
