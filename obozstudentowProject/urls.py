@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
 import obozstudentow.api
@@ -45,6 +46,7 @@ urlpatterns = [
     path("admin/", admin.site.urls, name="admin"),
     path("api/", include(obozstudentow.api.api_router.urls)),
     path("api2/", include("obozstudentow.api.urls")),
+    path("bereal-api/", include("bereal.urls")),  # Include BeReal app URLs
     path(
         "download-image/<int:image_id>/",
         obozstudentow.views.download_image,
