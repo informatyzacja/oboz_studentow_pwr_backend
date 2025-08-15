@@ -25,7 +25,7 @@ class BerealPost(models.Model):
         verbose_name_plural = "Posty BeReal"
         unique_together = ["user", "bereal_date"]
         ordering = ["-created_at"]
-        db_table = "obozstudentow_berealpost"
+
         managed = False
 
     def __str__(self):
@@ -44,7 +44,6 @@ class BerealLike(models.Model):
         verbose_name_plural = "Lajki BeReal"
         unique_together = ["user", "post"]
         ordering = ["-created_at"]
-        db_table = "obozstudentow_bereallike"
         managed = False
 
     def __str__(self):
@@ -75,7 +74,6 @@ class BerealReport(models.Model):
         verbose_name_plural = "Zgłoszenia BeReal"
         unique_together = ["reporter", "post"]
         ordering = ["-created_at"]
-        db_table = "obozstudentow_berealreport"
         managed = False
 
     def __str__(self):
@@ -91,7 +89,6 @@ class BerealNotification(models.Model):
         verbose_name = "Powiadomienie BeReal"
         verbose_name_plural = "Powiadomienia BeReal"
         ordering = ["-sent_at"]
-        db_table = "obozstudentow_berealnotification"
         managed = False
 
     def __str__(self):
