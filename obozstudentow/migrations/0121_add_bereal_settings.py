@@ -32,7 +32,7 @@ def remove_bereal_settings(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("obozstudentow", "0121_bereal_models"),
+        ("obozstudentow", "0120_add_permissions"),
     ]
 
     operations = [
