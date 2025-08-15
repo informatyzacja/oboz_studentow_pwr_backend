@@ -26,8 +26,6 @@ class BerealPost(models.Model):
         unique_together = ["user", "bereal_date"]
         ordering = ["-created_at"]
 
-        managed = False
-
     def __str__(self):
         return (
             f"BeReal {self.user.first_name} {self.user.last_name} - {self.bereal_date}"
@@ -44,7 +42,6 @@ class BerealLike(models.Model):
         verbose_name_plural = "Lajki BeReal"
         unique_together = ["user", "post"]
         ordering = ["-created_at"]
-        managed = False
 
     def __str__(self):
         return f"{self.user.first_name} ❤️ {self.post.user.first_name}"
@@ -74,7 +71,6 @@ class BerealReport(models.Model):
         verbose_name_plural = "Zgłoszenia BeReal"
         unique_together = ["reporter", "post"]
         ordering = ["-created_at"]
-        managed = False
 
     def __str__(self):
         return f"Zgłoszenie: {self.post} przez {self.reporter.first_name}"
@@ -89,7 +85,6 @@ class BerealNotification(models.Model):
         verbose_name = "Powiadomienie BeReal"
         verbose_name_plural = "Powiadomienia BeReal"
         ordering = ["-sent_at"]
-        managed = False
 
     def __str__(self):
         return f"BeReal {self.date} - {self.sent_at.strftime('%H:%M')}"
