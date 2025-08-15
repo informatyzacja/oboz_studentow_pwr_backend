@@ -202,7 +202,7 @@ class SoberDutySerializer(serializers.ModelSerializer):
         fields = ("start", "end")
 
 
-from .tinder import TinderProfileSerializer, tinder_register_active
+from .tinder import TinderProfileSerializer, tinder_register_active, tinder_active
 from ..models import TinderProfile
 
 
@@ -215,6 +215,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     tinder_profile = serializers.SerializerMethodField()
 
     tinder_register_active = serializers.SerializerMethodField()
+    tinder_active = serializers.SerializerMethodField()
 
     def get_tinder_profile(self, obj):
         return TinderProfileSerializer(
@@ -249,6 +250,9 @@ class ProfileSerializer(serializers.ModelSerializer):
     def get_tinder_register_active(self, obj):
         return tinder_register_active()
 
+    def get_tinder_active(self, obj):
+        return tinder_active()
+
     class Meta:
         model = User
         fields = (
@@ -269,6 +273,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "notifications",
             "tinder_profile",
             "tinder_register_active",
+            "tinder_active",
         )
         depth = 1
 
