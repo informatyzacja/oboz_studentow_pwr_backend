@@ -9,4 +9,3 @@ from .workshop import *
 from .permissions import *
 
 from .houses import *
-from .bereal import *

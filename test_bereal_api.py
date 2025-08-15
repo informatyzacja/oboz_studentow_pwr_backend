@@ -4,7 +4,8 @@ from django.utils import timezone
 from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
-from obozstudentow.models import Setting, BerealNotification, BerealPost
+from obozstudentow.models import Setting
+from bereal.models import BerealNotification, BerealPost
 import json
 
 User = get_user_model()
@@ -44,21 +45,21 @@ class BeerealAPITestCase(TestCase):
         setting.value = "false"
         setting.save()
 
-        response = self.client.get("/api2/bereal/status/")
-        self.assertEqual(response.status_code, 200)
-
-        data = response.json()
-        self.assertFalse(data["bereal_enabled"])
-        self.assertFalse(data["is_active"])
+    response = self.client.get("/api2/bereal/status/")
+    self.assertEqual(response.status_code, 200)
+    data = response.json()
+    # In new app response keys: is_active, was_today, can_post, deadline
+    self.assertIn("is_active", data)
+    self.assertFalse(data["is_active"])
 
     def test_bereal_status_enabled(self):
         """Test BeReal status when enabled"""
-        response = self.client.get("/api2/bereal/status/")
-        self.assertEqual(response.status_code, 200)
 
-        data = response.json()
-        self.assertTrue(data["bereal_enabled"])
-        self.assertFalse(data["is_active"])  # No notification yet
+    response = self.client.get("/api2/bereal/status/")
+    self.assertEqual(response.status_code, 200)
+    data = response.json()
+    self.assertIn("is_active", data)
+    self.assertFalse(data["is_active"])  # No notification yet
 
     def test_bereal_status_with_notification(self):
         """Test BeReal status with active notification"""
@@ -68,13 +69,11 @@ class BeerealAPITestCase(TestCase):
             deadline=timezone.now() + timezone.timedelta(hours=2),
         )
 
-        response = self.client.get("/api2/bereal/status/")
-        self.assertEqual(response.status_code, 200)
-
-        data = response.json()
-        self.assertTrue(data["bereal_enabled"])
-        self.assertTrue(data["is_active"])
-        self.assertTrue(data["can_post"])
+    response = self.client.get("/api2/bereal/status/")
+    self.assertEqual(response.status_code, 200)
+    data = response.json()
+    self.assertTrue(data["is_active"])
+    self.assertTrue(data["can_post"])
 
     def test_bereal_home_empty(self):
         """Test BeReal home with no posts"""
