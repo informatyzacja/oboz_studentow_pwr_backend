@@ -202,8 +202,8 @@ class SoberDutySerializer(serializers.ModelSerializer):
         fields = ("start", "end")
 
 
-from .tinder import TinderProfileSerializer, tinder_register_active, tinder_active
-from ..models import TinderProfile
+from tinder.api import TinderProfileSerializer, tinder_register_active, tinder_active
+from tinder.models import TinderProfile
 
 
 class ProfileSerializer(serializers.ModelSerializer):

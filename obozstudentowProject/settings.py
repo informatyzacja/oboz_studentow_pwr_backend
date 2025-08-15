@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "obozstudentow",
     "obozstudentow_async",
     "bereal",
+    "tinder",
     "channels",
     "rest_framework",
     "corsheaders",
