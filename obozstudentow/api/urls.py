@@ -5,6 +5,7 @@ from .notifications import *
 from .houses import *
 from .register import *
 from .tinder import *
+from bereal.api import *  # noqa: F401,F403
 
 from .chat import *
 
@@ -14,6 +15,11 @@ tinderurlpatterns = [
     path("upload-profile-data/", uploadProfileData),
     path("load-profiles/", loadTinderProfiles),
     path("action/", tinderAction),
+]
+
+# /api2/bereal/
+berealurlpatterns = [
+    path("", include("bereal.urls")),
 ]
 
 # /api2/
@@ -28,6 +34,7 @@ urlpatterns = [
     path("send_email_verification/", send_email_verification),
     path("login_with_code/", login_with_code),
     path("tinder/", include(tinderurlpatterns)),
+    path("bereal/", include(berealurlpatterns)),
     path("block_chat/<int:chat_id>/", block_chat),
     path("block_chat_notifications/<int:chat_id>/", block_chat_notifications),
 ]

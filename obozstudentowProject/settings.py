@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "obozstudentow",
     "obozstudentow_async",
+    "bereal",
     "channels",
     "rest_framework",
     "corsheaders",
@@ -226,12 +227,16 @@ REST_FRAMEWORK = {
         "rest_framework.throttling.UserRateThrottle",
     ],
     "DEFAULT_THROTTLE_RATES": {
-        "anon": os.getenv("ANON_THROTTLE_RATE", "10/minute")
-        if os.getenv("ANON_THROTTLE_RATE") != "None"
-        else None,
-        "user": os.getenv("USER_THROTTLE_RATE", "1800/hour")
-        if os.getenv("USER_THROTTLE_RATE") != "None"
-        else None,
+        "anon": (
+            os.getenv("ANON_THROTTLE_RATE", "10/minute")
+            if os.getenv("ANON_THROTTLE_RATE") != "None"
+            else None
+        ),
+        "user": (
+            os.getenv("USER_THROTTLE_RATE", "1800/hour")
+            if os.getenv("USER_THROTTLE_RATE") != "None"
+            else None
+        ),
     },
     "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
 }
