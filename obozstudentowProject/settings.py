@@ -326,7 +326,7 @@ LOGGING = {
 from celery.schedules import crontab
 
 CELERY_BEAT_SCHEDULE = {
-    "plan-campaign-utc-midnight": {
+    "plan-campaign-midnight": {
         "task": "app.tasks.schedule_today_prompt",
         "schedule": crontab(minute=1, hour=0),  # UTC
     },
