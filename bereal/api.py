@@ -17,6 +17,7 @@ from .models import (
 )
 from obozstudentow.models import Setting
 from obozstudentow.api.notifications import send_notification, UserFCMToken
+from datetime import datetime
 
 User = get_user_model()
 
@@ -86,6 +87,9 @@ def get_bereal_status(user=None):
     today_bereal = get_today_bereal()
     # widoczne tylko jeśli wysłane
     visible = today_bereal and today_bereal.is_sent
+    deadline_dt = None
+    if visible and today_bereal and today_bereal.deadline:
+        deadline_dt = datetime.combine(today_bereal.date, today_bereal.deadline)
     return {
         "is_active": bereal_active(),
         "was_today": bool(visible),
@@ -96,7 +100,7 @@ def get_bereal_status(user=None):
                 user=user, bereal_date=today_bereal.date
             ).exists()
         ),
-        "deadline": today_bereal.deadline if visible else None,
+        "deadline": deadline_dt,
     }
 
 
