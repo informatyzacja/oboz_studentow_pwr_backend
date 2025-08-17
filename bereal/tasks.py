@@ -7,6 +7,24 @@ from django.utils import timezone
 import datetime
 
 
+def _get_setting_int(name: str, default: int) -> int:
+    """Fetch integer setting value or return default on any error.
+
+    We import Setting lazily to avoid any potential circular imports at worker startup.
+    """
+    try:
+        from obozstudentow.models import Setting  # local import
+
+        value = (
+            Setting.objects.filter(name=name).values_list("value", flat=True).first()
+        )
+        if value is None:
+            return default
+        return int(value)
+    except Exception:
+        return default
+
+
 @shared_task
 def schedule_today_prompt():
     """Ensure there's a notification object for today and schedule the send task.
@@ -39,22 +57,26 @@ def schedule_today_prompt():
 def _random_window_for_today():
     import random, datetime
 
-    # Random start time between TIME_START and TIME_END
-    TIME_START = 10  # 10:00
-    TIME_END = 22  # 22:00
-    minutes = random.randint(0, (TIME_END - TIME_START) * 60)
+    # Pull configuration from settings (fallback to defaults if missing / invalid)
+    time_start = _get_setting_int("bereal_time_start", 10)  # hour 0-23
+    time_end = _get_setting_int("bereal_time_end", 22)  # hour 1-23
+
+    # Basic validation / normalization
+    if not (0 <= time_start <= 23):
+        time_start = 10
+    if not (0 <= time_end <= 23):
+        time_end = 22
+    if time_end <= time_start:  # fallback to defaults if misconfigured
+        time_start, time_end = 10, 22
+
+    minutes = random.randint(0, (time_end - time_start) * 60)
     base_dt = datetime.datetime.combine(
-        timezone.now().date(), datetime.time(TIME_START, 0)
+        timezone.now().date(), datetime.time(time_start, 0)
     )
     start_dt = base_dt + datetime.timedelta(minutes=minutes)
 
-    # DEBUG - plan in 1 minute
-    start_dt = timezone.now() + datetime.timedelta(minutes=1)
-    # END DEBUG
     # deadline zostanie policzony dopiero przy wysyłaniu (send_daily_prompt)
-    return {
-        "start": start_dt.time(),
-    }
+    return {"start": start_dt.time()}
 
 
 @shared_task(bind=True, max_retries=3, default_retry_delay=60)
@@ -71,7 +93,10 @@ def send_daily_prompt(self, prompt_id):
                     start_dt = timezone.make_aware(
                         start_dt, timezone.get_current_timezone()
                     )
-                deadline_dt = start_dt + datetime.timedelta(minutes=3)
+                deadline_minutes = _get_setting_int("bereal_deadline_minutes", 3)
+                if deadline_minutes < 1:
+                    deadline_minutes = 3
+                deadline_dt = start_dt + datetime.timedelta(minutes=deadline_minutes)
                 p.deadline = deadline_dt.time()
             # tu: pobierz aktywne urządzenia i wyślij batch push (FCM/APNs/WebPush)
             # send_push_to_all(...)
