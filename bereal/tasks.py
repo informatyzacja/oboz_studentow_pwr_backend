@@ -55,7 +55,8 @@ def schedule_today_prompt():
 
 
 def _random_window_for_today():
-    import random, datetime
+    import random
+    import datetime
 
     # Pull configuration from settings (fallback to defaults if missing / invalid)
     time_start = _get_setting_int("bereal_time_start", 10)  # hour 0-23
