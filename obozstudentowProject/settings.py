@@ -274,54 +274,48 @@ if not DEBUG:
 
 LOGGING = {
     "version": 1,
-    "disable_existing_logger": False,
+    "disable_existing_loggers": False,
     "formatters": {
         "verbose": {
             "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
             "style": "{",
         },
         "simple": {
-            "format": "{levelname} {asctime} {message}",
+            "format": "{levelname} {asctime} {module} {message}",
             "style": "{",
         },
     },
     "handlers": {
         "console": {
-            "level": "INFO",
+            "level": "DEBUG",
             "class": "logging.StreamHandler",
             "formatter": "simple",
         },
         "mail_admins": {
             "level": "ERROR",
             "class": "django.utils.log.AdminEmailHandler",
+            "formatter": "simple",
         },
     },
     "loggers": {
         "django": {
             "handlers": ["console"],
-            "level": "INFO",
-            "propagate": False,
         },
         "django.request": {
-            "handlers": ["mail_admins" if not DEBUG else "console"],
+            "handlers": ["mail_admins"],
             "level": "ERROR",
-            "propagate": False,
+            "propagate": True,
         },
-        "django.security": {
-            "handlers": ["mail_admins" if not DEBUG else "console"],
-            "level": "ERROR",
-            "propagate": False,
+        "celery": {
+            "level": "DEBUG",
         },
-        "py.warnings": {
-            "handlers": ["console"],
-        },
-        "django.security.DisallowedHost": {
-            "handlers": ["console"],
-            "propagate": False,
+        "django_celery_beat.schedulers": {
+            "level": "DEBUG",
         },
     },
-    "root": {"level": "INFO"},
+    "root": {"handlers": ["console"], "level": "ERROR"},
 }
+
 
 from celery.schedules import crontab
 
@@ -342,6 +336,8 @@ CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND", "django-db")
 CELERY_CACHE_BACKEND = "django-cache"
 CELERY_RESULT_EXTENDED = True
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+DJANGO_CELERY_BEAT_TZ_AWARE = False
+
 # Celery 5.x -> 6.0 deprecation: broker_connection_retry will no longer control
 # startup retry behavior. Explicitly enable retries on startup to keep current behavior
 # and silence the CPendingDeprecationWarning.
