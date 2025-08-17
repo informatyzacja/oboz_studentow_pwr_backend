@@ -25,7 +25,7 @@ daphne==4.1.2
 defusedxml==0.7.1
 diff-match-patch==20230430
 distlib==0.3.9
-Django==5.1
+Django~=5.1.0
 django-celery-beat==2.8.1
 django-cors-headers==4.3.1
 django-import-export==4.1.1
