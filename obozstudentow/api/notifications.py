@@ -1,8 +1,9 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.contrib.auth.decorators import permission_required
 
 from ..models import UserFCMToken
+
+from celery import shared_task
 
 
 @api_view(["POST"])
@@ -49,6 +50,7 @@ else:
     )
 
 
+@shared_task(max_retries=3, default_retry_delay=30)
 def send_notification(title, body, tokens, link=None):
     message = messaging.MulticastMessage(
         notification=messaging.Notification(title=title, body=body),

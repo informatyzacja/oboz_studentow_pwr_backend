@@ -65,7 +65,7 @@ def send_message_notification(message):
         if message.chat.users.count() > 2:
             group_name = "\nDo grupy " + message.chat.name
 
-        response = send_notification(
+        send_notification.delay(
             f"{message.user.first_name} {message.user.last_name[0]}. " + group_name,
             message.message,
             tokens,

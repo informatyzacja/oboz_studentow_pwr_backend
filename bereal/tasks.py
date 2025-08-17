@@ -5,6 +5,8 @@ from django.db import transaction
 
 from django.utils import timezone
 import datetime
+from obozstudentow.models import UserFCMToken
+from obozstudentow.api.notifications import send_notification
 
 
 def _get_setting_int(name: str, default: int) -> int:
@@ -99,15 +101,21 @@ def send_daily_prompt(self, prompt_id):
                     deadline_minutes = 3
                 deadline_dt = start_dt + datetime.timedelta(minutes=deadline_minutes)
                 p.deadline = deadline_dt.time()
-            # tu: pobierz aktywne urządzenia i wyślij batch push (FCM/APNs/WebPush)
-            # send_push_to_all(...)
+
+            tokens = UserFCMToken.objects.all().values_list("token", flat=True)
+            send_notification.delay(
+                title="It's time to BeerReal!",
+                body="Pora na Twoje codzienne BeerReal!",
+                tokens=tokens,
+                link="/bereal/home/",
+            )
+
             p.is_sent = True
             p.sent_at = timezone.now()
             p.save(update_fields=["is_sent", "sent_at", "deadline"])
             print(f"Wysłano powiadomienie BeReal - {str(p)}")
         except Exception as e:
             self.retry(exc=e)
-            logger.error(f"Nie udało się wysłać powiadomienia BeReal - {str(p)}")
             return f"Nie udało się wysłać powiadomienia BeReal - {str(p)}"
         return f"Wysłano powiadomienie BeReal - {str(p)}"
 

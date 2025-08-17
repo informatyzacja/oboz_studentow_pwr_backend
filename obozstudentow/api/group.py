@@ -308,7 +308,7 @@ def signup_group(request):
             content = f'Grupę "{group.name}" i jej członków możesz zobaczyć w zakładce "Profil"'
             # absolute_url = request.build_absolute_uri("/app/profil")
 
-            response = send_notification(title, content, tokens)
+            send_notification.delay(title, content, tokens)
         except:
             pass
 

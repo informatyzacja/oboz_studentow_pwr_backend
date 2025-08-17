@@ -301,7 +301,7 @@ def report_bereal_post(request, post_id):
         if admin_tokens:
             title = "Nowe zgłoszenie BeReal"
             content = f"Post użytkownika {post.user.first_name} został zgłoszony przez {request.user.first_name}"
-            send_notification(title, content, admin_tokens)
+            send_notification.delay(title, content, admin_tokens)
     except Exception:
         pass
     return Response({"success": True})
