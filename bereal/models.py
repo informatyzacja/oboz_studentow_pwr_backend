@@ -77,17 +77,30 @@ class BerealReport(models.Model):
 
 
 class BerealNotification(models.Model):
-    sent_at = models.DateTimeField(auto_now_add=True)
-    date = models.DateField()
-    deadline = models.DateTimeField()
+    date = models.DateField(db_index=True)
+    start = models.TimeField()
+    # Deadline (koniec okna) jest teraz wyliczany dopiero w momencie wysłania
+    # powiadomienia. Dlatego może być puste do czasu send_daily_prompt.
+    deadline = models.TimeField(null=True, blank=True)
+
+    sent_at = models.DateTimeField(null=True, blank=True)
+    is_sent = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Powiadomienie BeReal"
         verbose_name_plural = "Powiadomienia BeReal"
-        ordering = ["-sent_at"]
+        ordering = ["-date"]
 
     def __str__(self):
-        return f"BeReal {self.date} - {self.sent_at.strftime('%H:%M')}"
+        return f"BeReal {self.date} - {self.start.strftime('%H:%M')}"
 
     def is_active(self):
-        return timezone.now() < self.deadline and self.date == timezone.now().date()
+        """Czy okno BeReal jest aktywne.
+
+        Wymagamy aby powiadomienie zostało wysłane (is_sent True) oraz aby deadline
+        był już znany. Zwraca False jeśli deadline jeszcze nie został ustawiony.
+        """
+        now = timezone.now()
+        if not self.is_sent or not self.deadline:
+            return False
+        return self.date == now.date() and self.start < now.time() < self.deadline
