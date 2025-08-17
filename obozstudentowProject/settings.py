@@ -37,8 +37,8 @@ from django.core.management.utils import get_random_secret_key
 
 SECRET_KEY = get_secret("SECRET_KEY", get_random_secret_key())
 
-ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "admin@localhost")
-ADMINS = [(ADMIN_EMAIL, ADMIN_EMAIL)]
+ADMIN_EMAILS = os.getenv("ADMIN_EMAILS", "admin@localhost").split(",")
+ADMINS = [(email, email) for email in ADMIN_EMAILS]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "true").lower() == "true"
@@ -327,11 +327,11 @@ from celery.schedules import crontab
 
 CELERY_BEAT_SCHEDULE = {
     "plan-campaign-midnight": {
-        "task": "app.tasks.schedule_today_prompt",
+        "task": "bereal.tasks.schedule_today_prompt",
         "schedule": crontab(minute=1, hour=0),  # UTC
     },
     "catch-up": {
-        "task": "app.tasks.catch_up_prompts",
+        "task": "bereal.tasks.catch_up_prompts",
         "schedule": crontab(minute="*/5"),
     },
 }

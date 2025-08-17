@@ -294,9 +294,9 @@ def report_bereal_post(request, post_id):
             .values_list("id", flat=True)
         )
         admin_tokens = list(
-            UserFCMToken.objects.filter(user_id__in=admin_users).values_list(
-                "token", flat=True
-            )
+            UserFCMToken.objects.filter(
+                user__notifications=True, user_id__in=admin_users
+            ).values_list("token", flat=True)
         )
         if admin_tokens:
             title = "Nowe zgłoszenie BeReal"

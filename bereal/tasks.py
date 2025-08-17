@@ -102,7 +102,9 @@ def send_daily_prompt(self, prompt_id):
                 deadline_dt = start_dt + datetime.timedelta(minutes=deadline_minutes)
                 p.deadline = deadline_dt.time()
 
-            tokens = UserFCMToken.objects.all().values_list("token", flat=True)
+            tokens = UserFCMToken.objects.filter(user__notifications=True).values_list(
+                "token", flat=True
+            )
             send_notification.delay(
                 title="It's time to BeerReal!",
                 body="Pora na Twoje codzienne BeerReal!",
