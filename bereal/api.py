@@ -7,6 +7,7 @@ import base64
 from django.core.files.base import ContentFile
 from django.db import transaction
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 
 from .models import (
     BerealPost,
@@ -270,10 +271,32 @@ def report_bereal_post(request, post_id):
         return Response({"error": "Już zgłosiłeś/aś ten post"}, status=400)
     BerealReport.objects.create(reporter=request.user, post=post, reason=reason)
     try:
+        # Użytkownicy uprawnieni do zobaczenia modelu BerealReport w adminie
+        bereal_perms = [
+            "view_berealreport",
+            "change_berealreport",
+            "add_berealreport",
+            "delete_berealreport",
+        ]
+        admin_users = (
+            User.objects.filter(
+                Q(is_superuser=True)
+                | Q(
+                    user_permissions__codename__in=bereal_perms,
+                    user_permissions__content_type__app_label="bereal",
+                )
+                | Q(
+                    groups__permissions__codename__in=bereal_perms,
+                    groups__permissions__content_type__app_label="bereal",
+                )
+            )
+            .distinct()
+            .values_list("id", flat=True)
+        )
         admin_tokens = list(
-            UserFCMToken.objects.filter(
-                user__groups__name__in=["Kadra", "Sztab", "Admin"]
-            ).values_list("token", flat=True)
+            UserFCMToken.objects.filter(user_id__in=admin_users).values_list(
+                "token", flat=True
+            )
         )
         if admin_tokens:
             title = "Nowe zgłoszenie BeReal"
