@@ -69,6 +69,7 @@ def send_message_notification(message):
             f"{message.user.first_name} {message.user.last_name[0]}. " + group_name,
             message.message,
             tokens,
+            f"/czat/{message.chat.id}",
         )
     except Exception as e:
         print(e)

@@ -342,3 +342,7 @@ DJANGO_CELERY_BEAT_TZ_AWARE = False
 # startup retry behavior. Explicitly enable retries on startup to keep current behavior
 # and silence the CPendingDeprecationWarning.
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
+# URLs used in error emails / monitoring; provide sane defaults so attribute errors don't occur
+SITE_URL = os.getenv("SITE_URL", "http://localhost:8000")
+CELERY_FLOWER_URL = os.getenv("CELERY_FLOWER_URL", "http://localhost:5555")
