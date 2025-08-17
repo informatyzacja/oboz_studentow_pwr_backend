@@ -68,6 +68,8 @@ INSTALLED_APPS = [
     "import_export",
     "orderable",
     "rest_framework_simplejwt",
+    "django_celery_beat",
+    "django_celery_results",
 ]
 
 if DEBUG:
@@ -189,7 +191,7 @@ LANGUAGE_CODE = "pl"
 
 TIME_ZONE = "Europe/Warsaw"
 
-USE_I18N = True
+USE_I18N = False
 
 USE_TZ = False
 
@@ -320,3 +322,27 @@ LOGGING = {
     },
     "root": {"level": "INFO"},
 }
+
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    "plan-campaign-midnight": {
+        "task": "app.tasks.schedule_today_prompt",
+        "schedule": crontab(minute=1, hour=0),  # UTC
+    },
+    "catch-up": {
+        "task": "app.tasks.catch_up_prompts",
+        "schedule": crontab(minute="*/5"),
+    },
+}
+
+
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER", "redis://127.0.0.1:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND", "django-db")
+CELERY_CACHE_BACKEND = "django-cache"
+CELERY_RESULT_EXTENDED = True
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+# Celery 5.x -> 6.0 deprecation: broker_connection_retry will no longer control
+# startup retry behavior. Explicitly enable retries on startup to keep current behavior
+# and silence the CPendingDeprecationWarning.
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True

@@ -7,6 +7,7 @@ import base64
 from django.core.files.base import ContentFile
 from django.db import transaction
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 
 from .models import (
     BerealPost,
@@ -83,17 +84,19 @@ def get_today_bereal():
 
 def get_bereal_status(user=None):
     today_bereal = get_today_bereal()
+    # widoczne tylko jeśli wysłane
+    visible = today_bereal and today_bereal.is_sent
     return {
         "is_active": bereal_active(),
-        "was_today": today_bereal is not None,
+        "was_today": bool(visible),
         "can_post": bool(
-            today_bereal
+            visible
             and user
             and not BerealPost.objects.filter(
                 user=user, bereal_date=today_bereal.date
             ).exists()
         ),
-        "deadline": today_bereal.deadline if today_bereal else None,
+        "deadline": today_bereal.deadline if visible else None,
     }
 
 
@@ -102,11 +105,18 @@ def bereal_home(request):
     page = int(request.GET.get("page", 1))
     page_size = int(request.GET.get("page_size", 10))
 
-    posts = (
+    # Posty dnia również powinny stać się widoczne dopiero po wysłaniu powiadomienia.
+    today = timezone.now().date()
+    today_bereal = get_today_bereal()
+    posts_qs = (
         BerealPost.objects.select_related("user")
         .prefetch_related("likes")
         .order_by("-created_at")
     )
+    if not (today_bereal and today_bereal.is_sent):
+        # ukryj dzisiejsze posty, zwracaj tylko wcześniejsze
+        posts_qs = posts_qs.exclude(bereal_date=today)
+    posts = posts_qs
     paginator = Paginator(posts, page_size)
     page_obj = paginator.get_page(page)
     serializer = BeerealPostSerializer(
@@ -176,7 +186,7 @@ def upload_bereal_post(request):
     if not bereal_active():
         return Response({"error": "BeReal jest obecnie wyłączony"}, status=400)
     today_bereal = get_today_bereal()
-    if not today_bereal:
+    if not today_bereal or not today_bereal.is_sent:
         return Response(
             {"error": "Dziś nie było jeszcze powiadomienia BeReal"}, status=400
         )
@@ -261,10 +271,32 @@ def report_bereal_post(request, post_id):
         return Response({"error": "Już zgłosiłeś/aś ten post"}, status=400)
     BerealReport.objects.create(reporter=request.user, post=post, reason=reason)
     try:
+        # Użytkownicy uprawnieni do zobaczenia modelu BerealReport w adminie
+        bereal_perms = [
+            "view_berealreport",
+            "change_berealreport",
+            "add_berealreport",
+            "delete_berealreport",
+        ]
+        admin_users = (
+            User.objects.filter(
+                Q(is_superuser=True)
+                | Q(
+                    user_permissions__codename__in=bereal_perms,
+                    user_permissions__content_type__app_label="bereal",
+                )
+                | Q(
+                    groups__permissions__codename__in=bereal_perms,
+                    groups__permissions__content_type__app_label="bereal",
+                )
+            )
+            .distinct()
+            .values_list("id", flat=True)
+        )
         admin_tokens = list(
-            UserFCMToken.objects.filter(
-                user__groups__name__in=["Kadra", "Sztab", "Admin"]
-            ).values_list("token", flat=True)
+            UserFCMToken.objects.filter(user_id__in=admin_users).values_list(
+                "token", flat=True
+            )
         )
         if admin_tokens:
             title = "Nowe zgłoszenie BeReal"
