@@ -64,6 +64,7 @@ def send_notification(title, body, tokens, link=None):
                 aps=messaging.Aps(sound="default"),
             ),
         ),
+        data={"link": link} if link else None,
     )
     response = messaging.send_each_for_multicast(message)
     info = f"Wysłano powiadomienie do {response.success_count} użytkowników, {response.failure_count} niepowodzeń"
