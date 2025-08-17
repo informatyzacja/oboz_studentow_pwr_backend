@@ -52,6 +52,14 @@ else:
 
 @shared_task(max_retries=3, default_retry_delay=30)
 def send_notification(title, body, tokens, link=None):
+    # Guard: if no tokens, avoid calling Firebase (would raise max_workers must be > 0)
+    if not tokens:
+        return "Brak tokenów - pomijam wysyłkę powiadomienia"
+
+    # Guard: Firebase not initialized (missing credentials file)
+    if not firebase_admin._apps:  # pragma: no cover - defensive
+        return "Firebase nie został zainicjalizowany - pomijam wysyłkę"
+
     message = messaging.MulticastMessage(
         notification=messaging.Notification(title=title, body=body),
         tokens=tokens,
