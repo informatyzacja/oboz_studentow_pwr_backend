@@ -50,10 +50,11 @@ def tinder_active():
 
 @api_view(["POST"])
 def uploadProfilePhoto(request):
-    if not tinder_register_active():
-        return Response(
-            {"error": "Rejestracja na Tinder jest obecnie wyłączona"}, status=400
-        )
+    # Komentuję to bo ten endpoint jest też używany do dodawania zdjęć profilowych na BeerReal
+    # if not tinder_register_active():
+    #     return Response(
+    #         {"error": "Rejestracja na Tinder jest obecnie wyłączona"}, status=400
+    #     )
 
     profile = TinderProfile.objects.get_or_create(user=request.user)[0]
 
