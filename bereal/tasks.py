@@ -37,6 +37,9 @@ def schedule_today_prompt():
     we now combine today's date with the stored start TimeField to build an aware
     datetime for the ETA.
     """
+    if not _is_bereal_active():
+        # BeReal jest wyłączony – nie planujemy dzisiejszego promptu
+        return "BeReal disabled", False
     with transaction.atomic():
         now = timezone.now()
         today = now.date()
@@ -82,8 +85,31 @@ def _random_window_for_today():
     return {"start": start_dt.time()}
 
 
+def _is_bereal_active() -> bool:
+    """Sprawdza czy BeReal jest aktywny bazując na ustawieniu 'bereal_active'.
+
+    Nie importujemy funkcji z api, aby uniknąć potencjalnych cyklicznych importów –
+    odczytujemy Setting bezpośrednio tutaj (lazy import jak w _get_setting_int).
+    """
+    try:
+        from obozstudentow.models import Setting  # lokalny import
+
+        value = (
+            Setting.objects.filter(name="bereal_active")
+            .values_list("value", flat=True)
+            .first()
+        )
+        if value is None:
+            return False
+        return str(value).lower() == "true"
+    except Exception:
+        return False
+
+
 @shared_task(bind=True, max_retries=3, default_retry_delay=60)
 def send_daily_prompt(self, prompt_id):
+    if not _is_bereal_active():
+        return "BeReal disabled – skipping send"
     with transaction.atomic():
         p = BerealNotification.objects.select_for_update().get(id=prompt_id)
         if p.is_sent:
@@ -132,6 +158,8 @@ def catch_up_prompts():
     rows where start <= now <= deadline and is_sent is False and enqueue the send task.
     Limited batch size to 50 just like previous implementation to avoid stampede.
     """
+    if not _is_bereal_active():
+        return "BeReal disabled – nothing to catch up"
     now = timezone.now()
     current_time = now.time()
     qs = BerealNotification.objects.filter(
