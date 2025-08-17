@@ -66,4 +66,5 @@ def send_notification(title, body, tokens, link=None):
         ),
     )
     response = messaging.send_each_for_multicast(message)
-    return response
+    info = f"Wysłano powiadomienie do {response.success_count} użytkowników, {response.failure_count} niepowodzeń"
+    return info
