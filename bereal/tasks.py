@@ -106,7 +106,7 @@ def send_daily_prompt(self, prompt_id):
             print(f"Wysłano powiadomienie BeReal - {str(p)}")
         except Exception as e:
             self.retry(exc=e)
-            print(f"Nie udało się wysłać powiadomienia BeReal - {str(p)}")
+            logger.error(f"Nie udało się wysłać powiadomienia BeReal - {str(p)}")
             return f"Nie udało się wysłać powiadomienia BeReal - {str(p)}"
         return f"Wysłano powiadomienie BeReal - {str(p)}"
 
