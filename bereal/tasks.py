@@ -116,17 +116,16 @@ def send_daily_prompt(self, prompt_id):
             return
         try:
             # Ustal deadline dopiero teraz (np. 3 minuty od start), jeśli brak.
-            if not p.deadline:
-                start_dt = datetime.datetime.combine(p.date, p.start)
-                if timezone.is_naive(start_dt):
-                    start_dt = timezone.make_aware(
-                        start_dt, timezone.get_current_timezone()
-                    )
-                deadline_minutes = _get_setting_int("bereal_deadline_minutes", 3)
-                if deadline_minutes < 1:
-                    deadline_minutes = 3
-                deadline_dt = start_dt + datetime.timedelta(minutes=deadline_minutes)
-                p.deadline = deadline_dt.time()
+            start_dt = datetime.datetime.combine(p.date, p.start)
+            if timezone.is_naive(start_dt):
+                start_dt = timezone.make_aware(
+                    start_dt, timezone.get_current_timezone()
+                )
+            deadline_minutes = _get_setting_int("bereal_deadline_minutes", 3)
+            if deadline_minutes < 1:
+                deadline_minutes = 3
+            deadline_dt = start_dt + datetime.timedelta(minutes=deadline_minutes)
+            p.deadline = deadline_dt.time()
 
             tokens = list(
                 UserFCMToken.objects.filter(user__notifications=True).values_list(
@@ -135,7 +134,7 @@ def send_daily_prompt(self, prompt_id):
             )
             send_notification.delay(
                 title="It's time to BeerReal!",
-                body="Pora na Twoje codzienne BeerReal!",
+                body=f"Pora na Twoje codzienne BeerReal! Masz {deadline_minutes} minuty na przesłanie zdjęcia!",
                 tokens=tokens,
                 link="/bereal/home/",
             )

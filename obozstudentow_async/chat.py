@@ -66,7 +66,8 @@ def send_message_notification(message):
             group_name = "\nDo grupy " + message.chat.name
 
         send_notification.delay(
-            f"{message.user.first_name} {message.user.last_name[0]}. " + group_name,
+            f"Wiadomość od {message.user.first_name} {message.user.last_name[0]}. "
+            + group_name,
             message.message,
             tokens,
             f"/czat/{message.chat.id}",
