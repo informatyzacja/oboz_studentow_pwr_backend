@@ -15,8 +15,10 @@ def send_workshop_notifications():
         end__gt=timezone.now(),
     )
     for workshop in workshops:
-        title = f"Przypomnienie o: {workshop.name}"
-        minutes_until_start = (workshop.start - timezone.now()).total_seconds() // 60
+        title = workshop.name
+        minutes_until_start = int(
+            (workshop.start - timezone.now()).total_seconds() / 60
+        )
         if minutes_until_start < 0:
             continue
         message = f"Warsztaty rozpoczynają się za {minutes_until_start} minut."
