@@ -326,7 +326,11 @@ CELERY_BEAT_SCHEDULE = {
     },
     "catch-up": {
         "task": "bereal.tasks.catch_up_prompts",
-        "schedule": crontab(minute="*/5"),
+        "schedule": crontab(minute="*/10"),
+    },
+    "workshop-notifications": {
+        "task": "obozstudentow.tasks.send_workshop_notifications",
+        "schedule": crontab(minute="*/15"),
     },
 }
 
