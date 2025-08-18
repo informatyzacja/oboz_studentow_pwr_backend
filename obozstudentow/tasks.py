@@ -11,18 +11,18 @@ def send_workshop_notifications():
     NOTIFICATION_MINUTES = 15
     workshops = Workshop.objects.filter(
         notifications_sent=False,
-        start__lte=timezone.now() - timedelta(minutes=NOTIFICATION_MINUTES),
+        start__lte=timezone.now() + timedelta(minutes=NOTIFICATION_MINUTES),
         end__gt=timezone.now(),
     )
     for workshop in workshops:
         title = f"Przypomnienie o: {workshop.name}"
-        minutes_until_start = (workshop.start - timezone.now()).total_seconds() / 60
+        minutes_until_start = (workshop.start - timezone.now()).total_seconds() // 60
         if minutes_until_start < 0:
             continue
-        message = f"Warsztaty rozpoczynają się za {minutes_until_start} minut.\n"
+        message = f"Warsztaty rozpoczynają się za {minutes_until_start} minut."
 
         if workshop.location:
-            message += f"Lokalizacja: {workshop.location}\n"
+            message += f"\nLokalizacja: {workshop.location}"
 
         tokens = list(
             UserFCMToken.objects.filter(
