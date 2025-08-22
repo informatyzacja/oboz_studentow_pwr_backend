@@ -1,5 +1,6 @@
 from django.db import models
 from django_resized import ResizedImageField
+from datetime import datetime, timedelta
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
@@ -79,8 +80,6 @@ class BerealReport(models.Model):
 class BerealNotification(models.Model):
     date = models.DateField(db_index=True, unique=True)
     start = models.TimeField()
-    # Deadline (koniec okna) jest teraz wyliczany dopiero w momencie wysłania
-    # powiadomienia. Dlatego może być puste do czasu send_daily_prompt.
     deadline = models.TimeField(null=True, blank=True)
 
     sent_at = models.DateTimeField(null=True, blank=True)
@@ -94,13 +93,26 @@ class BerealNotification(models.Model):
     def __str__(self):
         return f"BeReal {self.date} - {self.start.strftime('%H:%M')}"
 
-    def is_active(self):
-        """Czy okno BeReal jest aktywne.
+    @property
+    def start_at(self):
+        """Pełna data+czas startu powiadomienia"""
+        return datetime.combine(self.date, self.start).astimezone(timezone.get_current_timezone())
 
-        Wymagamy aby powiadomienie zostało wysłane (is_sent True) oraz aby deadline
-        był już znany. Zwraca False jeśli deadline jeszcze nie został ustawiony.
-        """
+    @property
+    def deadline_at(self):
+        """Pełna data+czas deadline (uwzględnia przejście po północy)"""
+        if not self.deadline:
+            return None
+        dt = datetime.combine(self.date, self.deadline)
+        dt = timezone.make_aware(dt, timezone.get_current_timezone())
+        # Jeśli deadline < start → znaczy, że okno przechodzi po północy
+        if self.deadline <= self.start:
+            dt += timedelta(days=1)
+        return dt
+
+    def is_active(self):
+        """Czy okno BeReal jest aktywne między start a deadline"""
         now = timezone.now()
-        if not self.is_sent or not self.deadline:
+        if not self.is_sent or not self.deadline_at:
             return False
-        return self.date == now.date() and self.start < now.time() < self.deadline
+        return self.start_at <= now <= self.deadline_at

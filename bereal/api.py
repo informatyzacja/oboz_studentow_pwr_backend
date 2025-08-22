@@ -83,26 +83,65 @@ def get_today_bereal():
     return BerealNotification.objects.filter(date=today).first()
 
 
+def get_last_sent_bereal():
+    return BerealNotification.objects.filter(is_sent=True).order_by("-date").first()
+
 def get_bereal_status(user=None):
-    today_bereal = get_today_bereal()
-    # widoczne tylko jeśli wysłane
-    visible = today_bereal and today_bereal.is_sent
+    last_sent = get_last_sent_bereal()
+    visible = last_sent is not None
     deadline_dt = None
-    if visible and today_bereal and today_bereal.deadline:
-        deadline_dt = datetime.combine(today_bereal.date, today_bereal.deadline)
+    if visible and last_sent.deadline:
+         deadline_dt = last_sent.deadline_at
+    can_post = (
+        visible
+        and user
+        and not BerealPost.objects.filter(user=user, bereal_date=last_sent.date).exists()
+    )
     return {
         "is_active": bereal_active(),
         "was_today": bool(visible),
-        "can_post": bool(
-            visible
-            and user
-            and not BerealPost.objects.filter(
-                user=user, bereal_date=today_bereal.date
-            ).exists()
-        ),
+        "can_post": can_post,
         "deadline": deadline_dt,
     }
 
+@api_view(["POST"])
+def upload_bereal_post(request):
+    if not bereal_active():
+        return Response({"error": "BeReal jest obecnie wyłączony"}, status=400)
+    last_sent = get_last_sent_bereal()
+    if not last_sent:
+        return Response({"error": "Nie było jeszcze powiadomienia BeReal"}, status=400)
+    if BerealPost.objects.filter(user=request.user, bereal_date=last_sent.date).exists():
+        return Response(
+            {"error": "Już przesłałeś/aś zdjęcie na ten dzień", "redirect": True}, status=400
+        )
+    photo1_base64 = request.data.get("photo1")
+    photo2_base64 = request.data.get("photo2")
+    if not photo1_base64 or not photo2_base64:
+        return Response({"error": "Brak zdjęcia"}, status=400)
+    try:
+        with transaction.atomic():
+            photo1 = ContentFile(
+                base64.b64decode(photo1_base64),
+                f"bereal_photo1_{request.user.id}_{last_sent.date}.jpeg",
+            )
+            photo2 = ContentFile(
+                base64.b64decode(photo2_base64),
+                f"bereal_photo2_{request.user.id}_{last_sent.date}.jpeg",
+            )
+            post = BerealPost.objects.create(
+                user=request.user,
+                bereal_date=last_sent.date,
+                is_late=not last_sent.is_active(),
+                photo1=photo1,
+                photo2=photo2,
+            )
+            serializer = BeerealPostSerializer(post, context={"request": request})
+            return Response({"success": True, "post": serializer.data})
+    except Exception as e:
+        return Response(
+            {"error": f"Błąd podczas przesyłania zdjęcia: {str(e)}"}, status=400
+        )
 
 @api_view(["GET"])
 def bereal_home(request):
@@ -183,48 +222,6 @@ def bereal_post_detail(request, post_id):
         return Response({"error": "Post nie istnieje"}, status=404)
     serializer = BeerealPostSerializer(post, context={"request": request})
     return Response({"success": True, "post": serializer.data})
-
-
-@api_view(["POST"])
-def upload_bereal_post(request):
-    if not bereal_active():
-        return Response({"error": "BeReal jest obecnie wyłączony"}, status=400)
-    today_bereal = get_today_bereal()
-    if not today_bereal or not today_bereal.is_sent:
-        return Response(
-            {"error": "Dziś nie było jeszcze powiadomienia BeReal"}, status=400
-        )
-    if BerealPost.objects.filter(
-        user=request.user, bereal_date=today_bereal.date
-    ).exists():
-        return Response({"error": "Już przesłałeś/aś zdjęcie na dzisiaj"}, status=400)
-    photo1_base64 = request.data.get("photo1")
-    photo2_base64 = request.data.get("photo2")
-    if not photo1_base64 or not photo2_base64:
-        return Response({"error": "Brak zdjęcia"}, status=400)
-    try:
-        with transaction.atomic():
-            photo1 = ContentFile(
-                base64.b64decode(photo1_base64),
-                f"bereal_photo1_{request.user.id}_{today_bereal.date}.jpeg",
-            )
-            photo2 = ContentFile(
-                base64.b64decode(photo2_base64),
-                f"bereal_photo2_{request.user.id}_{today_bereal.date}.jpeg",
-            )
-            post = BerealPost.objects.create(
-                user=request.user,
-                bereal_date=today_bereal.date,
-                is_late=not today_bereal.is_active(),
-                photo1=photo1,
-                photo2=photo2,
-            )
-            serializer = BeerealPostSerializer(post, context={"request": request})
-            return Response({"success": True, "post": serializer.data})
-    except Exception as e:
-        return Response(
-            {"error": f"Błąd podczas przesyłania zdjęcia: {str(e)}"}, status=400
-        )
 
 
 @api_view(["DELETE"])
