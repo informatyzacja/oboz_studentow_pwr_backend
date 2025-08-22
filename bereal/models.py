@@ -96,7 +96,9 @@ class BerealNotification(models.Model):
     @property
     def start_at(self):
         """Pełna data+czas startu powiadomienia"""
-        return datetime.combine(self.date, self.start).astimezone(timezone.get_current_timezone())
+        return datetime.combine(self.date, self.start).astimezone(
+            timezone.get_current_timezone()
+        )
 
     @property
     def deadline_at(self):
