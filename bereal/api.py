@@ -86,16 +86,19 @@ def get_today_bereal():
 def get_last_sent_bereal():
     return BerealNotification.objects.filter(is_sent=True).order_by("-date").first()
 
+
 def get_bereal_status(user=None):
     last_sent = get_last_sent_bereal()
     visible = last_sent is not None
     deadline_dt = None
     if visible and last_sent.deadline:
-         deadline_dt = last_sent.deadline_at
+        deadline_dt = last_sent.deadline_at
     can_post = (
         visible
         and user
-        and not BerealPost.objects.filter(user=user, bereal_date=last_sent.date).exists()
+        and not BerealPost.objects.filter(
+            user=user, bereal_date=last_sent.date
+        ).exists()
     )
     return {
         "is_active": bereal_active(),
@@ -104,6 +107,7 @@ def get_bereal_status(user=None):
         "deadline": deadline_dt,
     }
 
+
 @api_view(["POST"])
 def upload_bereal_post(request):
     if not bereal_active():
@@ -111,9 +115,12 @@ def upload_bereal_post(request):
     last_sent = get_last_sent_bereal()
     if not last_sent:
         return Response({"error": "Nie było jeszcze powiadomienia BeReal"}, status=400)
-    if BerealPost.objects.filter(user=request.user, bereal_date=last_sent.date).exists():
+    if BerealPost.objects.filter(
+        user=request.user, bereal_date=last_sent.date
+    ).exists():
         return Response(
-            {"error": "Już przesłałeś/aś zdjęcie na ten dzień", "redirect": True}, status=400
+            {"error": "Już przesłałeś/aś zdjęcie na ten dzień", "redirect": True},
+            status=400,
         )
     photo1_base64 = request.data.get("photo1")
     photo2_base64 = request.data.get("photo2")
@@ -142,6 +149,7 @@ def upload_bereal_post(request):
         return Response(
             {"error": f"Błąd podczas przesyłania zdjęcia: {str(e)}"}, status=400
         )
+
 
 @api_view(["GET"])
 def bereal_home(request):
