@@ -15,6 +15,7 @@ class Workshop(models.Model):
     photo = ResizedImageField(upload_to="workshop", blank=True)
     userLimit = models.IntegerField()
     itemsToTake = models.TextField(blank=True, null=True)
+    notifications_sent = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Warsztat"

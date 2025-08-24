@@ -305,10 +305,9 @@ def signup_group(request):
             )
 
             title = f"Zostałeś/aś zapisany/a na grę nocną."
-            content = f'Grupę "{group.name}" i jej członków możesz zobaczyć w zakładce "Profil"'
-            # absolute_url = request.build_absolute_uri("/app/profil")
+            content = f'Grupę "{group.name}" i jej członków możesz zobaczyć klikając w to powiadomienie lub w zakładce "Profil"'
 
-            response = send_notification(title, content, tokens)
+            send_notification.delay(title, content, tokens, f"/moja-grupa/{group.id}")
         except:
             pass
 

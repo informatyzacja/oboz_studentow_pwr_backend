@@ -22,7 +22,7 @@ class MessageSerializer(serializers.ModelSerializer):
         return (
             obj.user.first_name
             + " "
-            + obj.user.last_name[0]
+            + obj.user.last_name[:1]
             + "."
             + (" (" + obj.user.title + ")" if obj.user.title else "")
         )

@@ -10,6 +10,8 @@ from django.utils import timezone
 from obozstudentow.models import Setting, User
 from tinder.models import TinderProfile, TinderAction
 from obozstudentow_async.models import Chat
+from obozstudentow.api.notifications import send_notification, UserFCMToken
+import random
 
 
 def tinder_register_active():
@@ -50,10 +52,11 @@ def tinder_active():
 
 @api_view(["POST"])
 def uploadProfilePhoto(request):
-    if not tinder_register_active():
-        return Response(
-            {"error": "Rejestracja na Tinder jest obecnie wyłączona"}, status=400
-        )
+    # Komentuję to bo ten endpoint jest też używany do dodawania zdjęć profilowych na BeerReal
+    # if not tinder_register_active():
+    #     return Response(
+    #         {"error": "Rejestracja na Tinder jest obecnie wyłączona"}, status=400
+    #     )
 
     profile = TinderProfile.objects.get_or_create(user=request.user)[0]
 
@@ -203,6 +206,28 @@ def tinderAction(request):
         if not chat:
             chat = Chat.objects.create(name=f"tinder ({user}, {target})")
             chat.users.add(user, target)
+
+        if target.notifications:
+            tokens = list(
+                UserFCMToken.objects.filter(
+                    user=target, user__notifications=True
+                ).values_list("token", flat=True)
+            )
+            body_templates = [
+                "Masz nowy match z {name}!",
+                "Match! Ty i {name} polubiliście się.",
+                "🔥 Iskra jest – rozpocznij rozmowę z {name}.",
+                "To jest match! Przywitaj się z {name}.",
+                "Wpadliście sobie w oko: Ty i {name}.",
+            ]
+            body = random.choice(body_templates).format(name=user.first_name)
+            send_notification.delay(
+                "It's a match!",
+                body,
+                tokens,
+                link=f"/czat/{chat.id}",
+            )
+
     return Response(
         {"success": True, "match": match, "chat_id": chat.id if match else None}
     )

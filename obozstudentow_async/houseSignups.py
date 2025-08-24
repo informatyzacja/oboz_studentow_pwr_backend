@@ -1,22 +1,8 @@
-import json
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
-
-from asgiref.sync import sync_to_async
 
 import django
 
 django.setup()
-
-from obozstudentow.models import User, UserFCMToken
-from obozstudentow.api.notifications import send_notification
-
-from channels.db import database_sync_to_async
-
-from django.contrib.auth.models import AnonymousUser
-
-from django.utils import timezone
-
-from .models import Message
 
 
 class HouseSignupsConsumer(AsyncJsonWebsocketConsumer):
