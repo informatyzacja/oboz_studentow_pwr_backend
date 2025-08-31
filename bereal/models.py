@@ -93,28 +93,13 @@ class BerealNotification(models.Model):
     def __str__(self):
         return f"BeReal {self.date} - {self.start.strftime('%H:%M')}"
 
-    @property
-    def start_at(self):
-        """Pełna data+czas startu powiadomienia"""
-        return datetime.combine(self.date, self.start).astimezone(
-            timezone.get_current_timezone()
-        )
-
-    @property
-    def deadline_at(self):
-        """Pełna data+czas deadline (uwzględnia przejście po północy)"""
-        if not self.deadline:
-            return None
-        dt = datetime.combine(self.date, self.deadline)
-        dt = timezone.make_aware(dt, timezone.get_current_timezone())
-        # Jeśli deadline < start → znaczy, że okno przechodzi po północy
-        if self.deadline <= self.start:
-            dt += timedelta(days=1)
-        return dt
-
     def is_active(self):
-        """Czy okno BeReal jest aktywne między start a deadline"""
+        """Czy okno BeReal jest aktywne.
+
+        Wymagamy aby powiadomienie zostało wysłane (is_sent True) oraz aby deadline
+        był już znany. Zwraca False jeśli deadline jeszcze nie został ustawiony.
+        """
         now = timezone.now()
-        if not self.is_sent or not self.deadline_at:
+        if not self.is_sent or not self.deadline:
             return False
-        return self.start_at <= now <= self.deadline_at
+        return self.date == now.date() and self.start < now.time() < self.deadline
