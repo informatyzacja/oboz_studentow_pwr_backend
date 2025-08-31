@@ -5,6 +5,8 @@ from django.db import transaction
 
 from django.utils import timezone
 import datetime
+from obozstudentow.models import UserFCMToken
+from obozstudentow.api.notifications import send_notification
 
 
 def _get_setting_int(name: str, default: int) -> int:
@@ -35,6 +37,9 @@ def schedule_today_prompt():
     we now combine today's date with the stored start TimeField to build an aware
     datetime for the ETA.
     """
+    if not _is_bereal_active():
+        # BeReal jest wyłączony – nie planujemy dzisiejszego promptu
+        return "BeReal disabled", False
     with transaction.atomic():
         now = timezone.now()
         today = now.date()
@@ -80,34 +85,66 @@ def _random_window_for_today():
     return {"start": start_dt.time()}
 
 
+def _is_bereal_active() -> bool:
+    """Sprawdza czy BeReal jest aktywny bazując na ustawieniu 'bereal_active'.
+
+    Nie importujemy funkcji z api, aby uniknąć potencjalnych cyklicznych importów –
+    odczytujemy Setting bezpośrednio tutaj (lazy import jak w _get_setting_int).
+    """
+    try:
+        from obozstudentow.models import Setting  # lokalny import
+
+        value = (
+            Setting.objects.filter(name="bereal_active")
+            .values_list("value", flat=True)
+            .first()
+        )
+        if value is None:
+            return False
+        return str(value).lower() == "true"
+    except Exception:
+        return False
+
+
 @shared_task(bind=True, max_retries=3, default_retry_delay=60)
 def send_daily_prompt(self, prompt_id):
+    if not _is_bereal_active():
+        return "BeReal disabled – skipping send"
     with transaction.atomic():
         p = BerealNotification.objects.select_for_update().get(id=prompt_id)
         if p.is_sent:
             return
         try:
             # Ustal deadline dopiero teraz (np. 3 minuty od start), jeśli brak.
-            if not p.deadline:
-                start_dt = datetime.datetime.combine(p.date, p.start)
-                if timezone.is_naive(start_dt):
-                    start_dt = timezone.make_aware(
-                        start_dt, timezone.get_current_timezone()
-                    )
-                deadline_minutes = _get_setting_int("bereal_deadline_minutes", 3)
-                if deadline_minutes < 1:
-                    deadline_minutes = 3
-                deadline_dt = start_dt + datetime.timedelta(minutes=deadline_minutes)
-                p.deadline = deadline_dt.time()
-            # tu: pobierz aktywne urządzenia i wyślij batch push (FCM/APNs/WebPush)
-            # send_push_to_all(...)
+            start_dt = datetime.datetime.combine(p.date, p.start)
+            if timezone.is_naive(start_dt):
+                start_dt = timezone.make_aware(
+                    start_dt, timezone.get_current_timezone()
+                )
+            deadline_minutes = _get_setting_int("bereal_deadline_minutes", 3)
+            if deadline_minutes < 1:
+                deadline_minutes = 3
+            deadline_dt = start_dt + datetime.timedelta(minutes=deadline_minutes)
+            p.deadline = deadline_dt.time()
+
+            tokens = list(
+                UserFCMToken.objects.filter(user__notifications=True).values_list(
+                    "token", flat=True
+                )
+            )
+            send_notification.delay(
+                title="It's time to BeerReal!",
+                body=f"Pora na Twoje codzienne BeerReal! Masz {deadline_minutes} minuty na przesłanie zdjęcia!",
+                tokens=tokens,
+                link="/bereal/home/",
+            )
+
             p.is_sent = True
             p.sent_at = timezone.now()
             p.save(update_fields=["is_sent", "sent_at", "deadline"])
             print(f"Wysłano powiadomienie BeReal - {str(p)}")
         except Exception as e:
             self.retry(exc=e)
-            logger.error(f"Nie udało się wysłać powiadomienia BeReal - {str(p)}")
             return f"Nie udało się wysłać powiadomienia BeReal - {str(p)}"
         return f"Wysłano powiadomienie BeReal - {str(p)}"
 
@@ -120,6 +157,8 @@ def catch_up_prompts():
     rows where start <= now <= deadline and is_sent is False and enqueue the send task.
     Limited batch size to 50 just like previous implementation to avoid stampede.
     """
+    if not _is_bereal_active():
+        return "BeReal disabled – nothing to catch up"
     now = timezone.now()
     current_time = now.time()
     qs = BerealNotification.objects.filter(

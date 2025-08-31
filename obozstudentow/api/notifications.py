@@ -1,8 +1,9 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.contrib.auth.decorators import permission_required
 
 from ..models import UserFCMToken
+
+from celery import shared_task
 
 
 @api_view(["POST"])
@@ -49,7 +50,16 @@ else:
     )
 
 
+@shared_task(max_retries=3, default_retry_delay=30)
 def send_notification(title, body, tokens, link=None):
+    # Guard: if no tokens, avoid calling Firebase (would raise max_workers must be > 0)
+    if not tokens:
+        return "Brak tokenów - pomijam wysyłkę powiadomienia"
+
+    # Guard: Firebase not initialized (missing credentials file)
+    if not firebase_admin._apps:  # pragma: no cover - defensive
+        return "Firebase nie został zainicjalizowany - pomijam wysyłkę"
+
     message = messaging.MulticastMessage(
         notification=messaging.Notification(title=title, body=body),
         tokens=tokens,
@@ -62,6 +72,8 @@ def send_notification(title, body, tokens, link=None):
                 aps=messaging.Aps(sound="default"),
             ),
         ),
+        data={"link": link} if link else None,
     )
     response = messaging.send_each_for_multicast(message)
-    return response
+    info = f"Wysłano powiadomienie do {response.success_count} użytkowników, {response.failure_count} niepowodzeń"
+    return info

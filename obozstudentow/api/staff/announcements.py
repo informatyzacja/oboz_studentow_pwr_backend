@@ -64,9 +64,8 @@ def add_announcement(request):
             )
 
         if tokens:
-            response = send_notification(title, content, tokens)
-            info = f"Wysłano powiadomienie do {response.success_count} użytkowników"
-            # , {response.failure_count} niepowodzeń'
+            send_notification.delay(title, content, tokens, "/")
+            info = f"Wysłano powiadomienie"
 
     return Response({"success": True, "info": info})
 

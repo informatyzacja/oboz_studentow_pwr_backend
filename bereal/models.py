@@ -77,7 +77,7 @@ class BerealReport(models.Model):
 
 
 class BerealNotification(models.Model):
-    date = models.DateField(db_index=True)
+    date = models.DateField(db_index=True, unique=True)
     start = models.TimeField()
     # Deadline (koniec okna) jest teraz wyliczany dopiero w momencie wysłania
     # powiadomienia. Dlatego może być puste do czasu send_daily_prompt.
