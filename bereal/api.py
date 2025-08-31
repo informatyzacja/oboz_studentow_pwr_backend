@@ -24,7 +24,9 @@ User = get_user_model()
 
 class BeerealPostSerializer(serializers.ModelSerializer):
     user_name = serializers.CharField(source="user.first_name", read_only=True)
-    user_photo = serializers.ImageField(source="user.tinderprofile.photo", read_only=True)
+    user_photo = serializers.ImageField(
+        source="user.tinderprofile.photo", read_only=True
+    )
     likes_count = serializers.SerializerMethodField()
     is_liked_by_user = serializers.SerializerMethodField()
     is_post_owner = serializers.SerializerMethodField()
@@ -67,6 +69,7 @@ class BeerealLikeSerializer(serializers.ModelSerializer):
         model = BerealLike
         fields = ["id", "user", "user_name", "created_at"]
 
+
 def bereal_active():
     try:
         setting = Setting.objects.get(name="bereal_active")
@@ -107,7 +110,9 @@ def get_bereal_status(user=None):
         try:
             dt_deadline = datetime.combine(last_sent.date, last_sent.deadline)
             if timezone.is_naive(dt_deadline):
-                dt_deadline = timezone.make_aware(dt_deadline, timezone.get_current_timezone())
+                dt_deadline = timezone.make_aware(
+                    dt_deadline, timezone.get_current_timezone()
+                )
             deadline_iso = dt_deadline.isoformat()
             now = timezone.now()
             # Okno aktywne: powiadomienie wysłane, deadline ustawiony, teraz < deadline (tego samego dnia)
@@ -125,7 +130,9 @@ def get_bereal_status(user=None):
         and user is not None
         and not (
             last_sent
-            and BerealPost.objects.filter(user=user, bereal_date=last_sent.date).exists()
+            and BerealPost.objects.filter(
+                user=user, bereal_date=last_sent.date
+            ).exists()
         )
     )
     return {
@@ -143,14 +150,19 @@ def upload_bereal_post(request):
 
     if not bereal_active():
         return Response({"error": "BeReal jest obecnie wyłączony"}, status=400)
-    
+
     last_sent = get_last_sent_bereal()
     if not last_sent:
         return Response({"error": "Nie było jeszcze powiadomienia BeReal"}, status=400)
 
     # Można zrobić BeReal tylko jeśli nie zrobiłeś go w tej rundzie
-    if BerealPost.objects.filter(user=request.user, bereal_date=last_sent.date).exists():
-        return Response({"error": "Już przesłałeś/aś zdjęcie na ten dzień", "redirect": True}, status=400)
+    if BerealPost.objects.filter(
+        user=request.user, bereal_date=last_sent.date
+    ).exists():
+        return Response(
+            {"error": "Już przesłałeś/aś zdjęcie na ten dzień", "redirect": True},
+            status=400,
+        )
 
     photo1_base64 = request.data.get("photo1")
     photo2_base64 = request.data.get("photo2")
@@ -159,8 +171,12 @@ def upload_bereal_post(request):
 
     try:
         with transaction.atomic():
-            photo1 = _safe_b64_to_content(photo1_base64, f"bereal_photo1_{request.user.id}_{last_sent.date}.jpeg")
-            photo2 = _safe_b64_to_content(photo2_base64, f"bereal_photo2_{request.user.id}_{last_sent.date}.jpeg")
+            photo1 = _safe_b64_to_content(
+                photo1_base64, f"bereal_photo1_{request.user.id}_{last_sent.date}.jpeg"
+            )
+            photo2 = _safe_b64_to_content(
+                photo2_base64, f"bereal_photo2_{request.user.id}_{last_sent.date}.jpeg"
+            )
 
             post = BerealPost.objects.create(
                 user=request.user,
@@ -172,7 +188,9 @@ def upload_bereal_post(request):
             serializer = BeerealPostSerializer(post, context={"request": request})
             return Response({"success": True, "post": serializer.data})
     except Exception as e:
-        return Response({"error": f"Błąd podczas przesyłania zdjęcia: {str(e)}"}, status=400)
+        return Response(
+            {"error": f"Błąd podczas przesyłania zdjęcia: {str(e)}"}, status=400
+        )
 
 
 @api_view(["GET"])
@@ -237,7 +255,9 @@ def bereal_home(request):
 
     paginator = Paginator(posts_qs, page_size)
     page_obj = paginator.get_page(page)
-    serializer = BeerealPostSerializer(page_obj, many=True, context={"request": request})
+    serializer = BeerealPostSerializer(
+        page_obj, many=True, context={"request": request}
+    )
     return Response(
         {
             "posts": serializer.data,
@@ -248,7 +268,9 @@ def bereal_home(request):
                 "has_next": page_obj.has_next(),
                 "has_previous": page_obj.has_previous(),
             },
-            "bereal_status": get_bereal_status(request.user if request.user.is_authenticated else None),
+            "bereal_status": get_bereal_status(
+                request.user if request.user.is_authenticated else None
+            ),
         }
     )
 
@@ -266,7 +288,9 @@ def bereal_profile(request, user_id=None):
         user = request.user
 
     posts = BerealPost.objects.filter(user=user).order_by("-created_at")
-    post_serializer = BeerealPostSerializer(posts, many=True, context={"request": request})
+    post_serializer = BeerealPostSerializer(
+        posts, many=True, context={"request": request}
+    )
 
     photo_url = None
     tp = getattr(user, "tinderprofile", None)
@@ -308,7 +332,9 @@ def delete_bereal_post(request, post_id):
         post.delete()
         return Response({"success": True})
     except BerealPost.DoesNotExist:
-        return Response({"error": "Post nie istnieje lub nie masz uprawnień"}, status=404)
+        return Response(
+            {"error": "Post nie istnieje lub nie masz uprawnień"}, status=404
+        )
 
 
 @api_view(["POST"])
@@ -396,7 +422,9 @@ def report_bereal_post(request, post_id):
 
 @api_view(["GET"])
 def bereal_status(request):
-    return Response(get_bereal_status(request.user if request.user.is_authenticated else None))
+    return Response(
+        get_bereal_status(request.user if request.user.is_authenticated else None)
+    )
 
 
 @api_view(["POST"])
@@ -422,21 +450,32 @@ def update_profile_photo(request):
         # Jeśli zdjęcie jest na user.tinderprofile.photo, dostosuj poniższą linię.
         if hasattr(request.user, "photo"):
             request.user.photo.save(content.name, content, save=True)
-        elif hasattr(request.user, "tinderprofile") and hasattr(request.user.tinderprofile, "photo"):
+        elif hasattr(request.user, "tinderprofile") and hasattr(
+            request.user.tinderprofile, "photo"
+        ):
             request.user.tinderprofile.photo.save(content.name, content, save=True)
             request.user.tinderprofile.save(update_fields=["photo"])
         else:
-            return Response({"error": "Nie znaleziono pola na zdjęcie u użytkownika"}, status=400)
+            return Response(
+                {"error": "Nie znaleziono pola na zdjęcie u użytkownika"}, status=400
+            )
 
         photo_url = None
         try:
             if hasattr(request.user, "photo") and request.user.photo:
                 photo_url = request.build_absolute_uri(request.user.photo.url)
-            elif hasattr(request.user, "tinderprofile") and request.user.tinderprofile.photo:
-                photo_url = request.build_absolute_uri(request.user.tinderprofile.photo.url)
+            elif (
+                hasattr(request.user, "tinderprofile")
+                and request.user.tinderprofile.photo
+            ):
+                photo_url = request.build_absolute_uri(
+                    request.user.tinderprofile.photo.url
+                )
         except Exception:
             photo_url = None
 
         return Response({"success": True, "photo_url": photo_url})
     except Exception as e:
-        return Response({"error": f"Błąd podczas przesyłania zdjęcia: {str(e)}"}, status=400)
+        return Response(
+            {"error": f"Błąd podczas przesyłania zdjęcia: {str(e)}"}, status=400
+        )
