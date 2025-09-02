@@ -8,6 +8,9 @@ from rest_framework.response import Response
 from .models import BingoUserInstance, BingoUserTask
 from .serializers import BingoUserInstanceSerializer, BingoUserTaskSerializer
 from .utils import swap_user_task, check_bingo_win, create_bingo_for_user
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from obozstudentow.models import Setting
 
 
 class BingoUserInstanceViewSet(viewsets.ReadOnlyModelViewSet):
@@ -167,6 +170,19 @@ class BingoReviewViewSet(viewsets.ViewSet):
         instance = BingoUserInstance.objects.get(pk=pk)
         serializer = BingoUserInstanceSerializer(instance, context={"request": request})
         return Response(serializer.data)
+
+
+@api_view(["GET"])
+def bingo_status(request):
+    """Zwraca status aktywacji modułu Bingo.
+
+    Odpowiedź:
+    {
+        "is_active": bool
+    }
+    """
+    active = Setting.objects.filter(name="bingo_active", value__iexact="true").exists()
+    return Response({"is_active": active})
 
     @action(detail=True, methods=["post"], url_path="review-task/(?P<task_pk>\d+)")
     def review_task(self, request, pk=None, task_pk=None):
