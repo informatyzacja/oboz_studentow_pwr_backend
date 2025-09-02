@@ -77,7 +77,6 @@ class BingoUserInstanceViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class BingoUserTaskViewSet(viewsets.ModelViewSet):
-
     # ViewSet do zarządzania pojedynczymi zadaniami przez użytkownika.
 
     serializer_class = BingoUserTaskSerializer
@@ -152,7 +151,6 @@ class BingoUserTaskViewSet(viewsets.ModelViewSet):
 
 
 class BingoReviewViewSet(viewsets.ViewSet):
-
     # ViewSet dla Administratora do zarządzania i weryfikacji plansz bingo.
 
     permission_classes = [permissions.IsAdminUser]
