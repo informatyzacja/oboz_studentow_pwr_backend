@@ -8,7 +8,8 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.db.models import F
-from ..models import User, UserFCMToken, GroupMember, GroupType, TinderProfile
+from ..models import User, UserFCMToken, GroupMember, GroupType
+from tinder.models import TinderProfile
 from ..models import Group as ObozGroup
 
 from .group import GroupWardenInline

@@ -54,8 +54,9 @@ class WorkshopAdmin(ImportExportModelAdmin, admin.ModelAdmin):
         "signups",
         "signupsOpen",
         "signupsOpenTime",
+        "notifications_sent",
     )
-    readonly_fields = ("signups",)
+    readonly_fields = ("signups", "notifications_sent")
     search_fields = ("name", "visible", "location")
     list_filter = (
         "visible",

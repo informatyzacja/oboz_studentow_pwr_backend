@@ -1,13 +1,17 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from ..models import *
 from rest_framework import serializers
 
 import base64
 
 from django.core.files.base import ContentFile
-
 from django.utils import timezone
+
+from obozstudentow.models import Setting, User
+from tinder.models import TinderProfile, TinderAction
+from obozstudentow_async.models import Chat
+from obozstudentow.api.notifications import send_notification, UserFCMToken
+import random
 
 
 def tinder_register_active():
@@ -24,12 +28,35 @@ def tinder_register_active():
     return active
 
 
+class TinderProfileSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source="user.first_name")
+
+    class Meta:
+        model = TinderProfile
+        fields = "__all__"
+
+
+def tinder_active():
+    active = Setting.objects.get(name="tinder_swiping_active").value.lower() == "true"
+    if active and Setting.objects.get(name="tinder_swiping_activate_datetime").value:
+        active = (
+            timezone.datetime.strptime(
+                Setting.objects.get(name="tinder_swiping_activate_datetime").value,
+                "%Y-%m-%d %H:%M",
+            )
+            <= timezone.now()
+        )
+
+    return active
+
+
 @api_view(["POST"])
 def uploadProfilePhoto(request):
-    if not tinder_register_active():
-        return Response(
-            {"error": "Rejestracja na Tinder jest obecnie wyłączona"}, status=400
-        )
+    # Komentuję to bo ten endpoint jest też używany do dodawania zdjęć profilowych na BeerReal
+    # if not tinder_register_active():
+    #     return Response(
+    #         {"error": "Rejestracja na Tinder jest obecnie wyłączona"}, status=400
+    #     )
 
     profile = TinderProfile.objects.get_or_create(user=request.user)[0]
 
@@ -78,28 +105,6 @@ def uploadProfileData(request):
     )
 
 
-class TinderProfileSerializer(serializers.ModelSerializer):
-    name = serializers.CharField(source="user.first_name")
-
-    class Meta:
-        model = TinderProfile
-        fields = "__all__"
-
-
-def tinder_active():
-    active = Setting.objects.get(name="tinder_swiping_active").value.lower() == "true"
-    if active and Setting.objects.get(name="tinder_swiping_activate_datetime").value:
-        active = (
-            timezone.datetime.strptime(
-                Setting.objects.get(name="tinder_swiping_activate_datetime").value,
-                "%Y-%m-%d %H:%M",
-            )
-            <= timezone.now()
-        )
-
-    return active
-
-
 @api_view(["GET"])
 def loadTinderProfiles(request):
     if not tinder_active():
@@ -126,16 +131,12 @@ def loadTinderProfiles(request):
         .order_by("?")[:10]
     )
 
-    # demo profiles
-    # profiles = TinderProfile.objects.exclude(user=user)[0]
-    # profiles = [profiles] * 10
-
     serializer = TinderProfileSerializer(
         profiles, context={"request": request}, many=True
     )
     data = serializer.data
 
-    # demo id
+    # demo id randomization (kept from legacy implementation)
     import random
 
     for profile in data:
@@ -194,6 +195,7 @@ def tinderAction(request):
         ).exists()
     ) or tinderaction.action == 2
 
+    chat = None
     if match:
         chat = (
             Chat.objects.filter(name__startswith="tinder")
@@ -204,6 +206,28 @@ def tinderAction(request):
         if not chat:
             chat = Chat.objects.create(name=f"tinder ({user}, {target})")
             chat.users.add(user, target)
+
+        if target.notifications:
+            tokens = list(
+                UserFCMToken.objects.filter(
+                    user=target, user__notifications=True
+                ).values_list("token", flat=True)
+            )
+            body_templates = [
+                "Masz nowy match z {name}!",
+                "Match! Ty i {name} polubiliście się.",
+                "🔥 Iskra jest – rozpocznij rozmowę z {name}.",
+                "To jest match! Przywitaj się z {name}.",
+                "Wpadliście sobie w oko: Ty i {name}.",
+            ]
+            body = random.choice(body_templates).format(name=user.first_name)
+            send_notification.delay(
+                "It's a match!",
+                body,
+                tokens,
+                link=f"/czat/{chat.id}",
+            )
+
     return Response(
         {"success": True, "match": match, "chat_id": chat.id if match else None}
     )

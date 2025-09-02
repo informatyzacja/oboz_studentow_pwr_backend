@@ -3,10 +3,11 @@ from django.db.models import Q
 
 
 from obozstudentow_async.models import Message
-from ..models import User, TinderAction
+from ..models import User
+from tinder.models import TinderAction
 from obozstudentow_async.models import Chat
 from django.db.models import Max
-from .tinder import TinderProfileSerializer
+from tinder.api import TinderProfileSerializer
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -21,7 +22,7 @@ class MessageSerializer(serializers.ModelSerializer):
         return (
             obj.user.first_name
             + " "
-            + obj.user.last_name[0]
+            + obj.user.last_name[:1]
             + "."
             + (" (" + obj.user.title + ")" if obj.user.title else "")
         )
@@ -77,9 +78,11 @@ class ChatSerializer(serializers.ModelSerializer):
                 .first()
             )
             return {
-                "message": user.tinderprofile.description
-                if hasattr(user, "tinderprofile")
-                else None,
+                "message": (
+                    user.tinderprofile.description
+                    if hasattr(user, "tinderprofile")
+                    else None
+                ),
                 "date": last_action.date if last_action else None,
             }
 

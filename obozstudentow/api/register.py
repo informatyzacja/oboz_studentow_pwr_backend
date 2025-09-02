@@ -16,6 +16,8 @@ from django.core.mail import send_mail
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.template.loader import render_to_string
 
+from django.conf import settings
+
 
 def is_constant_code_user(user):
     return user.email == "test@oboz.samorzad.pwr.edu.pl"
@@ -79,6 +81,9 @@ def send_email_verification(request):
 
     # send email to user with verification code
     response = send_verification_email(user)
+
+    if settings.DEBUG:
+        print(f"Verification code sent to {user.email}: {user.verification_code}")
 
     return Response({"exists": True, "email_sent": response})
 
