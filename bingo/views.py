@@ -7,7 +7,7 @@ from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
 from .models import BingoUserInstance, BingoUserTask
 from .serializers import BingoUserInstanceSerializer, BingoUserTaskSerializer
-from .utils import swap_user_task, check_bingo_win
+from .utils import swap_user_task, check_bingo_win, create_bingo_for_user
 
 
 class BingoUserInstanceViewSet(viewsets.ReadOnlyModelViewSet):
@@ -24,6 +24,26 @@ class BingoUserInstanceViewSet(viewsets.ReadOnlyModelViewSet):
         return BingoUserInstance.objects.filter(user=self.request.user).exclude(
             review_status=BingoUserInstance.ReviewStatus.COMPLETED
         )
+
+    @action(detail=False, methods=["post"], url_path="generate")
+    def generate(self, request):
+        """Generuje nową planszę bingo dla użytkownika jeśli nie ma aktywnej."""
+        has_active = (
+            BingoUserInstance.objects.filter(user=request.user)
+            .exclude(review_status=BingoUserInstance.ReviewStatus.COMPLETED)
+            .exists()
+        )
+        if has_active:
+            return Response(
+                {"error": "Masz już aktywną planszę bingo."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            instance = create_bingo_for_user(request.user)
+        except ValueError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=["post"], url_path="submit-for-review")
     def submit_for_review(self, request, pk=None):
