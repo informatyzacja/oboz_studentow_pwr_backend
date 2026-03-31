@@ -1,3 +1,5 @@
+from .camp import *
+
 from .user import *
 
 from .models import *
