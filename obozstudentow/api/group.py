@@ -60,6 +60,15 @@ class GroupViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
 
+    def get_queryset(self):
+        from .camps import get_camp_from_request
+
+        camp = get_camp_from_request(self.request)
+        qs = self.queryset
+        if camp is not None:
+            qs = qs.filter(camp=camp)
+        return qs
+
 
 class GroupTypeSerializer(serializers.ModelSerializer):
     class Meta:

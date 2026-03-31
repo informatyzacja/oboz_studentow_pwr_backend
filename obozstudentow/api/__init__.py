@@ -2,6 +2,7 @@ from rest_framework import serializers, routers, viewsets, mixins
 from django.db.models import Q
 
 from .group import get_group_signup_info
+from .camps import get_camp_from_request
 
 api_router = routers.SimpleRouter()
 
@@ -66,6 +67,13 @@ class ScheduleItemViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = ScheduleItem.objects.filter(visible=True)
     serializer_class = ScheduleItemSerializer
 
+    def get_queryset(self):
+        camp = get_camp_from_request(self.request)
+        qs = self.queryset
+        if camp is not None:
+            qs = qs.filter(camp=camp)
+        return qs
+
 
 api_router.register(r"schedule", ScheduleItemViewSet)
 
@@ -99,13 +107,17 @@ class AnnouncementViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = AnnouncementSerializer
 
     def get_queryset(self):
-        return self.queryset.filter(
+        camp = get_camp_from_request(self.request)
+        qs = self.queryset.filter(
             Q(group__in=self.request.user.groupmember_set.values("group"))
             | Q(group__in=self.request.user.groupwarden_set.values("group"))
             | Q(group=None),
             Q(hide_date=None) | Q(hide_date__gt=timezone.now()),
             visible=True,
-        ).order_by("-date")
+        )
+        if camp is not None:
+            qs = qs.filter(camp=camp)
+        return qs.order_by("-date")
 
 
 api_router.register(r"announcement", AnnouncementViewSet)
@@ -124,7 +136,8 @@ class DailyQuestViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     serializer_class = DailyQuestSerializer
 
     def get_queryset(self):
-        return self.queryset.filter(
+        camp = get_camp_from_request(self.request)
+        qs = self.queryset.filter(
             Q(group__in=self.request.user.groupmember_set.values("group"))
             | Q(group__in=self.request.user.groupwarden_set.values("group"))
             | Q(group=None),
@@ -132,6 +145,9 @@ class DailyQuestViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
             visible=True,
             finish__gte=timezone.now(),
         )
+        if camp is not None:
+            qs = qs.filter(camp=camp)
+        return qs
 
 
 api_router.register(r"dailyQuest", DailyQuestViewSet)
@@ -150,6 +166,13 @@ class BusViewSet(
 ):
     queryset = Bus.objects.all()
     serializer_class = BusSerializer
+
+    def get_queryset(self):
+        camp = get_camp_from_request(self.request)
+        qs = self.queryset
+        if camp is not None:
+            qs = qs.filter(camp=camp)
+        return qs
 
 
 api_router.register(r"bus", BusViewSet)
@@ -306,6 +329,13 @@ class LinkViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Link.objects.order_by("sort_order")
     serializer_class = LinkSerializer
 
+    def get_queryset(self):
+        camp = get_camp_from_request(self.request)
+        qs = self.queryset
+        if camp is not None:
+            qs = qs.filter(camp=camp)
+        return qs
+
 
 api_router.register(r"link", LinkViewSet)
 
@@ -324,6 +354,13 @@ class HomeLinkSerializer(serializers.ModelSerializer):
 class HomeLinkViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = HomeLink.objects.filter(visible=True).order_by("sort_order")
     serializer_class = HomeLinkSerializer
+
+    def get_queryset(self):
+        camp = get_camp_from_request(self.request)
+        qs = self.queryset
+        if camp is not None:
+            qs = qs.filter(camp=camp)
+        return qs
 
 
 api_router.register(r"home-link", HomeLinkViewSet)
@@ -347,6 +384,13 @@ class ImageViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Image.objects.filter(visible=True)
     serializer_class = ImageSerializer
 
+    def get_queryset(self):
+        camp = get_camp_from_request(self.request)
+        qs = self.queryset
+        if camp is not None:
+            qs = qs.filter(camp=camp)
+        return qs
+
 
 api_router.register(r"image", ImageViewSet)
 
@@ -363,6 +407,13 @@ class PartnersSerializer(serializers.ModelSerializer):
 class PartnersViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Partners.objects.order_by("sort_order")
     serializer_class = PartnersSerializer
+
+    def get_queryset(self):
+        camp = get_camp_from_request(self.request)
+        qs = self.queryset
+        if camp is not None:
+            qs = qs.filter(camp=camp)
+        return qs
 
 
 api_router.register(r"partners", PartnersViewSet)

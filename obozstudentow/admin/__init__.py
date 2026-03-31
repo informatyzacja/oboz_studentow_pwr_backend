@@ -1,4 +1,5 @@
 from django.http.request import HttpRequest
+from .camp import *
 from .group import *
 from .meals import *
 from .people import *
