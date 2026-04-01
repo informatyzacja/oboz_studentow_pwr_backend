@@ -2,7 +2,7 @@ from rest_framework import serializers, routers, viewsets, mixins
 from django.db.models import Q
 
 from .group import get_group_signup_info
-from .camps import get_camp_from_request
+from .camps import get_camp_from_request, require_feature
 
 api_router = routers.SimpleRouter()
 
@@ -69,6 +69,7 @@ class ScheduleItemViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     def get_queryset(self):
         camp = get_camp_from_request(self.request)
+        require_feature(camp, "schedule")
         qs = self.queryset
         if camp is not None:
             qs = qs.filter(camp=camp)

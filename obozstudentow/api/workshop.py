@@ -73,9 +73,10 @@ class WorkshopViewSet(
     serializer_class = WorkshopSerializer
 
     def get_queryset(self):
-        from .camps import get_camp_from_request
+        from .camps import get_camp_from_request, require_feature
 
         camp = get_camp_from_request(self.request)
+        require_feature(camp, "workshops")
         qs = self.queryset.filter(visible=True, end__gt=timezone.now())
         if camp is not None:
             qs = qs.filter(camp=camp)
@@ -88,9 +89,10 @@ class WorkshopUserSignedUpViewSet(mixins.ListModelMixin, viewsets.GenericViewSet
     serializer_class = WorkshopSerializer
 
     def get_queryset(self):
-        from .camps import get_camp_from_request
+        from .camps import get_camp_from_request, require_feature
 
         camp = get_camp_from_request(self.request)
+        require_feature(camp, "workshops")
         qs = self.queryset.filter(
             Q(
                 id__in=WorkshopSignup.objects.filter(user=self.request.user).values(

@@ -1,10 +1,11 @@
 from django.contrib import admin
 
 from ..models import Meal, MealValidation
+from .mixins import CampScopedAdmin
 
 
 @admin.register(Meal)
-class MealAdmin(admin.ModelAdmin):
+class MealAdmin(CampScopedAdmin, admin.ModelAdmin):
     list_display = ("id", "name", "start", "end", "mealvalidation__count")
 
     ordering = ("start", "end")

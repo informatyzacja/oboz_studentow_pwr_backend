@@ -264,3 +264,183 @@ class CampDataIsolationTest(TestCase):
         self.client.force_authenticate(user=self.user_a)
         resp = self.client.get("/api/group/", HTTP_X_CAMP_ID="999999")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+
+# ---------------------------------------------------------------------------
+# CampSettings model tests
+# ---------------------------------------------------------------------------
+
+
+class CampSettingsModelTest(TestCase):
+    def setUp(self):
+        self.camp = Camp.objects.create(name="Settings Camp", slug="settings-camp")
+
+    def test_settings_auto_created(self):
+        """CampSettings should be auto-created on Camp creation."""
+        from obozstudentow.models.camp import CampSettings
+
+        self.assertTrue(CampSettings.objects.filter(camp=self.camp).exists())
+
+    def test_settings_str(self):
+        from obozstudentow.models.camp import CampSettings
+
+        settings = self.camp.settings
+        self.assertIn("Settings Camp", str(settings))
+
+    def test_feature_flags_default_true(self):
+        s = self.camp.settings
+        for field in [
+            "feature_workshops",
+            "feature_schedule",
+            "feature_tinder",
+            "feature_bereal",
+            "feature_bingo",
+            "feature_points",
+        ]:
+            self.assertTrue(getattr(s, field), f"{field} should default to True")
+
+    def test_branding_defaults(self):
+        s = self.camp.settings
+        self.assertEqual(s.primary_color, "#3b5bdb")
+        self.assertEqual(s.secondary_color, "#ffffff")
+
+
+# ---------------------------------------------------------------------------
+# Feature flag helper tests
+# ---------------------------------------------------------------------------
+
+
+class FeatureFlagHelperTest(TestCase):
+    def setUp(self):
+        self.camp = Camp.objects.create(name="Flag Camp", slug="flag-camp")
+
+    def test_feature_enabled_by_default(self):
+        from obozstudentow.api.camps import check_feature_enabled
+
+        self.assertTrue(check_feature_enabled(self.camp, "workshops"))
+        self.assertTrue(check_feature_enabled(self.camp, "bingo"))
+
+    def test_feature_disabled(self):
+        from obozstudentow.api.camps import check_feature_enabled
+
+        self.camp.settings.feature_workshops = False
+        self.camp.settings.save()
+        self.assertFalse(check_feature_enabled(self.camp, "workshops"))
+
+    def test_feature_enabled_when_camp_none(self):
+        """When no camp (backward-compat mode), all features are enabled."""
+        from obozstudentow.api.camps import check_feature_enabled
+
+        self.assertTrue(check_feature_enabled(None, "bingo"))
+
+    def test_require_feature_raises_when_disabled(self):
+        from rest_framework.exceptions import PermissionDenied
+        from obozstudentow.api.camps import require_feature
+
+        self.camp.settings.feature_tinder = False
+        self.camp.settings.save()
+        with self.assertRaises(PermissionDenied):
+            require_feature(self.camp, "tinder")
+
+    def test_require_feature_ok_when_enabled(self):
+        from obozstudentow.api.camps import require_feature
+
+        # Should not raise
+        require_feature(self.camp, "tinder")
+
+
+# ---------------------------------------------------------------------------
+# Camp settings API endpoint tests
+# ---------------------------------------------------------------------------
+
+
+class CampSettingsAPITest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.owner = make_user("owner@settings.com")
+        self.member = make_user("member@settings.com")
+        self.other = make_user("other@settings.com")
+        self.camp = Camp.objects.create(name="API Settings Camp", slug="api-settings")
+        UserCamp.objects.create(user=self.owner, camp=self.camp, role=UserCamp.Role.OWNER)
+        UserCamp.objects.create(user=self.member, camp=self.camp, role=UserCamp.Role.MEMBER)
+
+    def test_owner_can_read_settings(self):
+        self.client.force_authenticate(user=self.owner)
+        resp = self.client.get(f"/api2/camps/{self.camp.pk}/settings/")
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertIn("feature_workshops", data)
+        self.assertIn("primary_color", data)
+
+    def test_member_can_read_settings(self):
+        self.client.force_authenticate(user=self.member)
+        resp = self.client.get(f"/api2/camps/{self.camp.pk}/settings/")
+        self.assertEqual(resp.status_code, 200)
+
+    def test_non_member_cannot_read_settings(self):
+        self.client.force_authenticate(user=self.other)
+        resp = self.client.get(f"/api2/camps/{self.camp.pk}/settings/")
+        self.assertEqual(resp.status_code, 403)
+
+    def test_owner_can_patch_settings(self):
+        self.client.force_authenticate(user=self.owner)
+        resp = self.client.patch(
+            f"/api2/camps/{self.camp.pk}/settings/",
+            {"feature_bingo": False, "primary_color": "#ff0000"},
+            format="json",
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.camp.settings.refresh_from_db()
+        self.assertFalse(self.camp.settings.feature_bingo)
+        self.assertEqual(self.camp.settings.primary_color, "#ff0000")
+
+    def test_member_cannot_patch_settings(self):
+        self.client.force_authenticate(user=self.member)
+        resp = self.client.patch(
+            f"/api2/camps/{self.camp.pk}/settings/",
+            {"feature_bingo": False},
+            format="json",
+        )
+        self.assertEqual(resp.status_code, 403)
+
+    def test_settings_in_my_camps(self):
+        self.client.force_authenticate(user=self.owner)
+        resp = self.client.get("/api2/camps/my/")
+        self.assertEqual(resp.status_code, 200)
+        camps = resp.json()
+        self.assertEqual(len(camps), 1)
+        self.assertIn("settings", camps[0])
+        self.assertIn("feature_workshops", camps[0]["settings"])
+
+
+# ---------------------------------------------------------------------------
+# Feature flag enforcement via API tests
+# ---------------------------------------------------------------------------
+
+
+class FeatureFlagAPIEnforcementTest(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = make_user("ff_user@example.com")
+        self.camp = Camp.objects.create(name="FF Camp", slug="ff-camp")
+        UserCamp.objects.create(user=self.user, camp=self.camp, role=UserCamp.Role.MEMBER)
+        self.camp.settings.feature_workshops = False
+        self.camp.settings.feature_schedule = False
+        self.camp.settings.save()
+        self.client.force_authenticate(user=self.user)
+        self.headers = {"HTTP_X_CAMP_ID": str(self.camp.pk)}
+
+    def test_workshop_returns_403_when_disabled(self):
+        resp = self.client.get("/api/workshop/", **self.headers)
+        self.assertEqual(resp.status_code, 403)
+
+    def test_schedule_returns_403_when_disabled(self):
+        resp = self.client.get("/api/schedule/", **self.headers)
+        self.assertEqual(resp.status_code, 403)
+
+    def test_workshop_accessible_when_enabled(self):
+        self.camp.settings.feature_workshops = True
+        self.camp.settings.save()
+        resp = self.client.get("/api/workshop/", **self.headers)
+        # 200 or 404 (no data) – not 403
+        self.assertNotEqual(resp.status_code, 403)
