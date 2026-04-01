@@ -3,8 +3,9 @@ from rest_framework import serializers, viewsets, mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import NotFound, PermissionDenied, ParseError
 
-from ..models.camp import Camp, UserCamp
+from ..models.camp import Camp, CampSettings, UserCamp
 
 
 # ---------------------------------------------------------------------------
@@ -20,8 +21,6 @@ def get_camp_from_request(request):
     Raises rest_framework.exceptions.PermissionDenied / ParseError / NotFound
     when the header is present but invalid.
     """
-    from rest_framework.exceptions import NotFound, PermissionDenied, ParseError
-
     camp_id = request.META.get("HTTP_X_CAMP_ID")
     if not camp_id:
         return None
@@ -39,12 +38,77 @@ def get_camp_from_request(request):
 
 
 # ---------------------------------------------------------------------------
+# Feature-flag helper
+# ---------------------------------------------------------------------------
+
+FEATURE_FIELDS = {
+    "workshops": "feature_workshops",
+    "schedule": "feature_schedule",
+    "tinder": "feature_tinder",
+    "bereal": "feature_bereal",
+    "bingo": "feature_bingo",
+    "points": "feature_points",
+}
+
+
+def check_feature_enabled(camp, feature: str) -> bool:
+    """
+    Return True if *feature* is enabled for *camp*.
+
+    When *camp* is None (no X-Camp-Id header) the feature is considered enabled
+    (backward-compat mode: single-camp behaviour).
+
+    Raises ValueError for unknown feature names.
+    """
+    if camp is None:
+        return True
+    field = FEATURE_FIELDS.get(feature)
+    if field is None:
+        raise ValueError(f"Unknown feature: {feature}")
+    try:
+        settings = camp.settings
+    except CampSettings.DoesNotExist:
+        # Settings missing – treat as all enabled
+        return True
+    return getattr(settings, field, True)
+
+
+def require_feature(camp, feature: str):
+    """
+    Like check_feature_enabled but raises PermissionDenied when the feature is
+    disabled, suitable for use in DRF views.
+    """
+    if not check_feature_enabled(camp, feature):
+        raise PermissionDenied(
+            f"Funkcja '{feature}' jest wyłączona dla tego obozu."
+        )
+
+
+# ---------------------------------------------------------------------------
 # Serializers
 # ---------------------------------------------------------------------------
 
 
+class CampSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CampSettings
+        fields = (
+            "logo",
+            "primary_color",
+            "secondary_color",
+            "feature_workshops",
+            "feature_schedule",
+            "feature_tinder",
+            "feature_bereal",
+            "feature_bingo",
+            "feature_points",
+            "extra_config",
+        )
+
+
 class CampSerializer(serializers.ModelSerializer):
     role = serializers.SerializerMethodField()
+    settings = CampSettingsSerializer(read_only=True)
 
     def get_role(self, obj):
         request = self.context.get("request")
@@ -55,8 +119,8 @@ class CampSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Camp
-        fields = ("id", "name", "slug", "created_at", "is_active", "role")
-        read_only_fields = ("id", "created_at", "role")
+        fields = ("id", "name", "slug", "created_at", "is_active", "role", "settings")
+        read_only_fields = ("id", "created_at", "role", "settings")
 
 
 class CampCreateSerializer(serializers.ModelSerializer):
@@ -75,7 +139,16 @@ class UserCampSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserCamp
-        fields = ("id", "user", "user_email", "user_name", "camp", "camp_name", "role", "joined_at")
+        fields = (
+            "id",
+            "user",
+            "user_email",
+            "user_name",
+            "camp",
+            "camp_name",
+            "role",
+            "joined_at",
+        )
         read_only_fields = ("id", "joined_at")
 
 
@@ -90,9 +163,7 @@ class AddMemberSerializer(serializers.Serializer):
         from ..models.user import User
 
         if not data.get("email") and not data.get("user_id"):
-            raise serializers.ValidationError(
-                "Podaj email lub user_id użytkownika."
-            )
+            raise serializers.ValidationError("Podaj email lub user_id użytkownika.")
         if data.get("email"):
             try:
                 data["user"] = User.objects.get(email=data["email"])
@@ -121,8 +192,6 @@ def get_camp_for_user(request, require_owner=False):
     that the authenticated user is a member (or owner when require_owner=True).
     Returns (camp, user_camp) or raises an appropriate DRF exception.
     """
-    from rest_framework.exceptions import NotFound, PermissionDenied, ParseError
-
     camp_id = request.META.get("HTTP_X_CAMP_ID")
     if not camp_id:
         raise ParseError("Brak nagłówka X-Camp-Id.")
@@ -159,8 +228,8 @@ class IsCampMember(IsAuthenticated):
     2. The X-Camp-Id header is present and refers to an existing camp.
     3. The user is a member of that camp.
 
-    The camp object is attached to `request.camp` and the
-    UserCamp object to `request.user_camp` for downstream use.
+    The camp object is attached to ``request.camp`` and the
+    UserCamp object to ``request.user_camp`` for downstream use.
     """
 
     message = "Nie jesteś członkiem tego obozu lub brak nagłówka X-Camp-Id."
@@ -173,12 +242,11 @@ class IsCampMember(IsAuthenticated):
             return False
         try:
             camp = Camp.objects.get(pk=int(camp_id))
-        except (Camp.DoesNotExist, (ValueError, TypeError)):
+        except (Camp.DoesNotExist, ValueError, TypeError):
             return False
         uc = UserCamp.objects.filter(user=request.user, camp=camp).first()
         if not uc:
             return False
-        # Attach to request for convenience
         request.camp = camp
         request.user_camp = uc
         return True
@@ -192,7 +260,7 @@ class IsCampMember(IsAuthenticated):
 class CampScopedMixin:
     """
     Mix into ViewSets that operate in the context of a single camp.
-    Provides `self.get_camp()` which reads X-Camp-Id, validates membership,
+    Provides ``self.get_camp()`` which reads X-Camp-Id, validates membership,
     and caches the result on the request.
     """
 
@@ -212,11 +280,13 @@ class CampScopedMixin:
 
 class CampViewSet(viewsets.GenericViewSet):
     """
-    POST   /api2/camps/          – create a new camp (authenticated users)
-    GET    /api2/camps/my/       – list camps the current user belongs to
-    POST   /api2/camps/<id>/members/ – add member (OWNER only)
-    GET    /api2/camps/<id>/members/ – list members (camp member only)
+    POST   /api2/camps/                         – create a new camp
+    GET    /api2/camps/my/                      – list camps the current user belongs to
+    GET    /api2/camps/<id>/members/            – list members (camp member only)
+    POST   /api2/camps/<id>/members/            – add member (OWNER only)
     DELETE /api2/camps/<id>/members/<member_id>/ – remove member (OWNER only)
+    GET    /api2/camps/<id>/settings/           – get camp settings
+    PATCH  /api2/camps/<id>/settings/           – update camp settings (OWNER only)
     """
 
     queryset = Camp.objects.all()
@@ -235,7 +305,9 @@ class CampViewSet(viewsets.GenericViewSet):
 
     @action(detail=False, methods=["get"], url_path="my")
     def my_camps(self, request):
-        camps = Camp.objects.filter(user_camps__user=request.user)
+        camps = Camp.objects.filter(user_camps__user=request.user).select_related(
+            "settings"
+        )
         serializer = CampSerializer(camps, many=True, context={"request": request})
         return Response(serializer.data)
 
@@ -252,7 +324,9 @@ class CampViewSet(viewsets.GenericViewSet):
 
         if request.method == "GET":
             qs = UserCamp.objects.filter(camp=camp).select_related("user")
-            serializer = UserCampSerializer(qs, many=True, context={"request": request})
+            serializer = UserCampSerializer(
+                qs, many=True, context={"request": request}
+            )
             return Response(serializer.data)
 
         # POST – add member (OWNER only)
@@ -302,3 +376,39 @@ class CampViewSet(viewsets.GenericViewSet):
         uc = get_object_or_404(UserCamp, pk=member_id, camp=camp)
         uc.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=True, methods=["get", "patch"], url_path="settings")
+    def settings(self, request, pk=None):
+        camp = get_object_or_404(Camp, pk=pk)
+
+        # Must be a member to read settings
+        uc = UserCamp.objects.filter(user=request.user, camp=camp).first()
+        if not uc:
+            return Response(
+                {"detail": "Nie jesteś członkiem tego obozu."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        camp_settings, _ = CampSettings.objects.get_or_create(camp=camp)
+
+        if request.method == "GET":
+            return Response(
+                CampSettingsSerializer(camp_settings, context={"request": request}).data
+            )
+
+        # PATCH – update settings (OWNER only)
+        if uc.role != UserCamp.Role.OWNER:
+            return Response(
+                {"detail": "Tylko właściciel obozu może edytować ustawienia."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        serializer = CampSettingsSerializer(
+            camp_settings,
+            data=request.data,
+            partial=True,
+            context={"request": request},
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
