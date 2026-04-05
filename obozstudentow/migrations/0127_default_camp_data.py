@@ -87,7 +87,6 @@ def reverse_default_camp(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         (
             "obozstudentow",

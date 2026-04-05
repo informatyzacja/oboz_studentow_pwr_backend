@@ -5,16 +5,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow', '0126_camp_announcement_camp_bus_camp_dailyquest_camp_and_more'),
-        ('tinder', '0001_initial'),
+        (
+            "obozstudentow",
+            "0126_camp_announcement_camp_bus_camp_dailyquest_camp_and_more",
+        ),
+        ("tinder", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tinderprofile',
-            name='camp',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.camp', verbose_name='Obóz'),
+            model_name="tinderprofile",
+            name="camp",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow.camp",
+                verbose_name="Obóz",
+            ),
         ),
     ]

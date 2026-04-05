@@ -12,7 +12,6 @@ def create_settings_for_existing_camps(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("obozstudentow", "0128_campsettings"),
     ]

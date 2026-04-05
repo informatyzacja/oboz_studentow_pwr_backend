@@ -6,31 +6,99 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow', '0127_default_camp_data'),
+        ("obozstudentow", "0127_default_camp_data"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CampSettings',
+            name="CampSettings",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('logo', django_resized.forms.ResizedImageField(blank=True, crop=None, force_format=None, keep_meta=False, null=True, quality=85, scale=None, size=[400, 400], upload_to='camps/logos', verbose_name='Logo obozu')),
-                ('primary_color', models.CharField(default='#3b5bdb', max_length=7, verbose_name='Kolor główny (hex)')),
-                ('secondary_color', models.CharField(default='#ffffff', max_length=7, verbose_name='Kolor dodatkowy (hex)')),
-                ('feature_workshops', models.BooleanField(default=True, verbose_name='Warsztaty')),
-                ('feature_schedule', models.BooleanField(default=True, verbose_name='Harmonogram')),
-                ('feature_tinder', models.BooleanField(default=True, verbose_name='Tinder')),
-                ('feature_bereal', models.BooleanField(default=True, verbose_name='BeReal')),
-                ('feature_bingo', models.BooleanField(default=True, verbose_name='Bingo')),
-                ('feature_points', models.BooleanField(default=True, verbose_name='Punkty')),
-                ('extra_config', models.JSONField(blank=True, default=dict, verbose_name='Dodatkowa konfiguracja (JSON)')),
-                ('camp', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='settings', to='obozstudentow.camp', verbose_name='Obóz')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "logo",
+                    django_resized.forms.ResizedImageField(
+                        blank=True,
+                        crop=None,
+                        force_format=None,
+                        keep_meta=False,
+                        null=True,
+                        quality=85,
+                        scale=None,
+                        size=[400, 400],
+                        upload_to="camps/logos",
+                        verbose_name="Logo obozu",
+                    ),
+                ),
+                (
+                    "primary_color",
+                    models.CharField(
+                        default="#3b5bdb",
+                        max_length=7,
+                        verbose_name="Kolor główny (hex)",
+                    ),
+                ),
+                (
+                    "secondary_color",
+                    models.CharField(
+                        default="#ffffff",
+                        max_length=7,
+                        verbose_name="Kolor dodatkowy (hex)",
+                    ),
+                ),
+                (
+                    "feature_workshops",
+                    models.BooleanField(default=True, verbose_name="Warsztaty"),
+                ),
+                (
+                    "feature_schedule",
+                    models.BooleanField(default=True, verbose_name="Harmonogram"),
+                ),
+                (
+                    "feature_tinder",
+                    models.BooleanField(default=True, verbose_name="Tinder"),
+                ),
+                (
+                    "feature_bereal",
+                    models.BooleanField(default=True, verbose_name="BeReal"),
+                ),
+                (
+                    "feature_bingo",
+                    models.BooleanField(default=True, verbose_name="Bingo"),
+                ),
+                (
+                    "feature_points",
+                    models.BooleanField(default=True, verbose_name="Punkty"),
+                ),
+                (
+                    "extra_config",
+                    models.JSONField(
+                        blank=True,
+                        default=dict,
+                        verbose_name="Dodatkowa konfiguracja (JSON)",
+                    ),
+                ),
+                (
+                    "camp",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="settings",
+                        to="obozstudentow.camp",
+                        verbose_name="Obóz",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Ustawienia obozu',
-                'verbose_name_plural': 'Ustawienia obozów',
+                "verbose_name": "Ustawienia obozu",
+                "verbose_name_plural": "Ustawienia obozów",
             },
         ),
     ]

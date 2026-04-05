@@ -6,26 +6,50 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('bingo', '0002_remove_bingousertask_photo_proof_url_and_more'),
-        ('obozstudentow', '0126_camp_announcement_camp_bus_camp_dailyquest_camp_and_more'),
+        ("bingo", "0002_remove_bingousertask_photo_proof_url_and_more"),
+        (
+            "obozstudentow",
+            "0126_camp_announcement_camp_bus_camp_dailyquest_camp_and_more",
+        ),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='bingotasktemplate',
-            name='camp',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.camp', verbose_name='Obóz'),
+            model_name="bingotasktemplate",
+            name="camp",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow.camp",
+                verbose_name="Obóz",
+            ),
         ),
         migrations.AddField(
-            model_name='bingouserinstance',
-            name='camp',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.camp', verbose_name='Obóz'),
+            model_name="bingouserinstance",
+            name="camp",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow.camp",
+                verbose_name="Obóz",
+            ),
         ),
         migrations.AlterField(
-            model_name='bingousertask',
-            name='photo_proof',
-            field=django_resized.forms.ResizedImageField(blank=True, crop=None, force_format='JPEG', keep_meta=False, null=True, quality=85, scale=None, size=[1024, 1024], upload_to='bingo_photos/'),
+            model_name="bingousertask",
+            name="photo_proof",
+            field=django_resized.forms.ResizedImageField(
+                blank=True,
+                crop=None,
+                force_format="JPEG",
+                keep_meta=False,
+                null=True,
+                quality=85,
+                scale=None,
+                size=[1024, 1024],
+                upload_to="bingo_photos/",
+            ),
         ),
     ]
