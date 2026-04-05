@@ -444,3 +444,269 @@ class FeatureFlagAPIEnforcementTest(TestCase):
         resp = self.client.get("/api/workshop/", **self.headers)
         # 200 or 404 (no data) – not 403
         self.assertNotEqual(resp.status_code, 403)
+
+
+# ---------------------------------------------------------------------------
+# Django Admin isolation unit tests
+# ---------------------------------------------------------------------------
+
+
+class AdminCampIsolationTest(TestCase):
+    """
+    Tests for CampScopedAdmin queryset isolation and permission methods.
+
+    These tests exercise the mixin logic directly using a mock request,
+    without loading the full admin HTTP stack.
+    """
+
+    def setUp(self):
+        from obozstudentow.admin import WorkshopAdmin
+        from django.contrib.admin import site as admin_site
+
+        self.admin_site = admin_site
+
+        # Superuser
+        self.superuser = make_user("super@admin.com", is_staff=True, is_superuser=True)
+
+        # Two owners with separate camps
+        self.owner_a = make_user("owner_a@admin.com", is_staff=True)
+        self.owner_b = make_user("owner_b@admin.com", is_staff=True)
+
+        self.camp_a = Camp.objects.create(name="Camp A", slug="camp-a")
+        self.camp_b = Camp.objects.create(name="Camp B", slug="camp-b")
+
+        UserCamp.objects.create(
+            user=self.owner_a, camp=self.camp_a, role=UserCamp.Role.OWNER
+        )
+        UserCamp.objects.create(
+            user=self.owner_b, camp=self.camp_b, role=UserCamp.Role.OWNER
+        )
+
+        # Member with no admin access
+        self.member = make_user("member@admin.com")
+        UserCamp.objects.create(
+            user=self.member, camp=self.camp_a, role=UserCamp.Role.MEMBER
+        )
+
+    def _mock_request(self, user, session=None):
+        """Build a minimal request-like object for admin mixin testing."""
+        from unittest.mock import MagicMock
+
+        req = MagicMock()
+        req.user = user
+        req.session = session or {}
+        return req
+
+    def _get_workshop_admin(self):
+        from obozstudentow.admin.workshop import WorkshopAdmin
+        from django.contrib.admin import site
+
+        return WorkshopAdmin(
+            __import__("obozstudentow.models", fromlist=["Workshop"]).Workshop,
+            site,
+        )
+
+    def test_superuser_sees_all_workshops(self):
+        """Superuser queryset is not filtered."""
+        from obozstudentow.models import Workshop
+
+        Workshop.objects.create(
+            name="WS-A",
+            start="2026-07-01 10:00", userLimit=10,
+            end="2026-07-01 12:00",
+            camp=self.camp_a,
+        )
+        Workshop.objects.create(
+            name="WS-B",
+            start="2026-07-01 10:00", userLimit=10,
+            end="2026-07-01 12:00",
+            camp=self.camp_b,
+        )
+        admin_obj = self._get_workshop_admin()
+        req = self._mock_request(self.superuser)
+        qs = admin_obj.get_queryset(req)
+        self.assertEqual(qs.count(), 2)
+
+    def test_owner_a_sees_only_camp_a_workshops(self):
+        """OWNER A queryset is limited to camp A."""
+        from obozstudentow.models import Workshop
+
+        Workshop.objects.create(
+            name="WS-A",
+            start="2026-07-01 10:00", userLimit=10,
+            end="2026-07-01 12:00",
+            camp=self.camp_a,
+        )
+        Workshop.objects.create(
+            name="WS-B",
+            start="2026-07-01 10:00", userLimit=10,
+            end="2026-07-01 12:00",
+            camp=self.camp_b,
+        )
+        admin_obj = self._get_workshop_admin()
+        req = self._mock_request(self.owner_a)
+        qs = admin_obj.get_queryset(req)
+        self.assertEqual(qs.count(), 1)
+        self.assertEqual(qs.first().name, "WS-A")
+
+    def test_owner_a_no_access_to_camp_b_object(self):
+        """OWNER A cannot view/change an object belonging to camp B."""
+        from obozstudentow.models import Workshop
+
+        ws_b = Workshop.objects.create(
+            name="WS-B",
+            start="2026-07-01 10:00", userLimit=10,
+            end="2026-07-01 12:00",
+            camp=self.camp_b,
+        )
+        admin_obj = self._get_workshop_admin()
+        req = self._mock_request(self.owner_a)
+        self.assertFalse(admin_obj.has_view_permission(req, ws_b))
+        self.assertFalse(admin_obj.has_change_permission(req, ws_b))
+
+    def test_owner_a_can_access_own_object(self):
+        """OWNER A can view/change an object belonging to camp A."""
+        from obozstudentow.models import Workshop
+
+        ws_a = Workshop.objects.create(
+            name="WS-A",
+            start="2026-07-01 10:00", userLimit=10,
+            end="2026-07-01 12:00",
+            camp=self.camp_a,
+        )
+        admin_obj = self._get_workshop_admin()
+        req = self._mock_request(self.owner_a)
+        self.assertTrue(admin_obj.has_view_permission(req, ws_a))
+        self.assertTrue(admin_obj.has_change_permission(req, ws_a))
+
+    def test_member_has_no_admin_perms(self):
+        """MEMBER should not have any admin permissions."""
+        admin_obj = self._get_workshop_admin()
+        req = self._mock_request(self.member)
+        self.assertFalse(admin_obj.has_add_permission(req))
+        self.assertFalse(admin_obj.has_view_permission(req))
+
+
+# ---------------------------------------------------------------------------
+# Admin active camp tests
+# ---------------------------------------------------------------------------
+
+
+class AdminActiveCampTest(TestCase):
+    def setUp(self):
+        self.owner = make_user("owner@active.com", is_staff=True)
+        self.camp_a = Camp.objects.create(name="Camp Active A", slug="camp-active-a")
+        self.camp_b = Camp.objects.create(name="Camp Active B", slug="camp-active-b")
+        UserCamp.objects.create(
+            user=self.owner, camp=self.camp_a, role=UserCamp.Role.OWNER
+        )
+        UserCamp.objects.create(
+            user=self.owner, camp=self.camp_b, role=UserCamp.Role.OWNER
+        )
+
+    def _mock_request(self, user, session=None):
+        from unittest.mock import MagicMock
+
+        req = MagicMock()
+        req.user = user
+        req.session = session if session is not None else {}
+        return req
+
+    def _get_workshop_admin(self):
+        from obozstudentow.admin.workshop import WorkshopAdmin
+        from django.contrib.admin import site
+
+        return WorkshopAdmin(
+            __import__("obozstudentow.models", fromlist=["Workshop"]).Workshop,
+            site,
+        )
+
+    def test_active_camp_filters_queryset(self):
+        """When active camp is set to camp_a, only camp_a workshops are shown."""
+        from obozstudentow.models import Workshop
+        from obozstudentow.admin.mixins import SESSION_ACTIVE_CAMP_KEY
+
+        Workshop.objects.create(
+            name="Active-A",
+            start="2026-07-01 10:00", userLimit=10,
+            end="2026-07-01 12:00",
+            camp=self.camp_a,
+        )
+        Workshop.objects.create(
+            name="Active-B",
+            start="2026-07-01 10:00", userLimit=10,
+            end="2026-07-01 12:00",
+            camp=self.camp_b,
+        )
+        session = {SESSION_ACTIVE_CAMP_KEY: self.camp_a.pk}
+        req = self._mock_request(self.owner, session=session)
+
+        admin_obj = self._get_workshop_admin()
+        qs = admin_obj.get_queryset(req)
+        self.assertEqual(qs.count(), 1)
+        self.assertEqual(qs.first().name, "Active-A")
+
+    def test_no_active_camp_shows_all_owned(self):
+        """Without active camp set, all camps owned by user are shown."""
+        from obozstudentow.models import Workshop
+
+        Workshop.objects.create(
+            name="Active-A",
+            start="2026-07-01 10:00", userLimit=10,
+            end="2026-07-01 12:00",
+            camp=self.camp_a,
+        )
+        Workshop.objects.create(
+            name="Active-B",
+            start="2026-07-01 10:00", userLimit=10,
+            end="2026-07-01 12:00",
+            camp=self.camp_b,
+        )
+        req = self._mock_request(self.owner)
+        admin_obj = self._get_workshop_admin()
+        qs = admin_obj.get_queryset(req)
+        self.assertEqual(qs.count(), 2)
+
+    def test_save_model_auto_assigns_active_camp(self):
+        """New record gets active camp auto-assigned on save."""
+        from obozstudentow.models import Workshop
+        from obozstudentow.admin.mixins import SESSION_ACTIVE_CAMP_KEY
+
+        session = {SESSION_ACTIVE_CAMP_KEY: self.camp_a.pk}
+        req = self._mock_request(self.owner, session=session)
+
+        ws = Workshop(
+            name="AutoAssign",
+            start="2026-07-01 10:00", userLimit=10,
+            end="2026-07-01 12:00",
+        )
+        admin_obj = self._get_workshop_admin()
+        admin_obj.save_model(req, ws, form=None, change=False)
+        self.assertEqual(ws.camp, self.camp_a)
+
+    def test_save_model_falls_back_to_first_owned_camp(self):
+        """If no active camp, new record is assigned to first owned camp."""
+        from obozstudentow.models import Workshop
+
+        req = self._mock_request(self.owner)
+        ws = Workshop(
+            name="FallbackAssign",
+            start="2026-07-01 10:00", userLimit=10,
+            end="2026-07-01 12:00",
+        )
+        admin_obj = self._get_workshop_admin()
+        admin_obj.save_model(req, ws, form=None, change=False)
+        # Should be one of the owned camps
+        self.assertIn(ws.camp, [self.camp_a, self.camp_b])
+
+    def test_active_camp_invalid_for_user_is_cleared(self):
+        """Active camp belonging to another user gets cleared from session."""
+        from obozstudentow.admin.mixins import SESSION_ACTIVE_CAMP_KEY, _get_active_camp
+
+        other_camp = Camp.objects.create(name="Other Camp", slug="other-camp")
+        session = {SESSION_ACTIVE_CAMP_KEY: other_camp.pk}
+        req = self._mock_request(self.owner, session=session)
+
+        result = _get_active_camp(req)
+        self.assertIsNone(result)
+        self.assertNotIn(SESSION_ACTIVE_CAMP_KEY, req.session)

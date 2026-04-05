@@ -85,6 +85,7 @@ def uploadProfilePhoto(request):
 
 @api_view(["POST"])
 def uploadProfileData(request):
+    require_feature(get_camp_from_request(request), "tinder")
     if not tinder_register_active():
         return Response(
             {"error": "Rejestracja na Tinder jest obecnie wyłączona"}, status=400
