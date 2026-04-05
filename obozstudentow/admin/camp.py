@@ -45,6 +45,8 @@ class UserCampInline(admin.TabularInline):
 
 class CampSettingsInline(admin.StackedInline):
     model = CampSettings
+    extra = 0
+    max_num = 1
     can_delete = False
     verbose_name_plural = "Ustawienia obozu"
     fieldsets = (
@@ -80,6 +82,13 @@ class CampSettingsInline(admin.StackedInline):
         ),
     )
 
+    def has_add_permission(self, request, obj=None):
+        # CampSettings is auto-created by signal after Camp save.
+        # Avoid duplicate insert on Camp add form and allow add only if missing.
+        if obj is None:
+            return False
+        return not CampSettings.objects.filter(camp=obj).exists()
+
 
 # ---------------------------------------------------------------------------
 # CampAdmin
@@ -104,7 +113,9 @@ class CampAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
-        return qs.filter(user_camps__user=request.user, user_camps__role=UserCamp.Role.OWNER)
+        return qs.filter(
+            user_camps__user=request.user, user_camps__role=UserCamp.Role.OWNER
+        )
 
     def has_change_permission(self, request, obj=None):
         if request.user.is_superuser:
@@ -153,12 +164,11 @@ class CampAdmin(admin.ModelAdmin):
         camp = Camp.objects.filter(pk=camp_id).first()
         if camp is None:
             self.message_user(request, "Nie znaleziono obozu.", level="error")
-        elif not request.user.is_superuser and not _get_user_owner_camps(
-            request.user
-        ).filter(pk=camp_id).exists():
-            self.message_user(
-                request, "Nie masz dostępu do tego obozu.", level="error"
-            )
+        elif (
+            not request.user.is_superuser
+            and not _get_user_owner_camps(request.user).filter(pk=camp_id).exists()
+        ):
+            self.message_user(request, "Nie masz dostępu do tego obozu.", level="error")
         else:
             request.session[SESSION_ACTIVE_CAMP_KEY] = camp_id
             self.message_user(
@@ -167,7 +177,9 @@ class CampAdmin(admin.ModelAdmin):
                 level="success",
             )
         return HttpResponseRedirect(
-            request.META.get("HTTP_REFERER", reverse("admin:obozstudentow_camp_changelist"))
+            request.META.get(
+                "HTTP_REFERER", reverse("admin:obozstudentow_camp_changelist")
+            )
         )
 
     def clear_active_camp_view(self, request):
