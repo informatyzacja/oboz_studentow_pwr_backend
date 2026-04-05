@@ -6,130 +6,300 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('obozstudentow', '0125_bingo_setting'),
+        ("obozstudentow", "0125_bingo_setting"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Camp',
+            name="Camp",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=200, verbose_name='Nazwa obozu')),
-                ('slug', models.SlugField(max_length=100, unique=True, verbose_name='Slug')),
-                ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='Data utworzenia')),
-                ('is_active', models.BooleanField(default=True, verbose_name='Aktywny')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=200, verbose_name="Nazwa obozu")),
+                (
+                    "slug",
+                    models.SlugField(max_length=100, unique=True, verbose_name="Slug"),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name="Data utworzenia"
+                    ),
+                ),
+                (
+                    "is_active",
+                    models.BooleanField(default=True, verbose_name="Aktywny"),
+                ),
             ],
             options={
-                'verbose_name': 'Obóz',
-                'verbose_name_plural': 'Obozy',
+                "verbose_name": "Obóz",
+                "verbose_name_plural": "Obozy",
             },
         ),
         migrations.AddField(
-            model_name='announcement',
-            name='camp',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.camp', verbose_name='Obóz'),
+            model_name="announcement",
+            name="camp",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow.camp",
+                verbose_name="Obóz",
+            ),
         ),
         migrations.AddField(
-            model_name='bus',
-            name='camp',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.camp', verbose_name='Obóz'),
+            model_name="bus",
+            name="camp",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow.camp",
+                verbose_name="Obóz",
+            ),
         ),
         migrations.AddField(
-            model_name='dailyquest',
-            name='camp',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.camp', verbose_name='Obóz'),
+            model_name="dailyquest",
+            name="camp",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow.camp",
+                verbose_name="Obóz",
+            ),
         ),
         migrations.AddField(
-            model_name='faq',
-            name='camp',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.camp', verbose_name='Obóz'),
+            model_name="faq",
+            name="camp",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow.camp",
+                verbose_name="Obóz",
+            ),
         ),
         migrations.AddField(
-            model_name='group',
-            name='camp',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.camp', verbose_name='Obóz'),
+            model_name="group",
+            name="camp",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow.camp",
+                verbose_name="Obóz",
+            ),
         ),
         migrations.AddField(
-            model_name='homelink',
-            name='camp',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.camp', verbose_name='Obóz'),
+            model_name="homelink",
+            name="camp",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow.camp",
+                verbose_name="Obóz",
+            ),
         ),
         migrations.AddField(
-            model_name='house',
-            name='camp',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.camp', verbose_name='Obóz'),
+            model_name="house",
+            name="camp",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow.camp",
+                verbose_name="Obóz",
+            ),
         ),
         migrations.AddField(
-            model_name='image',
-            name='camp',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.camp', verbose_name='Obóz'),
+            model_name="image",
+            name="camp",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow.camp",
+                verbose_name="Obóz",
+            ),
         ),
         migrations.AddField(
-            model_name='lifeguard',
-            name='camp',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.camp', verbose_name='Obóz'),
+            model_name="lifeguard",
+            name="camp",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow.camp",
+                verbose_name="Obóz",
+            ),
         ),
         migrations.AddField(
-            model_name='link',
-            name='camp',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.camp', verbose_name='Obóz'),
+            model_name="link",
+            name="camp",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow.camp",
+                verbose_name="Obóz",
+            ),
         ),
         migrations.AddField(
-            model_name='meal',
-            name='camp',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.camp', verbose_name='Obóz'),
+            model_name="meal",
+            name="camp",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow.camp",
+                verbose_name="Obóz",
+            ),
         ),
         migrations.AddField(
-            model_name='mealduty',
-            name='camp',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.camp', verbose_name='Obóz'),
+            model_name="mealduty",
+            name="camp",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow.camp",
+                verbose_name="Obóz",
+            ),
         ),
         migrations.AddField(
-            model_name='nightgamesignup',
-            name='camp',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.camp', verbose_name='Obóz'),
+            model_name="nightgamesignup",
+            name="camp",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow.camp",
+                verbose_name="Obóz",
+            ),
         ),
         migrations.AddField(
-            model_name='partners',
-            name='camp',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.camp', verbose_name='Obóz'),
+            model_name="partners",
+            name="camp",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow.camp",
+                verbose_name="Obóz",
+            ),
         ),
         migrations.AddField(
-            model_name='scheduleitem',
-            name='camp',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.camp', verbose_name='Obóz'),
+            model_name="scheduleitem",
+            name="camp",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow.camp",
+                verbose_name="Obóz",
+            ),
         ),
         migrations.AddField(
-            model_name='soberduty',
-            name='camp',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.camp', verbose_name='Obóz'),
+            model_name="soberduty",
+            name="camp",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow.camp",
+                verbose_name="Obóz",
+            ),
         ),
         migrations.AddField(
-            model_name='staff',
-            name='camp',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.camp', verbose_name='Obóz'),
+            model_name="staff",
+            name="camp",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow.camp",
+                verbose_name="Obóz",
+            ),
         ),
         migrations.AddField(
-            model_name='workshop',
-            name='camp',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.camp', verbose_name='Obóz'),
+            model_name="workshop",
+            name="camp",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow.camp",
+                verbose_name="Obóz",
+            ),
         ),
         migrations.CreateModel(
-            name='UserCamp',
+            name="UserCamp",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('role', models.CharField(choices=[('owner', 'Właściciel'), ('member', 'Uczestnik')], default='member', max_length=10, verbose_name='Rola')),
-                ('joined_at', models.DateTimeField(auto_now_add=True, verbose_name='Data dołączenia')),
-                ('camp', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='user_camps', to='obozstudentow.camp', verbose_name='Obóz')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='user_camps', to=settings.AUTH_USER_MODEL, verbose_name='Użytkownik')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "role",
+                    models.CharField(
+                        choices=[("owner", "Właściciel"), ("member", "Uczestnik")],
+                        default="member",
+                        max_length=10,
+                        verbose_name="Rola",
+                    ),
+                ),
+                (
+                    "joined_at",
+                    models.DateTimeField(
+                        auto_now_add=True, verbose_name="Data dołączenia"
+                    ),
+                ),
+                (
+                    "camp",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="user_camps",
+                        to="obozstudentow.camp",
+                        verbose_name="Obóz",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="user_camps",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Użytkownik",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Członkostwo w obozie',
-                'verbose_name_plural': 'Członkostwa w obozie',
-                'indexes': [models.Index(fields=['user', 'camp'], name='obozstudent_user_id_c04ee4_idx'), models.Index(fields=['camp'], name='obozstudent_camp_id_514911_idx')],
-                'unique_together': {('user', 'camp')},
+                "verbose_name": "Członkostwo w obozie",
+                "verbose_name_plural": "Członkostwa w obozie",
+                "indexes": [
+                    models.Index(
+                        fields=["user", "camp"], name="obozstudent_user_id_c04ee4_idx"
+                    ),
+                    models.Index(
+                        fields=["camp"], name="obozstudent_camp_id_514911_idx"
+                    ),
+                ],
+                "unique_together": {("user", "camp")},
             },
         ),
     ]

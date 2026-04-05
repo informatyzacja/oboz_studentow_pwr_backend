@@ -90,7 +90,9 @@ class CampAPICreateTest(TestCase):
         resp = anon.post(
             "/api2/camps/", {"name": "Anon", "slug": "anon"}, format="json"
         )
-        self.assertIn(resp.status_code, [status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN])
+        self.assertIn(
+            resp.status_code, [status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN]
+        )
 
 
 class CampAPIMyCampsTest(TestCase):
@@ -102,9 +104,15 @@ class CampAPIMyCampsTest(TestCase):
         self.camp1 = Camp.objects.create(name="Camp A", slug="camp-a")
         self.camp2 = Camp.objects.create(name="Camp B", slug="camp-b")
         self.camp3 = Camp.objects.create(name="Camp C", slug="camp-c")
-        UserCamp.objects.create(user=self.user, camp=self.camp1, role=UserCamp.Role.OWNER)
-        UserCamp.objects.create(user=self.user, camp=self.camp2, role=UserCamp.Role.MEMBER)
-        UserCamp.objects.create(user=self.other, camp=self.camp3, role=UserCamp.Role.OWNER)
+        UserCamp.objects.create(
+            user=self.user, camp=self.camp1, role=UserCamp.Role.OWNER
+        )
+        UserCamp.objects.create(
+            user=self.user, camp=self.camp2, role=UserCamp.Role.MEMBER
+        )
+        UserCamp.objects.create(
+            user=self.other, camp=self.camp3, role=UserCamp.Role.OWNER
+        )
 
     def test_list_my_camps(self):
         resp = self.client.get("/api2/camps/my/")
@@ -127,8 +135,12 @@ class CampAPIMembersTest(TestCase):
         self.member = make_user("member@example.com")
         self.outsider = make_user("outsider@example.com")
         self.camp = Camp.objects.create(name="Camp X", slug="camp-x")
-        UserCamp.objects.create(user=self.owner, camp=self.camp, role=UserCamp.Role.OWNER)
-        UserCamp.objects.create(user=self.member, camp=self.camp, role=UserCamp.Role.MEMBER)
+        UserCamp.objects.create(
+            user=self.owner, camp=self.camp, role=UserCamp.Role.OWNER
+        )
+        UserCamp.objects.create(
+            user=self.member, camp=self.camp, role=UserCamp.Role.MEMBER
+        )
 
     def test_owner_can_list_members(self):
         self.client.force_authenticate(user=self.owner)
@@ -157,9 +169,7 @@ class CampAPIMembersTest(TestCase):
             format="json",
         )
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(
-            UserCamp.objects.filter(user=new_user, camp=self.camp).exists()
-        )
+        self.assertTrue(UserCamp.objects.filter(user=new_user, camp=self.camp).exists())
 
     def test_member_cannot_add_member(self):
         self.client.force_authenticate(user=self.member)
@@ -206,8 +216,12 @@ class CampDataIsolationTest(TestCase):
         self.camp_a = Camp.objects.create(name="Camp A", slug="iso-camp-a")
         self.camp_b = Camp.objects.create(name="Camp B", slug="iso-camp-b")
 
-        UserCamp.objects.create(user=self.user_a, camp=self.camp_a, role=UserCamp.Role.MEMBER)
-        UserCamp.objects.create(user=self.user_b, camp=self.camp_b, role=UserCamp.Role.MEMBER)
+        UserCamp.objects.create(
+            user=self.user_a, camp=self.camp_a, role=UserCamp.Role.MEMBER
+        )
+        UserCamp.objects.create(
+            user=self.user_b, camp=self.camp_b, role=UserCamp.Role.MEMBER
+        )
 
         self.gtype = GroupType.objects.create(name="Testowy")
         self.group_a = Group.objects.create(
@@ -219,9 +233,7 @@ class CampDataIsolationTest(TestCase):
 
     def test_group_scoped_by_camp(self):
         self.client.force_authenticate(user=self.user_a)
-        resp = self.client.get(
-            "/api/group/", HTTP_X_CAMP_ID=str(self.camp_a.id)
-        )
+        resp = self.client.get("/api/group/", HTTP_X_CAMP_ID=str(self.camp_a.id))
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         names = [g["name"] for g in resp.json()]
         self.assertIn("Grupa A", names)
@@ -229,9 +241,7 @@ class CampDataIsolationTest(TestCase):
 
     def test_camp_b_user_only_sees_camp_b_groups(self):
         self.client.force_authenticate(user=self.user_b)
-        resp = self.client.get(
-            "/api/group/", HTTP_X_CAMP_ID=str(self.camp_b.id)
-        )
+        resp = self.client.get("/api/group/", HTTP_X_CAMP_ID=str(self.camp_b.id))
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         names = [g["name"] for g in resp.json()]
         self.assertNotIn("Grupa A", names)
@@ -240,9 +250,7 @@ class CampDataIsolationTest(TestCase):
     def test_non_member_cannot_access_camp_a_data(self):
         # user_b is NOT a member of camp_a
         self.client.force_authenticate(user=self.user_b)
-        resp = self.client.get(
-            "/api/group/", HTTP_X_CAMP_ID=str(self.camp_a.id)
-        )
+        resp = self.client.get("/api/group/", HTTP_X_CAMP_ID=str(self.camp_a.id))
         self.assertEqual(resp.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_missing_camp_header_returns_all_backward_compat(self):
@@ -361,8 +369,12 @@ class CampSettingsAPITest(TestCase):
         self.member = make_user("member@settings.com")
         self.other = make_user("other@settings.com")
         self.camp = Camp.objects.create(name="API Settings Camp", slug="api-settings")
-        UserCamp.objects.create(user=self.owner, camp=self.camp, role=UserCamp.Role.OWNER)
-        UserCamp.objects.create(user=self.member, camp=self.camp, role=UserCamp.Role.MEMBER)
+        UserCamp.objects.create(
+            user=self.owner, camp=self.camp, role=UserCamp.Role.OWNER
+        )
+        UserCamp.objects.create(
+            user=self.member, camp=self.camp, role=UserCamp.Role.MEMBER
+        )
 
     def test_owner_can_read_settings(self):
         self.client.force_authenticate(user=self.owner)
@@ -423,7 +435,9 @@ class FeatureFlagAPIEnforcementTest(TestCase):
         self.client = APIClient()
         self.user = make_user("ff_user@example.com")
         self.camp = Camp.objects.create(name="FF Camp", slug="ff-camp")
-        UserCamp.objects.create(user=self.user, camp=self.camp, role=UserCamp.Role.MEMBER)
+        UserCamp.objects.create(
+            user=self.user, camp=self.camp, role=UserCamp.Role.MEMBER
+        )
         self.camp.settings.feature_workshops = False
         self.camp.settings.feature_schedule = False
         self.camp.settings.save()
@@ -512,13 +526,15 @@ class AdminCampIsolationTest(TestCase):
 
         Workshop.objects.create(
             name="WS-A",
-            start="2026-07-01 10:00", userLimit=10,
+            start="2026-07-01 10:00",
+            userLimit=10,
             end="2026-07-01 12:00",
             camp=self.camp_a,
         )
         Workshop.objects.create(
             name="WS-B",
-            start="2026-07-01 10:00", userLimit=10,
+            start="2026-07-01 10:00",
+            userLimit=10,
             end="2026-07-01 12:00",
             camp=self.camp_b,
         )
@@ -533,13 +549,15 @@ class AdminCampIsolationTest(TestCase):
 
         Workshop.objects.create(
             name="WS-A",
-            start="2026-07-01 10:00", userLimit=10,
+            start="2026-07-01 10:00",
+            userLimit=10,
             end="2026-07-01 12:00",
             camp=self.camp_a,
         )
         Workshop.objects.create(
             name="WS-B",
-            start="2026-07-01 10:00", userLimit=10,
+            start="2026-07-01 10:00",
+            userLimit=10,
             end="2026-07-01 12:00",
             camp=self.camp_b,
         )
@@ -555,7 +573,8 @@ class AdminCampIsolationTest(TestCase):
 
         ws_b = Workshop.objects.create(
             name="WS-B",
-            start="2026-07-01 10:00", userLimit=10,
+            start="2026-07-01 10:00",
+            userLimit=10,
             end="2026-07-01 12:00",
             camp=self.camp_b,
         )
@@ -570,7 +589,8 @@ class AdminCampIsolationTest(TestCase):
 
         ws_a = Workshop.objects.create(
             name="WS-A",
-            start="2026-07-01 10:00", userLimit=10,
+            start="2026-07-01 10:00",
+            userLimit=10,
             end="2026-07-01 12:00",
             camp=self.camp_a,
         )
@@ -628,13 +648,15 @@ class AdminActiveCampTest(TestCase):
 
         Workshop.objects.create(
             name="Active-A",
-            start="2026-07-01 10:00", userLimit=10,
+            start="2026-07-01 10:00",
+            userLimit=10,
             end="2026-07-01 12:00",
             camp=self.camp_a,
         )
         Workshop.objects.create(
             name="Active-B",
-            start="2026-07-01 10:00", userLimit=10,
+            start="2026-07-01 10:00",
+            userLimit=10,
             end="2026-07-01 12:00",
             camp=self.camp_b,
         )
@@ -652,13 +674,15 @@ class AdminActiveCampTest(TestCase):
 
         Workshop.objects.create(
             name="Active-A",
-            start="2026-07-01 10:00", userLimit=10,
+            start="2026-07-01 10:00",
+            userLimit=10,
             end="2026-07-01 12:00",
             camp=self.camp_a,
         )
         Workshop.objects.create(
             name="Active-B",
-            start="2026-07-01 10:00", userLimit=10,
+            start="2026-07-01 10:00",
+            userLimit=10,
             end="2026-07-01 12:00",
             camp=self.camp_b,
         )
@@ -677,7 +701,8 @@ class AdminActiveCampTest(TestCase):
 
         ws = Workshop(
             name="AutoAssign",
-            start="2026-07-01 10:00", userLimit=10,
+            start="2026-07-01 10:00",
+            userLimit=10,
             end="2026-07-01 12:00",
         )
         admin_obj = self._get_workshop_admin()
@@ -691,7 +716,8 @@ class AdminActiveCampTest(TestCase):
         req = self._mock_request(self.owner)
         ws = Workshop(
             name="FallbackAssign",
-            start="2026-07-01 10:00", userLimit=10,
+            start="2026-07-01 10:00",
+            userLimit=10,
             end="2026-07-01 12:00",
         )
         admin_obj = self._get_workshop_admin()

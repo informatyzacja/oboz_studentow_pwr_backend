@@ -5,21 +5,35 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('bereal', '0004_alter_berealnotification_date'),
-        ('obozstudentow', '0126_camp_announcement_camp_bus_camp_dailyquest_camp_and_more'),
+        ("bereal", "0004_alter_berealnotification_date"),
+        (
+            "obozstudentow",
+            "0126_camp_announcement_camp_bus_camp_dailyquest_camp_and_more",
+        ),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='berealnotification',
-            name='camp',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.camp', verbose_name='Obóz'),
+            model_name="berealnotification",
+            name="camp",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow.camp",
+                verbose_name="Obóz",
+            ),
         ),
         migrations.AddField(
-            model_name='berealpost',
-            name='camp',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='obozstudentow.camp', verbose_name='Obóz'),
+            model_name="berealpost",
+            name="camp",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="obozstudentow.camp",
+                verbose_name="Obóz",
+            ),
         ),
     ]
