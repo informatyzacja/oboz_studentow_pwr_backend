@@ -2,6 +2,7 @@
 Data migration: create a default "legacy" camp and assign all existing records to it.
 All existing users get the MEMBER role; staff (is_staff=True) get the OWNER role.
 """
+
 from django.db import migrations
 
 
@@ -17,7 +18,7 @@ def create_default_camp(apps, schema_editor):
 
     # Assign all users to the default camp
     for user in User.objects.all():
-        role = UserCamp.Role.OWNER if user.is_staff else UserCamp.Role.MEMBER
+        role = "owner" if user.is_staff else "member"
         UserCamp.objects.get_or_create(user=user, camp=camp, defaults={"role": role})
 
     # Assign camp to all domain models
@@ -88,7 +89,10 @@ def reverse_default_camp(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("obozstudentow", "0126_camp_announcement_camp_bus_camp_dailyquest_camp_and_more"),
+        (
+            "obozstudentow",
+            "0126_camp_announcement_camp_bus_camp_dailyquest_camp_and_more",
+        ),
         ("bereal", "0005_berealnotification_camp_berealpost_camp"),
         ("bingo", "0003_bingotasktemplate_camp_bingouserinstance_camp_and_more"),
         ("tinder", "0002_tinderprofile_camp"),

@@ -79,9 +79,7 @@ def require_feature(camp, feature: str):
     disabled, suitable for use in DRF views.
     """
     if not check_feature_enabled(camp, feature):
-        raise PermissionDenied(
-            f"Funkcja '{feature}' jest wyłączona dla tego obozu."
-        )
+        raise PermissionDenied(f"Funkcja '{feature}' jest wyłączona dla tego obozu.")
 
 
 # ---------------------------------------------------------------------------
@@ -324,9 +322,7 @@ class CampViewSet(viewsets.GenericViewSet):
 
         if request.method == "GET":
             qs = UserCamp.objects.filter(camp=camp).select_related("user")
-            serializer = UserCampSerializer(
-                qs, many=True, context={"request": request}
-            )
+            serializer = UserCampSerializer(qs, many=True, context={"request": request})
             return Response(serializer.data)
 
         # POST – add member (OWNER only)
@@ -377,8 +373,13 @@ class CampViewSet(viewsets.GenericViewSet):
         uc.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    @action(detail=True, methods=["get", "patch"], url_path="settings")
-    def settings(self, request, pk=None):
+    @action(
+        detail=True,
+        methods=["get", "patch"],
+        url_path="settings",
+        url_name="settings",
+    )
+    def camp_settings(self, request, pk=None):
         camp = get_object_or_404(Camp, pk=pk)
 
         # Must be a member to read settings
