@@ -7,6 +7,7 @@ from django.http.request import HttpRequest
 from import_export.admin import ImportExportModelAdmin
 
 from ..models import Workshop, WorkshopSignup, WorkshopLeader, User
+from .mixins import CampScopedAdmin
 
 
 class WorkshopSignupInline(admin.TabularInline):
@@ -40,7 +41,7 @@ class WorkshopLeaderAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
 
 @admin.register(Workshop)
-class WorkshopAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+class WorkshopAdmin(CampScopedAdmin, ImportExportModelAdmin, admin.ModelAdmin):
     def signups(self, obj):
         return str(obj.workshopsignup_set.count()) + "/" + str(obj.userLimit)
 
@@ -54,8 +55,9 @@ class WorkshopAdmin(ImportExportModelAdmin, admin.ModelAdmin):
         "signups",
         "signupsOpen",
         "signupsOpenTime",
+        "notifications_sent",
     )
-    readonly_fields = ("signups",)
+    readonly_fields = ("signups", "notifications_sent")
     search_fields = ("name", "visible", "location")
     list_filter = (
         "visible",

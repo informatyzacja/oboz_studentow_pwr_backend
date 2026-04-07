@@ -60,6 +60,15 @@ class GroupViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
 
+    def get_queryset(self):
+        from .camps import get_camp_from_request
+
+        camp = get_camp_from_request(self.request)
+        qs = self.queryset
+        if camp is not None:
+            qs = qs.filter(camp=camp)
+        return qs
+
 
 class GroupTypeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -305,10 +314,9 @@ def signup_group(request):
             )
 
             title = f"Zostałeś/aś zapisany/a na grę nocną."
-            content = f'Grupę "{group.name}" i jej członków możesz zobaczyć w zakładce "Profil"'
-            # absolute_url = request.build_absolute_uri("/app/profil")
+            content = f'Grupę "{group.name}" i jej członków możesz zobaczyć klikając w to powiadomienie lub w zakładce "Profil"'
 
-            response = send_notification(title, content, tokens)
+            send_notification.delay(title, content, tokens, f"/moja-grupa/{group.id}")
         except:
             pass
 

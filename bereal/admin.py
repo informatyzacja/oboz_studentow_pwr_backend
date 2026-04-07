@@ -124,7 +124,14 @@ class BeerealReportAdmin(admin.ModelAdmin):
 
 @admin.register(BerealNotification)
 class BeerealNotificationAdmin(admin.ModelAdmin):
-    list_display = ("date", "sent_at", "deadline", "is_active_display", "posts_count")
+    list_display = (
+        "date",
+        "sent_at",
+        "start",
+        "deadline",
+        "is_active_display",
+        "posts_count",
+    )
     list_filter = ("date", "sent_at")
     ordering = ("-date",)
     readonly_fields = ("sent_at",)

@@ -14,6 +14,7 @@ from pathlib import Path
 import os, json
 from dotenv import load_dotenv
 from datetime import timedelta
+from corsheaders.defaults import default_headers
 
 
 def get_secret(key, default):
@@ -37,8 +38,8 @@ from django.core.management.utils import get_random_secret_key
 
 SECRET_KEY = get_secret("SECRET_KEY", get_random_secret_key())
 
-ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "admin@localhost")
-ADMINS = [(ADMIN_EMAIL, ADMIN_EMAIL)]
+ADMIN_EMAILS = os.getenv("ADMIN_EMAILS", "admin@localhost").split(",")
+ADMINS = [(email, email) for email in ADMIN_EMAILS]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "true").lower() == "true"
@@ -47,6 +48,7 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost").split(",")
 
 CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost").split(",")
 CORS_ALLOW_ALL_ORIGINS = os.getenv("CORS_ALLOW_ALL_ORIGINS", "false").lower() == "true"
+CORS_ALLOW_HEADERS = (*default_headers, "x-camp-id")
 
 # Application definition
 
@@ -70,6 +72,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "django_celery_beat",
     "django_celery_results",
+    "bingo",
 ]
 
 if DEBUG:
@@ -274,64 +277,62 @@ if not DEBUG:
 
 LOGGING = {
     "version": 1,
-    "disable_existing_logger": False,
+    "disable_existing_loggers": False,
     "formatters": {
         "verbose": {
             "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
             "style": "{",
         },
         "simple": {
-            "format": "{levelname} {asctime} {message}",
+            "format": "{levelname} {asctime} {module} {message}",
             "style": "{",
         },
     },
     "handlers": {
         "console": {
-            "level": "INFO",
+            "level": "DEBUG",
             "class": "logging.StreamHandler",
             "formatter": "simple",
         },
         "mail_admins": {
             "level": "ERROR",
             "class": "django.utils.log.AdminEmailHandler",
+            "formatter": "simple",
         },
     },
     "loggers": {
         "django": {
             "handlers": ["console"],
-            "level": "INFO",
-            "propagate": False,
         },
         "django.request": {
-            "handlers": ["mail_admins" if not DEBUG else "console"],
+            "handlers": ["mail_admins"],
             "level": "ERROR",
-            "propagate": False,
+            "propagate": True,
         },
-        "django.security": {
-            "handlers": ["mail_admins" if not DEBUG else "console"],
-            "level": "ERROR",
-            "propagate": False,
+        "celery": {
+            "level": "DEBUG",
         },
-        "py.warnings": {
-            "handlers": ["console"],
-        },
-        "django.security.DisallowedHost": {
-            "handlers": ["console"],
-            "propagate": False,
+        "django_celery_beat.schedulers": {
+            "level": "DEBUG",
         },
     },
-    "root": {"level": "INFO"},
+    "root": {"handlers": ["console"], "level": "ERROR"},
 }
+
 
 from celery.schedules import crontab
 
 CELERY_BEAT_SCHEDULE = {
     "plan-campaign-midnight": {
-        "task": "app.tasks.schedule_today_prompt",
+        "task": "bereal.tasks.schedule_today_prompt",
         "schedule": crontab(minute=1, hour=0),  # UTC
     },
     "catch-up": {
-        "task": "app.tasks.catch_up_prompts",
+        "task": "bereal.tasks.catch_up_prompts",
+        "schedule": crontab(minute="*/15"),
+    },
+    "workshop-notifications": {
+        "task": "obozstudentow.tasks.send_workshop_notifications",
         "schedule": crontab(minute="*/5"),
     },
 }
@@ -342,7 +343,13 @@ CELERY_RESULT_BACKEND = os.environ.get("CELERY_BACKEND", "django-db")
 CELERY_CACHE_BACKEND = "django-cache"
 CELERY_RESULT_EXTENDED = True
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+DJANGO_CELERY_BEAT_TZ_AWARE = False
+
 # Celery 5.x -> 6.0 deprecation: broker_connection_retry will no longer control
 # startup retry behavior. Explicitly enable retries on startup to keep current behavior
 # and silence the CPendingDeprecationWarning.
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
+# URLs used in error emails / monitoring; provide sane defaults so attribute errors don't occur
+SITE_URL = os.getenv("SITE_URL", "http://localhost:8000")
+CELERY_FLOWER_URL = os.getenv("CELERY_FLOWER_URL", "http://localhost:5555")

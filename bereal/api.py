@@ -7,7 +7,7 @@ import base64
 from django.core.files.base import ContentFile
 from django.db import transaction
 from django.contrib.auth import get_user_model
-from django.db.models import Q
+from django.db.models import Q, Count
 
 from .models import (
     BerealPost,
@@ -15,8 +15,10 @@ from .models import (
     BerealReport,
     BerealNotification,
 )
-from obozstudentow.models import Setting
+from obozstudentow.models import Setting, Group
 from obozstudentow.api.notifications import send_notification, UserFCMToken
+from obozstudentow.api.camps import get_camp_from_request, require_feature
+from datetime import datetime
 
 User = get_user_model()
 
@@ -86,6 +88,9 @@ def get_bereal_status(user=None):
     today_bereal = get_today_bereal()
     # widoczne tylko jeśli wysłane
     visible = today_bereal and today_bereal.is_sent
+    deadline_dt = None
+    if visible and today_bereal and today_bereal.deadline:
+        deadline_dt = datetime.combine(today_bereal.date, today_bereal.deadline)
     return {
         "is_active": bereal_active(),
         "was_today": bool(visible),
@@ -96,28 +101,52 @@ def get_bereal_status(user=None):
                 user=user, bereal_date=today_bereal.date
             ).exists()
         ),
-        "deadline": today_bereal.deadline if visible else None,
+        "deadline": deadline_dt,
     }
 
 
 @api_view(["GET"])
 def bereal_home(request):
+    require_feature(get_camp_from_request(request), "bereal")
     page = int(request.GET.get("page", 1))
     page_size = int(request.GET.get("page_size", 10))
+    scope = request.GET.get("scope")  # 'oboz' | 'frakcja' | None
+    time_filter = request.GET.get("time")  # 'dzisiaj' | 'all'
+    sort = request.GET.get("sort")  # 'popular' | 'recent'
 
-    # Posty dnia również powinny stać się widoczne dopiero po wysłaniu powiadomienia.
-    today = timezone.now().date()
-    today_bereal = get_today_bereal()
     posts_qs = (
-        BerealPost.objects.select_related("user")
+        BerealPost.objects.select_related("user", "user__tinderprofile")
         .prefetch_related("likes")
-        .order_by("-created_at")
-    )
-    if not (today_bereal and today_bereal.is_sent):
-        # ukryj dzisiejsze posty, zwracaj tylko wcześniejsze
-        posts_qs = posts_qs.exclude(bereal_date=today)
-    posts = posts_qs
-    paginator = Paginator(posts, page_size)
+        .annotate(likes_count=Count("likes"))
+    ).distinct()
+
+    # Time filter
+    if time_filter == "dzisiaj":
+        posts_qs = posts_qs.filter(bereal_date=timezone.now().date())
+
+    # Scope filter
+    if scope == "frakcja":
+        frakcja = Group.objects.filter(
+            Q(groupmember__user=request.user) | Q(groupwarden__user=request.user),
+            type__name="Frakcja",
+        ).first()
+        if frakcja:
+            posts_qs = posts_qs.filter(
+                Q(user__groupmember__group=frakcja)
+                | Q(user__groupwarden__group=frakcja)
+            )
+        else:
+            posts_qs = posts_qs.none()
+    elif scope == "house":
+        posts_qs = posts_qs.filter(user__house=request.user.house)
+
+    # Sorting
+    if sort == "popular":
+        posts_qs = posts_qs.order_by("-likes_count", "-created_at")
+    else:
+        posts_qs = posts_qs.order_by("-created_at")
+
+    paginator = Paginator(posts_qs, page_size)
     page_obj = paginator.get_page(page)
     serializer = BeerealPostSerializer(
         page_obj, many=True, context={"request": request}
@@ -126,19 +155,22 @@ def bereal_home(request):
         {
             "posts": serializer.data,
             "pagination": {
-                "current_page": page,
+                "current_page": page_obj.number,
                 "total_pages": paginator.num_pages,
                 "total_posts": paginator.count,
                 "has_next": page_obj.has_next(),
                 "has_previous": page_obj.has_previous(),
             },
-            "bereal_status": get_bereal_status(request.user),
+            "bereal_status": get_bereal_status(
+                request.user if request.user.is_authenticated else None
+            ),
         }
     )
 
 
 @api_view(["GET"])
 def bereal_profile(request, user_id=None):
+    require_feature(get_camp_from_request(request), "bereal")
     if user_id:
         try:
             user = User.objects.get(id=user_id)
@@ -183,6 +215,7 @@ def bereal_post_detail(request, post_id):
 
 @api_view(["POST"])
 def upload_bereal_post(request):
+    require_feature(get_camp_from_request(request), "bereal")
     if not bereal_active():
         return Response({"error": "BeReal jest obecnie wyłączony"}, status=400)
     today_bereal = get_today_bereal()
@@ -294,14 +327,14 @@ def report_bereal_post(request, post_id):
             .values_list("id", flat=True)
         )
         admin_tokens = list(
-            UserFCMToken.objects.filter(user_id__in=admin_users).values_list(
-                "token", flat=True
-            )
+            UserFCMToken.objects.filter(
+                user__notifications=True, user_id__in=admin_users
+            ).values_list("token", flat=True)
         )
         if admin_tokens:
             title = "Nowe zgłoszenie BeReal"
             content = f"Post użytkownika {post.user.first_name} został zgłoszony przez {request.user.first_name}"
-            send_notification(title, content, admin_tokens)
+            send_notification.delay(title, content, admin_tokens)
     except Exception:
         pass
     return Response({"success": True})

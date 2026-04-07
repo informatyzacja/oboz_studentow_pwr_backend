@@ -7,6 +7,14 @@ User = get_user_model()
 
 
 class BerealPost(models.Model):
+    camp = models.ForeignKey(
+        "obozstudentow.Camp",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Obóz",
+        db_index=True,
+    )
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="bereal_posts"
     )
@@ -77,7 +85,15 @@ class BerealReport(models.Model):
 
 
 class BerealNotification(models.Model):
-    date = models.DateField(db_index=True)
+    camp = models.ForeignKey(
+        "obozstudentow.Camp",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Obóz",
+        db_index=True,
+    )
+    date = models.DateField(db_index=True, unique=True)
     start = models.TimeField()
     # Deadline (koniec okna) jest teraz wyliczany dopiero w momencie wysłania
     # powiadomienia. Dlatego może być puste do czasu send_daily_prompt.

@@ -10,6 +10,9 @@ from ..models import House, HouseSignupProgress, User
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
+from obozstudentow.models import UserFCMToken
+from obozstudentow.api.notifications import send_notification
+
 
 class HouseLocatorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -69,17 +72,19 @@ class HouseViewSet(
     serializer_class = HouseSerializer
 
     def get_queryset(self):
+        from .camps import get_camp_from_request
+
         if not house_signups_active():
             return self.queryset.none()
 
-        return (
-            self.queryset.annotate(Count("user"))
-            .filter(
-                Q(places__gt=F("user__count"))
-                | Q(id=self.request.user.house.id if self.request.user.house else None)
-            )
-            .order_by("floor", "name")
+        camp = get_camp_from_request(self.request)
+        qs = self.queryset.annotate(Count("user")).filter(
+            Q(places__gt=F("user__count"))
+            | Q(id=self.request.user.house.id if self.request.user.house else None)
         )
+        if camp is not None:
+            qs = qs.filter(camp=camp)
+        return qs.order_by("floor", "name")
 
 
 from ..models import Setting
@@ -224,6 +229,20 @@ def signup_user_for_house(request, id):
                 ).data,
             },
         )
+
+        if user != request.user:
+            if user.notifications:
+                tokens = list(
+                    UserFCMToken.objects.filter(
+                        user=user, user__notifications=True
+                    ).values_list("token", flat=True)
+                )
+                send_notification.delay(
+                    title="Zostałeś/aś zapisany do domku!",
+                    body=f"Zostałeś/aś zapisany do domku nr {house.name} przez {request.user.first_name} {request.user.last_name[:1]}.",
+                    tokens=tokens,
+                    link="/profil",
+                )
 
         return Response(
             {"success": True, "progress_last_updated": progress.last_updated}

@@ -2,6 +2,14 @@ from django.db import models
 
 
 class Meal(models.Model):
+    camp = models.ForeignKey(
+        "obozstudentow.Camp",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Obóz",
+        db_index=True,
+    )
     name = models.CharField(max_length=100)
     start = models.DateTimeField()
     end = models.DateTimeField()

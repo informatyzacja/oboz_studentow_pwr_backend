@@ -65,10 +65,12 @@ def send_message_notification(message):
         if message.chat.users.count() > 2:
             group_name = "\nDo grupy " + message.chat.name
 
-        response = send_notification(
-            f"{message.user.first_name} {message.user.last_name[0]}. " + group_name,
+        send_notification.delay(
+            f"Wiadomość od {message.user.first_name} {message.user.last_name[0]}. "
+            + group_name,
             message.message,
             tokens,
+            f"/czat/{message.chat.id}",
         )
     except Exception as e:
         print(e)

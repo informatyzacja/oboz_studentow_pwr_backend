@@ -4,6 +4,14 @@ from django.contrib import admin
 
 
 class Workshop(models.Model):
+    camp = models.ForeignKey(
+        "obozstudentow.Camp",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Obóz",
+        db_index=True,
+    )
     name = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
     start = models.DateTimeField()
@@ -15,6 +23,7 @@ class Workshop(models.Model):
     photo = ResizedImageField(upload_to="workshop", blank=True)
     userLimit = models.IntegerField()
     itemsToTake = models.TextField(blank=True, null=True)
+    notifications_sent = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Warsztat"
