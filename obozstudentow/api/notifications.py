@@ -1,3 +1,7 @@
+import json
+import logging
+import os
+
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
@@ -37,16 +41,25 @@ import firebase_admin
 from firebase_admin import credentials, messaging
 from obozstudentowProject.settings import BASE_DIR
 
-if (BASE_DIR / "oboz-studentow-pwr-firebase-adminsdk.json").exists():
+firebase_credentials_json = os.getenv("FIREBASE_CREDENTIALS_JSON")
+
+if firebase_credentials_json:
+    try:
+        cred = credentials.Certificate(json.loads(firebase_credentials_json))
+        firebase_admin.initialize_app(cred)
+    except Exception as exc:  # pragma: no cover - defensive
+        logging.error(
+            "Invalid FIREBASE_CREDENTIALS_JSON. Firebase cannot be initialized. Error: %s",
+            exc,
+        )
+elif (BASE_DIR / "oboz-studentow-pwr-firebase-adminsdk.json").exists():
     cred = credentials.Certificate(
         BASE_DIR / "oboz-studentow-pwr-firebase-adminsdk.json"
     )
     firebase_admin.initialize_app(cred)
 else:
-    import logging
-
     logging.error(
-        "Firebase certificate file is missing. Firebase cannot be initialized."
+        "Firebase credentials are missing. Set FIREBASE_CREDENTIALS_JSON or provide oboz-studentow-pwr-firebase-adminsdk.json file."
     )
 
 
