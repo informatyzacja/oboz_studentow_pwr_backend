@@ -1,4 +1,5 @@
 from django.urls import path, include
+from rest_framework.routers import SimpleRouter
 
 from .group import *
 from .notifications import *
@@ -7,6 +8,11 @@ from .register import *
 from bereal.api import *  # noqa: F401,F403
 
 from .chat import *
+from .camps import CampViewSet
+
+# Camps router
+camps_router = SimpleRouter()
+camps_router.register(r"camps", CampViewSet, basename="camps")
 
 # /api2/bereal/
 berealurlpatterns = [
@@ -15,6 +21,7 @@ berealurlpatterns = [
 
 # /api2/
 urlpatterns = [
+    path("", include(camps_router.urls)),
     path("get-group-signup-info/", get_group_signup_info),
     path("signup-group/", signup_group),
     path("register-fcm-token/", register_fcm_token),

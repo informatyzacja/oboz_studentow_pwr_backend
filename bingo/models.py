@@ -11,6 +11,14 @@ from django_resized import ResizedImageField
 
 
 class BingoTaskTemplate(models.Model):
+    camp = models.ForeignKey(
+        "obozstudentow.Camp",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Obóz",
+        db_index=True,
+    )
     task_name = models.TextField()
     description = models.TextField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
@@ -20,6 +28,15 @@ class BingoTaskTemplate(models.Model):
 
 
 class BingoUserInstance(models.Model):
+    camp = models.ForeignKey(
+        "obozstudentow.Camp",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Obóz",
+        db_index=True,
+    )
+
     class ReviewStatus(models.TextChoices):
         IN_PROGRESS = "in_progress", "W trakcie"
         PENDING_REVIEW = "pending_review", "Oczekuje na sprawdzenie"

@@ -1,9 +1,11 @@
 from django.http.request import HttpRequest
+from .camp import *
 from .group import *
 from .meals import *
 from .people import *
 from .workshop import *
 from .user import *
+from .mixins import CampScopedAdmin
 
 from import_export.admin import ImportExportModelAdmin
 
@@ -25,7 +27,7 @@ class HomeLinkAdmin(OrderableAdmin):
     search_fields = ("name", "url", "icon")
 
 
-class FAQAdmin(ImportExportModelAdmin, OrderableAdmin):
+class FAQAdmin(CampScopedAdmin, ImportExportModelAdmin, OrderableAdmin):
     list_display = ("question", "answer", "sort_order_display")
     search_fields = ("question", "answer")
 
@@ -40,7 +42,7 @@ def show_maps(modeladmin, request, queryset):
     queryset.update(hide_map=False)
 
 
-class ScheduleItemAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+class ScheduleItemAdmin(CampScopedAdmin, ImportExportModelAdmin, admin.ModelAdmin):
     list_display = (
         "name",
         "description",
@@ -76,7 +78,7 @@ def hide_announncements(modeladmin, request, queryset):
 
 
 @admin.register(Announcement)
-class AnnouncementAdmin(admin.ModelAdmin):
+class AnnouncementAdmin(CampScopedAdmin, admin.ModelAdmin):
     list_display = ("title", "content", "date", "addedBy", "group", "visible")
     search_fields = ("title", "content", "date", "addedBy", "group", "visible")
 
@@ -94,7 +96,7 @@ from ..models import DailyQuest
 
 
 @admin.register(DailyQuest)
-class DailyQuestAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+class DailyQuestAdmin(CampScopedAdmin, ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ("title", "description", "start", "finish", "group", "visible")
     search_fields = (
         "title",
@@ -110,7 +112,7 @@ from ..models import Bus
 
 
 @admin.register(Bus)
-class BusAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+class BusAdmin(CampScopedAdmin, ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ("__str__", "user_count_to", "user_count_return", "location")
     search_fields = ("description", "location")
 
@@ -133,7 +135,7 @@ from ..models import Image
 
 
 @admin.register(Image)
-class ImageAdmin(admin.ModelAdmin):
+class ImageAdmin(CampScopedAdmin, admin.ModelAdmin):
     list_display = ("name", "image", "visible")
     search_fields = ("name", "image")
     list_filter = ("visible",)
@@ -154,7 +156,7 @@ from ..models import Partners
 
 
 @admin.register(Partners)
-class PartnersAdmin(OrderableAdmin):
+class PartnersAdmin(CampScopedAdmin, OrderableAdmin):
     list_display = ("name", "logo", "link", "sort_order_display")
     search_fields = ("name", "logo", "link")
 
@@ -197,7 +199,7 @@ def close_signout(modeladmin, request, queryset):
 
 
 @admin.register(House)
-class HouseAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+class HouseAdmin(CampScopedAdmin, ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ("name", "key_collected", "locators", "places", "full", "floor")
     search_fields = (
         "name",

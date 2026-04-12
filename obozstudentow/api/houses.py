@@ -72,17 +72,19 @@ class HouseViewSet(
     serializer_class = HouseSerializer
 
     def get_queryset(self):
+        from .camps import get_camp_from_request
+
         if not house_signups_active():
             return self.queryset.none()
 
-        return (
-            self.queryset.annotate(Count("user"))
-            .filter(
-                Q(places__gt=F("user__count"))
-                | Q(id=self.request.user.house.id if self.request.user.house else None)
-            )
-            .order_by("floor", "name")
+        camp = get_camp_from_request(self.request)
+        qs = self.queryset.annotate(Count("user")).filter(
+            Q(places__gt=F("user__count"))
+            | Q(id=self.request.user.house.id if self.request.user.house else None)
         )
+        if camp is not None:
+            qs = qs.filter(camp=camp)
+        return qs.order_by("floor", "name")
 
 
 from ..models import Setting

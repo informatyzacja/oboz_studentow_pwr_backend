@@ -8,6 +8,7 @@ from django.core.files.base import ContentFile
 from django.utils import timezone
 
 from obozstudentow.models import Setting, User
+from obozstudentow.api.camps import get_camp_from_request, require_feature
 from tinder.models import TinderProfile, TinderAction
 from obozstudentow_async.models import Chat
 from obozstudentow.api.notifications import send_notification, UserFCMToken
@@ -84,6 +85,7 @@ def uploadProfilePhoto(request):
 
 @api_view(["POST"])
 def uploadProfileData(request):
+    require_feature(get_camp_from_request(request), "tinder")
     if not tinder_register_active():
         return Response(
             {"error": "Rejestracja na Tinder jest obecnie wyłączona"}, status=400
@@ -107,6 +109,7 @@ def uploadProfileData(request):
 
 @api_view(["GET"])
 def loadTinderProfiles(request):
+    require_feature(get_camp_from_request(request), "tinder")
     if not tinder_active():
         return Response(
             {"info": "Przeglądanie profili jest obecnie wyłączone"}, status=200
@@ -147,6 +150,7 @@ def loadTinderProfiles(request):
 
 @api_view(["POST"])
 def tinderAction(request):
+    require_feature(get_camp_from_request(request), "tinder")
     if not tinder_active():
         return Response({"error": "Funkcja swipingu jest wyłączona"}, status=400)
 

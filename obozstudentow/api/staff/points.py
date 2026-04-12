@@ -5,6 +5,7 @@ from rest_framework import serializers
 
 from ...models import Point, PointType, GroupType, Group
 from .. import StaffSerializer, GroupSerializer, GroupTypeSerializer
+from ..camps import get_camp_from_request, require_feature
 
 from django.utils import timezone
 
@@ -40,6 +41,7 @@ class PointsSerializer(serializers.ModelSerializer):
 @api_view(["GET"])
 @permission_required("obozstudentow.can_view_points")
 def get_points(request):
+    require_feature(get_camp_from_request(request), "points")
     return Response(PointsSerializer(Point.objects.order_by("date"), many=True).data)
 
 
@@ -85,6 +87,7 @@ class PointTypeSerializer(serializers.ModelSerializer):
 @api_view(["GET"])
 @permission_required("obozstudentow.can_add_points")
 def get_point_types(request):
+    require_feature(get_camp_from_request(request), "points")
     groupTypes = GroupType.objects.all()
     pointTypes = PointType.objects.all()
     groups = Group.objects.all()
@@ -102,6 +105,7 @@ def get_point_types(request):
 @api_view(["POST"])
 @permission_required("obozstudentow.can_add_points")
 def add_points(request):
+    require_feature(get_camp_from_request(request), "points")
     if (
         not request.data["group"]
         or not request.data["type"]

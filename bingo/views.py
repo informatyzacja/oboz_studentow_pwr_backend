@@ -11,6 +11,7 @@ from .utils import swap_user_task, check_bingo_win, create_bingo_for_user
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from obozstudentow.models import Setting
+from obozstudentow.api.camps import get_camp_from_request, require_feature
 
 
 class BingoUserInstanceViewSet(viewsets.ReadOnlyModelViewSet):
@@ -23,6 +24,7 @@ class BingoUserInstanceViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        require_feature(get_camp_from_request(self.request), "bingo")
         # Użytkownik widzi tylko swoje aktywne (niezakończone) plansze
         return BingoUserInstance.objects.filter(user=self.request.user).exclude(
             review_status=BingoUserInstance.ReviewStatus.COMPLETED

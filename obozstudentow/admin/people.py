@@ -2,10 +2,11 @@ from ..models import LifeGuard, SoberDuty, Staff, User, MealDuty
 
 from django.contrib import admin
 from orderable.admin import OrderableAdmin
+from .mixins import CampScopedAdmin
 
 
 @admin.register(LifeGuard)
-class LifeGuardAdmin(admin.ModelAdmin):
+class LifeGuardAdmin(CampScopedAdmin, admin.ModelAdmin):
     list_display = ("user",)
     search_fields = ("user",)
 
@@ -18,7 +19,7 @@ class LifeGuardAdmin(admin.ModelAdmin):
 
 
 @admin.register(SoberDuty)
-class SoberDutyAdmin(admin.ModelAdmin):
+class SoberDutyAdmin(CampScopedAdmin, admin.ModelAdmin):
     list_display = ("user", "start", "end")
     search_fields = ("user", "start", "end")
 
@@ -31,7 +32,7 @@ class SoberDutyAdmin(admin.ModelAdmin):
 
 
 @admin.register(MealDuty)
-class MealDutyAdmin(admin.ModelAdmin):
+class MealDutyAdmin(CampScopedAdmin, admin.ModelAdmin):
     list_display = ("user", "start", "end")
     search_fields = ("user", "start", "end")
 
@@ -44,7 +45,7 @@ class MealDutyAdmin(admin.ModelAdmin):
 
 
 @admin.register(Staff)
-class ContactAdmin(OrderableAdmin):
+class ContactAdmin(CampScopedAdmin, OrderableAdmin):
     list_display = ("user", "sort_order_display")
     search_fields = ("user",)
 

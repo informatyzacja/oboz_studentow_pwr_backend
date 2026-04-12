@@ -4,6 +4,14 @@ from django.conf import settings
 
 
 class TinderProfile(models.Model):
+    camp = models.ForeignKey(
+        "obozstudentow.Camp",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Obóz",
+        db_index=True,
+    )
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     description = models.TextField(blank=True, null=True)
     photo = ResizedImageField(
