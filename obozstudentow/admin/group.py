@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from import_export.admin import ImportExportModelAdmin
+from .import_export_admin import ImportExportModelAdmin
 from django.db.models.fields.related import ForeignKey
 from django.forms.models import ModelChoiceField
 from django.http.request import HttpRequest

@@ -1,6 +1,6 @@
 from django.http import HttpRequest
 
-from import_export.admin import ImportExportModelAdmin
+from .import_export_admin import ImportExportModelAdmin
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget, ManyToManyWidget
 

@@ -5,7 +5,7 @@ from .people import *
 from .workshop import *
 from .user import *
 
-from import_export.admin import ImportExportModelAdmin
+from .import_export_admin import ImportExportModelAdmin
 
 from orderable.admin import OrderableAdmin
 
