@@ -18,6 +18,14 @@ from orderable.models import Orderable
 
 
 class Group(Orderable):
+    camp = models.ForeignKey(
+        "obozstudentow.Camp",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Obóz",
+        db_index=True,
+    )
     name = models.CharField(max_length=100)
     type = models.ForeignKey(GroupType, on_delete=models.PROTECT)
     logo = models.FileField(upload_to="groups", blank=True, null=True)
@@ -168,6 +176,14 @@ class Point(models.Model):
 
 # announcements
 class Announcement(models.Model):
+    camp = models.ForeignKey(
+        "obozstudentow.Camp",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Obóz",
+        db_index=True,
+    )
     group = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True, null=True)
     title = models.CharField(max_length=100)
     content = models.TextField()
@@ -187,6 +203,14 @@ class Announcement(models.Model):
 
 
 class DailyQuest(models.Model):
+    camp = models.ForeignKey(
+        "obozstudentow.Camp",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Obóz",
+        db_index=True,
+    )
     title = models.CharField(max_length=200)
     group = models.ForeignKey(Group, on_delete=models.CASCADE, blank=True, null=True)
     description = models.TextField(null=True, blank=True)
@@ -205,6 +229,14 @@ class DailyQuest(models.Model):
 
 
 class NightGameSignup(models.Model):
+    camp = models.ForeignKey(
+        "obozstudentow.Camp",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Obóz",
+        db_index=True,
+    )
     user_band = models.CharField(max_length=10)
     user_first_name = models.CharField(max_length=150)
     user_last_name = models.CharField(max_length=150)

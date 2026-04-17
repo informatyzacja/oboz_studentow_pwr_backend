@@ -9,6 +9,7 @@ from typing import Any
 from ..models import GroupType, Group, GroupMember, GroupWarden, User
 
 from orderable.admin import OrderableAdmin
+from .mixins import CampScopedAdmin
 
 
 @admin.register(GroupType)
@@ -56,7 +57,7 @@ class GroupMemberAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 
 
 @admin.register(Group)
-class GroupAdmin(ImportExportModelAdmin, OrderableAdmin):
+class GroupAdmin(CampScopedAdmin, ImportExportModelAdmin, OrderableAdmin):
     list_display = (
         "id",
         "name",
@@ -112,7 +113,7 @@ from ..models import NightGameSignup
 
 
 @admin.register(NightGameSignup)
-class NightGameSignupAdmin(admin.ModelAdmin):
+class NightGameSignupAdmin(CampScopedAdmin, admin.ModelAdmin):
     list_display = (
         "group",
         "user_first_name",

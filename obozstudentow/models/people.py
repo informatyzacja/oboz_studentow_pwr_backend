@@ -3,6 +3,14 @@ from orderable.models import Orderable
 
 
 class LifeGuard(models.Model):
+    camp = models.ForeignKey(
+        "obozstudentow.Camp",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Obóz",
+        db_index=True,
+    )
     user = models.ForeignKey("obozstudentow.User", on_delete=models.CASCADE)
 
     class Meta:
@@ -14,6 +22,14 @@ class LifeGuard(models.Model):
 
 
 class SoberDuty(models.Model):
+    camp = models.ForeignKey(
+        "obozstudentow.Camp",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Obóz",
+        db_index=True,
+    )
     user = models.ForeignKey("obozstudentow.User", on_delete=models.CASCADE)
     start = models.DateTimeField()
     end = models.DateTimeField()
@@ -36,6 +52,14 @@ class SoberDuty(models.Model):
 
 
 class MealDuty(models.Model):
+    camp = models.ForeignKey(
+        "obozstudentow.Camp",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Obóz",
+        db_index=True,
+    )
     user = models.ForeignKey("obozstudentow.User", on_delete=models.CASCADE)
     start = models.DateTimeField()
     end = models.DateTimeField()
@@ -58,6 +82,14 @@ class MealDuty(models.Model):
 
 
 class Staff(Orderable):
+    camp = models.ForeignKey(
+        "obozstudentow.Camp",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Obóz",
+        db_index=True,
+    )
     user = models.OneToOneField("obozstudentow.User", on_delete=models.CASCADE)
 
     class Meta(Orderable.Meta):

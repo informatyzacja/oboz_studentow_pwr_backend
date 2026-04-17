@@ -17,6 +17,7 @@ from .models import (
 )
 from obozstudentow.models import Setting, Group
 from obozstudentow.api.notifications import send_notification, UserFCMToken
+from obozstudentow.api.camps import get_camp_from_request, require_feature
 from datetime import datetime
 
 User = get_user_model()
@@ -106,6 +107,7 @@ def get_bereal_status(user=None):
 
 @api_view(["GET"])
 def bereal_home(request):
+    require_feature(get_camp_from_request(request), "bereal")
     page = int(request.GET.get("page", 1))
     page_size = int(request.GET.get("page_size", 10))
     scope = request.GET.get("scope")  # 'oboz' | 'frakcja' | None
@@ -168,6 +170,7 @@ def bereal_home(request):
 
 @api_view(["GET"])
 def bereal_profile(request, user_id=None):
+    require_feature(get_camp_from_request(request), "bereal")
     if user_id:
         try:
             user = User.objects.get(id=user_id)
@@ -212,6 +215,7 @@ def bereal_post_detail(request, post_id):
 
 @api_view(["POST"])
 def upload_bereal_post(request):
+    require_feature(get_camp_from_request(request), "bereal")
     if not bereal_active():
         return Response({"error": "BeReal jest obecnie wyłączony"}, status=400)
     today_bereal = get_today_bereal()

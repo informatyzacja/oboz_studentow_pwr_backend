@@ -21,6 +21,14 @@ class Icons(models.Model):
 
 
 class Link(Orderable):
+    camp = models.ForeignKey(
+        "obozstudentow.Camp",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Obóz",
+        db_index=True,
+    )
     name = models.CharField(
         max_length=100, help_text="Nazwa linku (nie widoczna dla użytkownika)"
     )
@@ -36,6 +44,14 @@ class Link(Orderable):
 
 
 class HomeLink(Orderable):
+    camp = models.ForeignKey(
+        "obozstudentow.Camp",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Obóz",
+        db_index=True,
+    )
     name = models.CharField(max_length=100)
     url = models.CharField(max_length=500, blank=True, null=True)
     image = models.ImageField(upload_to="home_links", blank=True, null=True)
@@ -52,6 +68,14 @@ class HomeLink(Orderable):
 
 
 class FAQ(Orderable):
+    camp = models.ForeignKey(
+        "obozstudentow.Camp",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Obóz",
+        db_index=True,
+    )
     question = models.CharField(max_length=100)
     answer = models.TextField()
 
@@ -60,6 +84,14 @@ class FAQ(Orderable):
 
 
 class ScheduleItem(models.Model):
+    camp = models.ForeignKey(
+        "obozstudentow.Camp",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Obóz",
+        db_index=True,
+    )
     name = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
     start = models.DateTimeField()
@@ -85,6 +117,14 @@ class ScheduleItem(models.Model):
 
 
 class Bus(models.Model):
+    camp = models.ForeignKey(
+        "obozstudentow.Camp",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Obóz",
+        db_index=True,
+    )
     description = models.CharField(max_length=100)
     location = models.URLField(null=True, blank=True)
 
@@ -96,6 +136,14 @@ class Bus(models.Model):
 
 
 class Image(models.Model):
+    camp = models.ForeignKey(
+        "obozstudentow.Camp",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Obóz",
+        db_index=True,
+    )
     name = models.CharField(max_length=100)
     image = models.FileField(upload_to="images")
     visible = models.BooleanField(default=True)
@@ -122,6 +170,14 @@ class Setting(models.Model):
 
 
 class Partners(Orderable):
+    camp = models.ForeignKey(
+        "obozstudentow.Camp",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Obóz",
+        db_index=True,
+    )
     name = models.CharField(max_length=100)
     link = models.URLField(blank=True, null=True)
     logo = ResizedImageField(upload_to="partners", force_format=None, size=[400, 400])

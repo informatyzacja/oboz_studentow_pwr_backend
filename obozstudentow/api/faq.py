@@ -14,3 +14,12 @@ class FAQSerializer(serializers.ModelSerializer):
 class FAQViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = FAQ.objects.order_by("sort_order")
     serializer_class = FAQSerializer
+
+    def get_queryset(self):
+        from .camps import get_camp_from_request
+
+        camp = get_camp_from_request(self.request)
+        qs = self.queryset
+        if camp is not None:
+            qs = qs.filter(camp=camp)
+        return qs

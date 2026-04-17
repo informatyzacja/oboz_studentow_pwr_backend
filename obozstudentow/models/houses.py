@@ -3,6 +3,14 @@ from obozstudentow_async.models import Chat
 
 
 class House(models.Model):
+    camp = models.ForeignKey(
+        "obozstudentow.Camp",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Obóz",
+        db_index=True,
+    )
     name = models.CharField(
         max_length=10, verbose_name="Numer domku/pokoju", unique=True
     )
